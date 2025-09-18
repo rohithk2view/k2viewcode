@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DBConn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="DBConnGenericAdoJdbc" name="Oracle1" type="genericdb" version="8.2.0">
+    <JdbcDriverName>Oracle</JdbcDriverName>
+    <Active>true</Active>
+</DBConn>
