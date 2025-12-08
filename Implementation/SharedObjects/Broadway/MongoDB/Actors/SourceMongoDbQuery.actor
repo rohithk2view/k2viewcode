@@ -1,0 +1,46 @@
+{
+    "type": "SourceMongoDbQuery",
+    "doc": [
+        "To improve performance with less calls to Mongo, data from parent LU table is aggregated to groups",
+        "This actor creates a MongoDB query and generates the filter and runs it against MongoDB",
+        "The filter is generated dynamically according to the input parameters.",
+        "If the Fabric session has ROWS_GENERATOR set to true, the actor will not perform any actions and will only return parent_rows, allowing DocumentQuery to handle data generation immediately afterward."
+    ],
+    "badge": "Mo",
+    "inputs": [
+        {
+            "name": "parent_rows",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object"
+                }
+            },
+            "doc": [
+                "The array of maps to use for building the mongo filter, the map keys are the column names and the values are the column values.",
+                "The map can contain multiple keys, in this case the filter will be a conjunction of all the keys.",
+                "The map can contain a single key, in this case the filter will be a single condition.",
+                "The map can contain no keys, in this case the read operation will not be executed."
+            ]
+        },
+        {
+            "const": 100,
+            "name": "size",
+            "schema": {
+                "type": "integer"
+            },
+            "doc": [
+                "A numeric value. This value will be used as the group size of rows from parent_rows.",
+                "each group will be used to generate the mongo filter.",
+                "The default value is 100.",
+                "The value must be greater than 0."
+            ]
+        }
+    ],
+    "outputs": [],
+    "tags": [
+        "db"
+    ],
+    "parentType": "MongoDbRead",
+    "actorClass": "com.k2view.cdbms.usercode.common.mongodb.actors.MongoDbActorSourceDbQuery"
+}

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DBConn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="DBConnGenericAdoJdbc" name="TDM" type="genericdb" version="8.3.1">
+    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+    <Active>true</Active>
+    <PortNum>5432</PortNum>
+    <DataBase>TDMDB</DataBase>
+    <UserId>postgres</UserId>
+    <ConnectionStringServerSide>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</ConnectionStringServerSide>
+    <MinConnectionsNumber>0</MinConnectionsNumber>
+    <MaxConnectionsNumber>60</MaxConnectionsNumber>
+    <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>
+    <AutomaticMetadataLoading>false</AutomaticMetadataLoading>
+    <OfflineMode>true</OfflineMode>
+    <CommandList></CommandList>
+    <ConnectionProperties></ConnectionProperties>
+    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+    <DataSource>postgres-service</DataSource>
+    <Password>postgres</Password>
+    <Certificate></Certificate>
+    <SchemaFilter></SchemaFilter>
+</DBConn>

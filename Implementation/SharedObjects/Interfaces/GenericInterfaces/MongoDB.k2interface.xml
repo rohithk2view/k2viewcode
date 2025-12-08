@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GenericInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="MongoDB" displayName="" enabled="true" version="1.4">
+    <Name>MongoDB</Name>
+    <Properties>
+        <Property name="connectionMethod">
+            <Value>programmaticConfiguration</Value>
+        </Property>
+        <Property name="connectionString">
+            <Value>mongodb://[USER]:[PASSWORD]@[HOST]:[PORT]/</Value>
+        </Property>
+        <Property name="host">
+            <Value>34.89.246.193</Value>
+        </Property>
+        <Property name="port">
+            <Value>27017</Value>
+        </Property>
+        <Property name="authDb">
+            <Value>admin</Value>
+        </Property>
+        <Property name="user">
+            <Value>admin</Value>
+        </Property>
+        <Property name="password">
+            <Value>~encs2~xkunRYRsBK01f6QxukMEBsO4Jf/XtQZ+5jeYax2FqpZgzVyzVygEfw==</Value>
+        </Property>
+        <Property name="sslEnabled">
+            <Value>false</Value>
+        </Property>
+        <Property name="retryWrites">
+            <Value>true</Value>
+        </Property>
+        <Property name="retryReads">
+            <Value>true</Value>
+        </Property>
+        <Property name="binaryAsBytes">
+            <Value>true</Value>
+        </Property>
+        <Property name="batchSize">
+            <Value>100</Value>
+        </Property>
+        <Property name="sampleSize">
+            <Value>100</Value>
+        </Property>
+        <Property name="minPoolSize">
+            <Value>0</Value>
+        </Property>
+        <Property name="maxPoolSize">
+            <Value>100</Value>
+        </Property>
+        <Property name="ioprovider">
+            <Value>mongoDbIoProvider</Value>
+        </Property>
+        <Property name="excludeConfigDb">
+            <Value>true</Value>
+        </Property>
+    </Properties>
+</GenericInterface>

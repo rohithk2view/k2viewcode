@@ -1,0 +1,564 @@
+tags: LoadFlows,CustomTableLevel,TableToTableLoad,Trash
+stages:
+  Stage 2:
+    transactional: false
+  Inputs:
+    transactional: false
+    actors:
+      Target Interface:
+        parent: Const
+        remark: The target interface
+        in:
+          value:
+            const: null
+            external: targetInterface
+            schema: string
+        out:
+          value:
+            schema: string
+      Target Schema:
+        parent: Const
+        remark: The target Schema
+        in:
+          value:
+            const: null
+            external: targetSchema
+            schema: string
+        out:
+          value:
+            schema: string
+      Target Table Name:
+        parent: Const
+        remark: The name of the target table.
+        in:
+          value:
+            const: null
+            external: targetTable
+            schema: string
+        out:
+          value:
+            schema: string
+      'Table''s fields Names ':
+        parent: Const
+        in:
+          value:
+            const: null
+            external: fieldsArray
+            schema: '#ref'
+        out:
+          value:
+            schema: '#ref'
+      Get Commit Size:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_REF_UPD_SIZE
+            default: false
+        out:
+          result:
+            schema: integer
+  Stage 3:
+    transactional: false
+  Stage 1:
+    transactional: false
+    actors:
+      Input Records:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: inputRecords
+            schema: '#ref'
+        out:
+          value:
+            schema: '#ref'
+      GetPIIFields:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: catalog_field_info
+          mtableCaseSensitive:
+            const: false
+          dataPlatform:
+            link: Target Interface/value
+            schema: string
+            mandatory: false
+          dataset:
+            link: Target Table Name/value
+            schema: string
+            mandatory: false
+          pii:
+            const: true
+            schema: boolean
+            mandatory: false
+          schema:
+            link: Target Schema/value
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      GetPKFields:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: catalog_field_info
+          mtableCaseSensitive:
+            const: false
+          dataPlatform:
+            link: Target Interface/value
+            schema: string
+            mandatory: false
+          dataset:
+            link: Target Table Name/value
+            schema: string
+            mandatory: false
+          pk:
+            const: true
+            schema: boolean
+            mandatory: false
+          schema:
+            link: Target Schema/value
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      MTableLookup1:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: CustomInplaceMaskingBasedOnColumnValue
+          InterfaceName:
+            link: Target Interface/value
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          SchemaName:
+            link: Target Schema/value
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          TableName:
+            link: Target Table Name/value
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+          KeyColumn:
+            schema: string
+          ColumnToUpdate:
+            schema: string
+          MaskingID:
+            schema: string
+          Collections:
+            schema: string
+  Iterate Input records:
+    transactional: false
+    actors:
+      Input Record:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+              path: Input Records/value
+              iterate: Iterate
+        out:
+          value:
+            schema: '#ref'
+  Get KeyColumn Value:
+    transactional: false
+    actors:
+      KeyColumn Value:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                let value = obj[key];
+                value;
+              script: |-
+                var value = obj[key];
+                value;
+          obj:
+            link: Input Record/value
+            schema: '#ref'
+            mandatory: false
+          key:
+            link: MTableLookup1/KeyColumn
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: integer
+      Converting String to Object:
+        parent: JsonParser
+        in:
+          stream:
+            link: MTableLookup1/Collections
+        out:
+          object:
+            schema: '#ref'
+  MaskBasedonKeyColumn Value:
+    transactional: false
+    actors:
+      MaskingWithCollection1:
+        parent: MaskingWithCollection
+        in:
+          maskingId:
+            const: null
+            link: MTableLookup1/MaskingID
+          interface:
+            const: POSTGRESQL_ADMIN
+          useInstanceId:
+            const: false
+          collection:
+            link: Converting String to Object/object
+            schema: '#ref'
+          value:
+            link: KeyColumn Value/result
+        out:
+          value:
+            schema: string
+  Create key-value map:
+    transactional: false
+    actors:
+      StringFormat1:
+        parent: StringFormat
+        in:
+          format:
+            const: "{\r\n  \"${COLUMN_NAME}\" : \"${COUMNN_ALUE}\"\r\n}"
+          COLUMN_NAME:
+            link: MTableLookup1/ColumnToUpdate
+            schema: string
+            mandatory: false
+          COUMNN_ALUE:
+            link: MaskingWithCollection1/value
+            schema: integer
+            mandatory: false
+  Create JsonFormat:
+    transactional: false
+    actors:
+      JsonParser1:
+        parent: JsonParser
+        in:
+          stream:
+            link: StringFormat1/string
+        out:
+          object:
+            schema: '#ref'
+  Map Meerge:
+    transactional: false
+    actors:
+      MapMerge1:
+        parent: MapMerge
+        in:
+          maps:
+            link:
+            - path: Input Record/value
+              pos: 0
+            - path: JsonParser1/object
+              pos: 1
+        out:
+          map:
+            schema: '#ref'
+  Load Data To Target:
+    transactional: true
+    actors:
+      Load Table:
+        parent: DbLoad
+        in:
+          interface:
+            const: null
+            external: targetInterface
+          command:
+            const: update
+          schema:
+            const: null
+            external: targetSchema
+          table:
+            const: null
+            link: Target Table Name/value
+          fields:
+            const: null
+            link: GetPIIFields/result/field
+          keys:
+            const: null
+            link: GetPKFields/result/field
+          dialect:
+            const: oracle
+          batch:
+            const: true
+          __active_environment:
+            const: target
+            schema: string
+            mandatory: false
+          params:
+            link: MapMerge1/map
+      Count Records:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var i = flowGlobals.recCount;
+              var result = false;
+              if (i == null) {
+                  i = 0;
+              }
+              flowGlobals.recCount = ++i;
+              if (i%commitSize === 0) {
+                  result = true;
+              }
+              result;
+          commitSize:
+            link: Get Commit Size/result
+            schema: boolean
+            mandatory: false
+        out:
+          result:
+            schema: integer
+      Count1:
+        parent: Count
+        out:
+          value:
+            schema: integer
+  Stage To Commit every Commit Size:
+    last: 1
+    transactional: false
+    actors:
+      Commit?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Count Records/result
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+  Return Current Count:
+    transactional: false
+    actors:
+      Count:
+        parent: JavaScript
+        in:
+          script:
+            const: flowGlobals.recCount;
+        out:
+          result:
+            schema: integer
+      Return Table Count:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Count1/value
+        out:
+          value:
+            external: result
+            schema: integer
+schemas:
+  Table's fields Names .in.value:
+    type: array
+    items:
+      type: string
+  Table's fields Names .out.value:
+    type: array
+    items:
+      type: string
+  Input Records.in.value:
+    type: array
+    items: {
+      }
+  Input Records.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        AGE:
+          type: number
+        EMAIL:
+          type: string
+        FIRST_NAME:
+          type: string
+        LAST_NAME:
+          type: string
+        PERSON_ID:
+          type: string
+  GetPIIFields.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        dataPlatform:
+          type: string
+        schema:
+          type: string
+        dataset:
+          type: string
+        class:
+          type: string
+        field:
+          type: string
+        sqlDataType:
+          type: string
+        sourceNullable:
+          type: string
+        definedBy:
+          type: string
+        ordinalPosition:
+          type: string
+        sourceEntityType:
+          type: string
+        sourceDataType:
+          type: string
+        pk: {
+          }
+        pii:
+          type: string
+        classification:
+          type: string
+        columnSize: {
+          }
+        idx: {
+          }
+        description: {
+          }
+        attributeOf: {
+          }
+        encodingType: {
+          }
+        V12: {
+          }
+  GetPKFields.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        dataPlatform:
+          type: string
+        schema:
+          type: string
+        dataset:
+          type: string
+        class:
+          type: string
+        field:
+          type: string
+        sqlDataType:
+          type: string
+        sourceNullable:
+          type: string
+        definedBy:
+          type: string
+        ordinalPosition:
+          type: string
+        sourceEntityType:
+          type: string
+        sourceDataType:
+          type: string
+        pk:
+          type: string
+        pii: {
+          }
+        classification: {
+          }
+        columnSize:
+          type: string
+        idx:
+          type: string
+        description: {
+          }
+        attributeOf: {
+          }
+        encodingType: {
+          }
+        V12: {
+          }
+  MTableLookup1.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        InterfaceName:
+          type: string
+        SchemaName:
+          type: string
+        TableName:
+          type: string
+        ValueColumnName:
+          type: string
+        ConditionColumnName:
+          type: string
+  Input Record.out.value:
+    type: object
+    properties:
+      ACCOUNT_ID:
+        type: string
+      BALANCE:
+        type: integer
+      EMAIL:
+        type: string
+      EMP_ID:
+        type: integer
+      FIRST_NAME:
+        type: string
+      LAST_NAME:
+        type: string
+      PHONE:
+        type: string
+  KeyColumn Value.in.obj:
+    type: object
+    properties:
+      ACCOUNT_ID:
+        type: string
+      BALANCE:
+        type: integer
+      EMAIL:
+        type: string
+      EMP_ID:
+        type: integer
+      FIRST_NAME:
+        type: string
+      LAST_NAME:
+        type: string
+      PHONE:
+        type: string
+  Converting String to Object.out.object:
+    type: array
+    items:
+      type: string
+  MaskingWithCollection1.in.collection:
+    type: array
+    items: {
+      }
+  JsonParser1.out.object:
+    type: object
+    properties:
+      FIRST_NAME:
+        type: string
+  MapMerge1.out.map:
+    type: object
+    properties:
+      ACCOUNT_ID:
+        type: string
+      BALANCE:
+        type: integer
+      EMAIL:
+        type: string
+      EMP_ID:
+        type: integer
+      FIRST_NAME:
+        type: string
+      LAST_NAME:
+        type: string
+      PHONE:
+        type: string
+      'FIRST_NAME ':
+        type: string

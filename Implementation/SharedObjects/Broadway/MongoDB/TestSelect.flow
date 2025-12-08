@@ -1,0 +1,15 @@
+tags: MongoDB
+stages:
+  Stage 1: {
+    }
+  Stage 2:
+    actors:
+      SourceMongoDbQuery1:
+        parent: SourceMongoDbQuery
+        in:
+          interface:
+            const: MongoDB
+          database:
+            const: k2v
+          collection:
+            const: orders

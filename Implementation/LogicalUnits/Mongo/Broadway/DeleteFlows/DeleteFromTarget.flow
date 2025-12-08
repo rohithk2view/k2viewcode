@@ -1,0 +1,60 @@
+tags: DeleteFlows
+stages:
+  LU Name:
+    actors:
+      Get LU Name:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetLuType
+        out:
+          luType:
+            schema: string
+  Get Field Name And Value:
+    actors:
+      Get Instance ID Column Name:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getLUVariable
+          luName:
+            link: Get LU Name/luType
+            schema: string
+            mandatory: false
+          variableName:
+            const: ROOT_COLUMN_NAME
+            schema: string
+            mandatory: false
+        out:
+          variableValue:
+            schema: string
+      Get Target Entity:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+  Build Input:
+    actors:
+      Build Map Of Instance ID for Filter:
+        parent: MapBuild
+        in:
+          key:
+            link: Get Instance ID Column Name/variableValue
+          value:
+            link: Get Target Entity/result
+  Delete:
+    actors:
+      Delete Document:
+        parent: MongoDbWrite
+        in:
+          interface:
+            const: MongoDB
+          database:
+            const: k2v
+          collection:
+            const: orders
+          operation:
+            const: DELETE_ONE
+          filter:
+            link: Build Map Of Instance ID for Filter/map

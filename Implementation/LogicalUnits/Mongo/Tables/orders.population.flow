@@ -1,0 +1,138 @@
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          _id:
+            external: _id
+            schema: any
+            mandatory: false
+          total:
+            external: total
+            schema: any
+            mandatory: false
+          userId:
+            external: userId
+            schema: any
+            mandatory: false
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Source:
+    actors:
+      MongoQuery:
+        parent: SourceMongoDbQuery
+        in:
+          interface:
+            const: MongoDB
+          database:
+            const: k2v
+          collection:
+            const: orders
+          parent_rows:
+            link: PopulationArgs/parent_rows
+          flatten:
+            const: false
+        out:
+          result:
+            schema: '#ref'
+  Mapping:
+    actors:
+      DocumentQuery:
+       parent: DocumentQuery
+       in:
+          rowsGeneratorDistribution:
+            const: 1
+          rowsGeneratorDistribution:
+            const: 1
+          field:
+            const: 
+          parent_rows:
+            link: MongoQuery/result
+      Get SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+  Masking:
+    actors:
+      Catalog Masking Mapper:
+        parent: CatalogMaskingMapper
+        in:
+          interface:
+            const: null
+            link: Get SEQ_CACHE_INTERFACE/result
+          mtable:
+            schema: any
+          dataPlatform:
+            const: MongoDB
+          schema:
+            const: k2v
+          dataset:
+            const: orders
+          catalogClassName:
+            const: null
+            schema: string
+            mandatory: false
+          values:
+            link: DocumentQuery/result
+        out:
+          values:
+            schema: '#ref'
+  LU Table:
+    last: 1
+    actors:
+      orders:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - _id
+            - total
+            - userId
+          keys:
+            const:
+            - _id
+          dialect:
+            const: sqlite
+          _id:
+            schema: any
+          total:
+            schema: any
+          userId:
+            schema: any
+          params:
+            link:
+              path: Catalog Masking Mapper/values
+              iterate: Iterate
+  Post Load: {
+    }
+schemas:
+  MongoQuery.out.result:
+    type: object
+    properties:
+      _id:
+        type: {
+          }
+      total:
+        type: {
+          }
+      userId:
+        type: {
+          }

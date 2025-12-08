@@ -1,0 +1,9 @@
+dataPlatform,schema,dataset,class,field,sqlDataType,sourceNullable,definedBy,ordinalPosition,sourceEntityType,sourceDataType,pk,pii,classification,V1
+MongoDB,k2v,orders,orders,_id,4,TRUE,UNKNOWN,0,Column,any,true,,,
+MongoDB,k2v,orders,orders,total,8,TRUE,REAL,1,Column,real,,,,
+MongoDB,k2v,orders,orders,userId,4,TRUE,INTEGER,2,Column,integer,,,,
+MongoDB,k2v,test,test,_id,12,TRUE,UNKNOWN,0,Column,any,true,,,
+MongoDB,k2v,test,test,name,12,TRUE,STRING,1,Column,string,,true,NAME,
+MongoDB,k2v,users,users,_id,4,TRUE,UNKNOWN,0,Column,any,true,,,
+MongoDB,k2v,users,users,age,4,TRUE,INTEGER,2,Column,integer,,true,AGE,
+MongoDB,k2v,users,users,name,12,TRUE,STRING,1,Column,string,,true,NAME,

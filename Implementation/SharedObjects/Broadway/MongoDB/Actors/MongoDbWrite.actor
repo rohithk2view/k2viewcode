@@ -1,0 +1,160 @@
+{
+    "type": "MongoDbWrite",
+    "badge": "Mo",
+    "doc": [
+        "This actor writes data to a MongoDB collection.",
+        "It supports various CRUD operations, including insert, update, replace, and delete.",
+        "To support bulk operations, the actor should be placed inside a transaction.",
+        "The operation type determines the action performed on the database.",
+        "If the database or collection does not exist, behavior varies depending on the operation."
+    ],
+    "inputs": [
+        {
+            "const": "",
+            "name": "interface",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.interface",
+                "interfaceType": [
+                    "MongoDB"
+                ]
+            },
+            "mandatory": true,
+            "doc": [
+                "The MongoDB interface name to use for the connection."
+            ]
+        },
+        {
+            "name": "database",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": true,
+            "doc": [
+                "The name of the target MongoDB database.",
+                "If the database doesn't exist, it will be created automatically upon the first insert operation.",
+                "For update, or delete operations, if the database does not exist, no error will be thrown, but no data will be modified."
+            ]
+        },
+        {
+            "name": "collection",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": true,
+            "doc": [
+                "The name of the MongoDB collection where the operation will be executed.",
+                "If the collection doesn't exist, it will be created automatically upon the first insert operation.",
+                "For update or delete operations, if the collection does not exist, the operation will execute without an error but will not affect any documents.",
+                "If using transactions, the collection must exist before performing any operations."
+            ]
+        },
+        {
+            "name": "filter",
+            "schema": {
+                "type": "any"
+            },
+            "mandatory": false,
+            "doc": [
+                "Specifies the filter criteria for selecting documents in update, replace, or delete operations.",
+                "Accepts either a map (object) or a string in MongoDB Extended JSON format.",
+                "When using a map, values must be properly parsed into BSON-compatible Java types—not just Extended JSON.",
+                "String filters may include named parameters using ${} syntax, e.g., { \"name\": ${name} }.",
+                "If the target collection does not exist, the operation will run but affect no documents.",
+                "See the official MongoDB documentation for supported query formats."
+            ]
+        },
+        {
+            "name": "filter_params",
+            "schema": {
+                "type": "object"
+            },
+            "doc": [
+                "Optional parameters to the filter.",
+                "Should be a map for named parameters."
+            ]
+        },
+        {
+            "name": "data",
+            "schema": {
+                "type": "any"
+            },
+            "mandatory": false,
+            "doc": [
+                "The data to insert, update, or replace with.",
+                "Can be either a map (object) or a string in MongoDB Extended JSON format.",
+                "If data is provided as a map, ensure that the values are parsed into BSON Java types rather than remaining in Extended JSON format.",
+                "Required for insert, update, and replace operations.",
+                "Example: { \"name\": \"John Doe\", \"age\": 30 }"
+            ]
+        },
+        {
+            "const": "",
+            "name": "operation",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.dropdown",
+                "options": [
+                    "INSERT_ONE",
+                    "INSERT_MANY",
+                    "UPDATE_ONE",
+                    "UPDATE_ONE_UPSERT",
+                    "UPDATE_MANY",
+                    "UPDATE_MANY_UPSERT",
+                    "REPLACE_ONE",
+                    "REPLACE_ONE_UPSERT",
+                    "DELETE_ONE",
+                    "DELETE_MANY"
+                ]
+            },
+            "mandatory": true,
+            "doc": [
+                "The MongoDB operation to perform.",
+                "Supported operations include insert, update, replace, and delete.",
+                "Refer to the MongoDB Java Sync Driver official documentation for more details on each operation.",
+                "For updates and replacements, a filter must be provided.",
+                "If updating or deleting from a non-existent collection, the operation will succeed but will not affect any documents.",
+                "If inserting, MongoDB will automatically create the collection if it does not exist.",
+                "Inside transactions, the collection must exist before performing any operation.",
+                "Note that INSERT_MANY is supported only in transaction mode."
+            ]
+        },
+        {
+            "const": true,
+            "name": "bulk_ordered",
+            "schema": {
+                "type": "boolean"
+            },
+            "mandatory": false,
+            "doc": [
+                "Determines whether bulk operations are executed in order.",
+                "If true, operations are executed sequentially, stopping on error.",
+                "If false, operations are executed in parallel without stopping.",
+                "This setting applies only when the operation is performed inside a transaction."
+            ]
+        }
+    ],
+    "outputs": [
+        {
+            "name": "affectedRows",
+            "schema": {
+                "type": "integer"
+            },
+            "doc": [
+                "The number of documents affected by the operation.",
+                "For insert operations, it returns the count of inserted documents.",
+                "For update/replace/delete, it returns the number of modified/deleted documents.",
+                "If the collection does not exist, this value will be zero."
+            ]
+        }
+    ],
+    "tags": [
+        "db"
+    ],
+    "actorClass": "com.k2view.cdbms.usercode.common.mongodb.actors.MongoDbActorWrite",
+    "addInput": true
+}

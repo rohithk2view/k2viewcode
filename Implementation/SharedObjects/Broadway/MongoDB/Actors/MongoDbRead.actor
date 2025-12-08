@@ -1,0 +1,143 @@
+{
+    "type": "MongoDbRead",
+    "badge": "Mo",
+    "doc": [
+        "This actor reads data from a MongoDB collection.",
+        "It supports filtering, projection, sorting, and limiting the number of returned documents.",
+        "If the database or collection does not exist, the operation will return an empty result set without throwing an error."
+    ],
+    "inputs": [
+        {
+            "const": "",
+            "name": "interface",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.interface",
+                "interfaceType": [
+                    "MongoDB"
+                ]
+            },
+            "mandatory": true,
+            "doc": [
+                "The MongoDB interface name to use for the connection."
+            ]
+        },
+        {
+            "name": "database",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": true,
+            "doc": [
+                "The name of the target MongoDB database.",
+                "If the database does not exist, no error is thrown, but the query will return an empty array."
+            ]
+        },
+        {
+            "name": "collection",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": true,
+            "doc": [
+                "The name of the MongoDB collection to read from.",
+                "If the collection does not exist, the query will return an empty array without error."
+            ]
+        },
+        {
+            "name": "filter",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.code",
+                "template": true
+            },
+            "mandatory": false,
+            "doc": [
+                "A JSON string specifying the criteria for selecting documents.",
+                "If the collection does not exist, the actor will not fail but will return an empty result instead.",
+                "Can contain named params using ${} notation.",
+                "Example: { \"name\": ${name} }",
+                "Refer to the official MongoDB documentation for supported formats."
+            ]
+        },
+        {
+            "name": "filter_params",
+            "schema": {},
+            "doc": [
+                "Optional parameters to the filter.",
+                "Should be a map for named parameters."
+            ]
+        },
+        {
+            "name": "projection",
+            "schema": {
+                "type": "object"
+            },
+            "mandatory": false,
+            "doc": [
+                "Specifies the fields to include or exclude in the result.",
+                "Use a map (object) where keys are field names and values are 1 (include) or 0 (exclude).",
+                "Example: { \"name\": 1, \"age\": 1 } to return only the 'name' and 'age' fields."
+            ]
+        },
+        {
+            "name": "sort",
+            "schema": {
+                "type": "object"
+            },
+            "mandatory": false,
+            "doc": [
+                "Specifies the sort order of the query results.",
+                "Use a map (object) where keys are field names and values are 1 (ascending) or -1 (descending).",
+                "Example: { \"age\": -1 } to sort by age in descending order."
+            ]
+        },
+        {
+            "name": "limit",
+            "schema": {
+                "type": "integer"
+            },
+            "mandatory": false,
+            "doc": [
+                "Limits the number of documents returned by the query.",
+                "If not specified, all matching documents are returned."
+            ]
+        },
+        {
+            "name": "flatten",
+            "const": false,
+            "schema": {
+                "type": "boolean"
+            },
+            "doc": [
+                "When true, sub-documents will be encoded into a JSON string."
+            ],
+            "mandatory": false
+        }
+    ],
+    "outputs": [
+        {
+            "name": "result",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object"
+                }
+            },
+            "doc": [
+                "An array of maps, where each map represents a document retrieved from the collection.",
+                "Each document is returned as a key-value map, matching the structure of the MongoDB document.",
+                "If no documents match the query, an empty array is returned."
+            ]
+        }
+    ],
+    "tags": [
+        "db"
+    ],
+    "actorClass": "com.k2view.cdbms.usercode.common.mongodb.actors.MongoDbActorRead",
+    "addInput": true
+}

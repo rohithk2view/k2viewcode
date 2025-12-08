@@ -1,0 +1,17 @@
+tags: MongoDB
+stages:
+  Delete all documents:
+    transactional: false
+    actors:
+      MongoDeleteMany:
+        parent: MongoDbWrite
+        in:
+          interface:
+            const: null
+            external: interface
+          operation:
+            const: DELETE_MANY
+          database:
+            external: schema
+          collection:
+            external: table

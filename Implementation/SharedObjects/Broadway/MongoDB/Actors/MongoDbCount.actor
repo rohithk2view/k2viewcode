@@ -1,0 +1,89 @@
+{
+    "type": "MongoDbCount",
+    "badge": "Mo",
+    "doc": [
+        "This actor counts documents in a MongoDB collection with an optional filter."
+    ],
+    "inputs": [
+        {
+            "const": "",
+            "name": "interface",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.interface",
+                "interfaceType": [
+                    "MongoDB"
+                ]
+            },
+            "mandatory": true,
+            "doc": [
+                "The MongoDB interface name to use for the connection."
+            ]
+        },
+        {
+            "name": "database",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": true,
+            "doc": [
+                "The name of the target MongoDB database.",
+                "If the database does not exist, no error is thrown, but the query will return an empty array."
+            ]
+        },
+        {
+            "name": "collection",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": true,
+            "doc": [
+                "The name of the MongoDB collection to read from.",
+                "If the collection does not exist, the query will return an empty array without error."
+            ]
+        },
+        {
+            "name": "filter",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.code",
+                "template": true
+            },
+            "mandatory": false,
+            "doc": [
+                "A JSON string specifying the criteria for selecting documents.",
+                "If the collection does not exist, the actor will not fail but will return an empty result instead.",
+                "Can contain named params using ${} notation.",
+                "Example: { \"name\": ${name} }",
+                "Refer to the official MongoDB documentation for supported formats."
+            ]
+        },
+        {
+            "name": "filter_params",
+            "schema": {},
+            "doc": [
+                "Optional parameters to the filter.",
+                "Should be a map for named parameters."
+            ]
+        }
+    ],
+    "outputs": [
+        {
+            "name": "result",
+            "schema": {
+                "type": "integer"
+            },
+            "doc": [
+                "The number of documents in the collection with the provided filter."
+            ]
+        }
+    ],
+    "tags": [
+        "db"
+    ],
+    "actorClass": "com.k2view.cdbms.usercode.common.mongodb.actors.MongoDbActorCount"
+}

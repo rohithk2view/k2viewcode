@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>orders</Name>
+  <ID>tbl_orders</ID>
+  <EntityId>_id</EntityId>
+  <Columns>
+    <Column name="_id" id="_id" index="0" datatype="text" mandatory="true" />
+    <Column name="total" id="total" index="1" datatype="REAL" />
+    <Column name="userId" id="userId" index="2" datatype="INTEGER" />
+  </Columns>
+  <IndexesList>
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="_id" />
+  </IndexesList>
+  <EnrichmentList>
+  </EnrichmentList>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <DecisionFunction></DecisionFunction>
+  </LazyDataUpdate>
+  <TriggersList>
+  </TriggersList>
+  <BasedOn>
+    <Source interface="MongoDB" schema="k2v" table="orders" timestamp="2025-12-08">
+      <ColumnsList>_id,total,userId</ColumnsList>
+    </Source>
+  </BasedOn>
+</TableObject>

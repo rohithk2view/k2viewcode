@@ -1,0 +1,143 @@
+tags: MongoDB
+stages:
+  Inputs:
+    actors:
+      Interface:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: interfaceName
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - MongoDB
+        out:
+          value:
+            schema: string
+      Schema:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: schema
+            schema: string
+            remark: |-
+              The name of the target MongoDB database.
+
+              If the database does not exist, no error is thrown, but the query will return an empty array.
+        out:
+          value:
+            schema: string
+      Dataset:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: dataset
+            schema: string
+            remark: |-
+              The name of the MongoDB collection to read from.
+
+              If the collection does not exist, the query will return an empty array without error.
+        out:
+          value:
+            schema: string
+      Filter:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: filter
+            schema: string
+            remark: 'Specifies the criteria for selecting documents using the MongoDB
+              Extended JSON syntax. Refer to MongoDB documentation for more info.
+              Example: { "_id": { "$oid": "60a9b2b0e6b9a2b0e6b9a2b0" } }'
+      Projection:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var result = {};
+              if (fields != null) {
+                  for (var i = 0; i < fields.length; i++) {
+                      result[fields[i]] = 1;
+                  }
+              }
+              result;
+          fields:
+            external: fields
+            schema: '#ref'
+            editor:
+              id: com.k2view.strings
+            remark: The fields to select.
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Sort:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: sort
+            schema: object
+            remark: |-
+              Specifies the sort order of the query results.
+
+              Use a map (object) where keys are field names and values are 1 (ascending) or -1 (descending).
+
+              Example: { "age": -1 } to sort by age in descending order.
+        out:
+          value:
+            schema: string
+      Limit:
+        parent: JavaScript
+        in:
+          script:
+            const: 'limit != null ? limit : 100;'
+          limit:
+            external: limit
+            schema: integer
+            remark: Limits the number of documents in the result. Default is 100.
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  Query:
+    actors:
+      MongoDbRead1:
+        parent: MongoDbRead
+        in:
+          interface:
+            const: null
+            link: Interface/value
+          database:
+            link: Schema/value
+          collection:
+            link: Dataset/value
+          filter:
+            link: Filter/value
+          projection:
+            link: Projection/result
+          sort:
+            link: Sort/value
+          limit:
+            link: Limit/result
+        out:
+          result:
+            external: result
+  Stage 1: {
+    }
+schemas:
+  Projection.in.fields:
+    type: array
+    items:
+      type: string
+  Projection.out.result:
+    type: object
+    properties:
+      isbn:
+        type: string
+      title:
+        type: string

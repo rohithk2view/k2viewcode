@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GenericInterfaces>
+	<Interfaces>
+		<!-- techType: filesystem,pubsub,database,search -->
+		<Interface type="MongoDB" displayName="MongoDB" enabled="true" version="1.0" category="DB" techType="">
+			<Properties>
+				<Property name="connectionMethod" displayName="Connection Method" dataType="OptionsList" mandatory="true" category="">
+					<OptionsList>
+						<Option value="programmaticConfiguration">Programmatic Configuration</Option>
+						<Option value="connectionString">Connection String/URI</Option>
+					</OptionsList>
+					<DefaultValue>programmaticConfiguration</DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="connectionString" displayName="Connection String" dataType="string" mandatory="true" showExp="[[connectionMethod==connectionString]]" category="">
+					<DefaultValue>mongodb://[USER]:[PASSWORD]@[HOST]:[PORT]/</DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="host" displayName="Host" dataType="string" mandatory="true" category="" secretManagerHelper="true">
+					<DefaultValue></DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="port" displayName="Port" dataType="integer" mandatory="true" category="" secretManagerHelper="true">
+					<DefaultValue></DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="authDb" displayName="Authentication DB" dataType="string" mandatory="false" showExp="[[connectionMethod==programmaticConfiguration]]" category="" secretManagerHelper="true">
+					<DefaultValue>admin</DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="user" displayName="User" dataType="string" mandatory="true" category="" secretManagerHelper="true">
+					<DefaultValue></DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="password" displayName="Password" dataType="password" mandatory="true" category="" secretManagerHelper="true">
+					<DefaultValue></DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="sslEnabled" displayName="SSL Enabled" dataType="boolean" mandatory="false" showExp="[[connectionMethod==programmaticConfiguration]]" category="">
+					<DefaultValue>true</DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="retryWrites" displayName="Retry Writes" dataType="boolean" mandatory="false" showExp="[[connectionMethod==programmaticConfiguration]]" category="Other">
+					<DefaultValue>true</DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="retryReads" displayName="Retry Reads" dataType="boolean" mandatory="false" showExp="[[connectionMethod==programmaticConfiguration]]" category="Other">
+					<DefaultValue>true</DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="binaryAsBytes" displayName="Read Binary as bytes" dataType="boolean" mandatory="false" category="Other">
+					<DefaultValue>true</DefaultValue>
+					<Comments/>
+				</Property>
+				<Property name="batchSize" displayName="Bulk Batch Size" dataType="integer" mandatory="true" category="Other">
+					<DefaultValue>100</DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="fetchSize" displayName="Documents Fetch Size" dataType="integer" mandatory="false" category="Other">
+					<DefaultValue></DefaultValue>
+					<Comments>If not set, Mongo sets a default of 101, and 4MB for subsequent batches</Comments>
+				</Property>
+				<Property name="sampleSize" displayName="Schema Inference Sample Size" dataType="integer" mandatory="false" category="Other">
+					<DefaultValue>100</DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="minPoolSize" displayName="Connection Pool Minimum Connections" dataType="integer" mandatory="false" showExp="[[connectionMethod==programmaticConfiguration]]" category="Other">
+					<DefaultValue>0</DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="maxPoolSize" displayName="Connection Pool Maximum connections" dataType="integer" mandatory="false" showExp="[[connectionMethod==programmaticConfiguration]]" category="Other">
+					<DefaultValue>100</DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="ioprovider" displayName="IoProvider Function" dataType="string" mandatory="true" readOnly="true" category="Advanced" disabledOnEnvOverride="true">
+					<DefaultValue>mongoDbIoProvider</DefaultValue>
+					<Comments>Function name that returns IoProvider</Comments>
+				</Property>
+				<Property name="delegate" displayName="" dataType="string" mandatory="false" readOnly="true" category="Advanced" disabledOnEnvOverride="true">
+					<DefaultValue></DefaultValue>
+					<Comments/>
+				</Property>
+				<Property name="excludeConfigDb" displayName="Exclude Config DB from Discovery" dataType="boolean" mandatory="false" category="Advanced">
+					<DefaultValue>true</DefaultValue>
+					<Comments/>
+				</Property>
+			</Properties>
+		</Interface>
+	</Interfaces>
+</GenericInterfaces>

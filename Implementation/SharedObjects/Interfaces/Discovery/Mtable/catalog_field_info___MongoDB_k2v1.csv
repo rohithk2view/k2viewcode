@@ -1,0 +1,3 @@
+dataPlatform,schema,dataset,class,field,sqlDataType,sourceNullable,definedBy,ordinalPosition,sourceEntityType,sourceDataType,pk,pii,classification,V1
+MongoDB,k2v1,test,test,_id,12,TRUE,UNKNOWN,0,Column,any,true,,,
+MongoDB,k2v1,test,test,name,12,TRUE,STRING,1,Column,string,,true,NAME,

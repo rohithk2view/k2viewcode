@@ -1,0 +1,3 @@
+InterfaceName,SchemaName,TableName,KeyColumn,ColumnToUpdate,MaskingID,Collections
+Oracle1,CUSTOMER,EMPLOYEE,EMP_ID,FIRST_NAME,EMP_ID,"[""ROHITH"",   ""SHANKAR"",   ""KUMAR"",   ""DEVANK"",   ""KAVINTA"",   ""HEMANTH"",   ""KUSHAL"" ]"
+Oracle1,CUSTOMER,STUDENT,STUDENT_ID1,LAST_NAME1,STUDENT_ID1,"[""k2view1"",""k2view2"",""k2view3"",""k2view4"",""k2view5""]"

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>test</Name>
+  <ID>tbl_test</ID>
+  <Columns>
+    <Column name="_id" id="_id" index="0" datatype="text" mandatory="true" />
+    <Column name="name" id="name" index="1" datatype="TEXT" />
+  </Columns>
+  <IndexesList>
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="_id" />
+  </IndexesList>
+  <EnrichmentList>
+  </EnrichmentList>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <DecisionFunction></DecisionFunction>
+  </LazyDataUpdate>
+  <TriggersList>
+  </TriggersList>
+  <BasedOn>
+    <Source interface="MongoDB" schema="k2v" table="test" timestamp="2025-12-08">
+      <ColumnsList>_id,name</ColumnsList>
+    </Source>
+  </BasedOn>
+</TableObject>

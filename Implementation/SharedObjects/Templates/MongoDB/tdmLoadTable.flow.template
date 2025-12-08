@@ -1,0 +1,90 @@
+tags: LoadFlows
+stages:
+  Create Documnent From LU's Tables:
+    transactional: false
+    actors:
+      Document Assemble:
+        parent: DocumentAssemble
+        in:
+          luType:
+            const: {{LU_NAME}}
+          mtable:
+            schema: any
+          dataPlatform:
+            const: {{SOURCE_INTERFACE}}
+          schema:
+            const: {{{SOURCE_SCHEMA}}}
+          dataset:
+            const: {{{SOURCE_TABLE}}}
+          root:
+            const: {{{SOURCE_TABLE}}}
+        out:
+          document:
+            schema: '#ref'
+      Get SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+  Mask Data:
+    transactional: false
+    actors:
+      Catalog Masking Mapper:
+        parent: CatalogMaskingMapper
+        in:
+          interface:
+            const: null
+            link: Get SEQ_CACHE_INTERFACE/result
+          mtable:
+            schema: any
+          dataPlatform:
+            const: {{SOURCE_INTERFACE}}
+          schema:
+            const: {{{SOURCE_SCHEMA}}}
+          dataset:
+            const: {{{SOURCE_TABLE}}}
+          useEnvironment:
+            const: true
+          useExecutionId:
+            const: true
+          values:
+            link: Document Assemble/document
+        out:
+          values:
+            schema: '#ref'
+  Write To DB:
+    transactional: false
+    actors:
+      Set Target Entity ID:
+        parent: FabricSet
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+          value:
+            const: null
+            link:
+              path: Catalog Masking Mapper/values/{{{MAIN_FIELD_NAME}}}
+              iterate: Iterate
+            default: false
+      Mongo DB Write:
+        parent: MongoDbWrite
+        in:
+          interface:
+            const: {{TARGET_INTERFACE}}
+          database:
+            const: {{{TARGET_SCHEMA}}}
+          collection:
+            const: {{{TARGET_TABLE}}}
+          operation:
+            const: INSERT_ONE
+          data:
+            link:
+              path: Catalog Masking Mapper/values
+              iterate: Iterate
+schemas:
+  Document Assemble.out.document:
+    type: array
+    items:
+      type: object
