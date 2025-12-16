@@ -1,0 +1,183 @@
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          customer_id:
+            external: customer_id
+            schema: any
+            mandatory: false
+          address_id:
+            external: address_id
+            schema: any
+            mandatory: false
+          street_address_1:
+            external: street_address_1
+            schema: any
+            mandatory: false
+          street_address_2:
+            external: street_address_2
+            schema: any
+            mandatory: false
+          city:
+            external: city
+            schema: any
+            mandatory: false
+          zip:
+            external: zip
+            schema: any
+            mandatory: false
+          state:
+            external: state
+            schema: any
+            mandatory: false
+          country:
+            external: country
+            schema: any
+            mandatory: false
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Source:
+    actors:
+      Get Sync Source Data Indicator:
+        parent: InnerFlow
+        condition: value
+        in:
+          flowName:
+            const: GetSyncSourceDataIndicator
+        out:
+          value:
+            schema: boolean
+      Query:
+        parent: SourceDbQuery
+        in:
+          interface:
+            const: CRM_DB
+          sql:
+            const: select * from public.address
+          parent_rows:
+            link: PopulationArgs/parent_rows
+        out:
+          result:
+            schema: '#ref'
+      Get SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+      Get MASKING_CACHE_TTL:
+        parent: FabricSetRead
+        in:
+          key:
+            const: MASKING_CACHE_TTL
+            default: false
+  Mask Data Based On Catalog:
+    actors:
+      Catalog Masking Mapper:
+        parent: CatalogMaskingMapper
+        in:
+          interface:
+            const: null
+            link: Get SEQ_CACHE_INTERFACE/result
+          mtable:
+            schema: any
+          dataPlatform:
+            const: CRM_DB
+          schema:
+            const: public
+          dataset:
+            const: address
+          ttl:
+            link: Get MASKING_CACHE_TTL/result
+            schema: number
+            mandatory: false
+          values:
+            link: Query/result
+  LU Table:
+    last: 1
+    actors:
+      address:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - customer_id
+            - address_id
+            - street_address_1
+            - street_address_2
+            - city
+            - zip
+            - state
+            - country
+          keys:
+            const:
+            - address_id
+          dialect:
+            const: sqlite
+          customer_id:
+            schema: any
+          address_id:
+            schema: any
+          street_address_1:
+            schema: any
+          street_address_2:
+            schema: any
+          city:
+            schema: any
+          zip:
+            schema: any
+          state:
+            schema: any
+          country:
+            schema: any
+          params:
+            link:
+              path: Catalog Masking Mapper/values
+              iterate: Iterate
+  Post Load: {
+    }
+schemas:
+  Query.out.result:
+    type: object
+    properties:
+      customer_id:
+        type: {
+          }
+      address_id:
+        type: {
+          }
+      street_address_1:
+        type: {
+          }
+      street_address_2:
+        type: {
+          }
+      city:
+        type: {
+          }
+      zip:
+        type: {
+          }
+      state:
+        type: {
+          }
+      country:
+        type: {
+          }

@@ -1,0 +1,118 @@
+{
+    "type": "ESLoad",
+    "parentType": "InnerFlow",
+    "actorClass": null,
+    "inputs": [
+        {
+            "name": "maps",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": null
+                }
+            },
+            "mandatory": true,
+            "doc": [
+                "The 'maps' input is an array of objects that contains the data to be loaded into Elasticsearch."
+            ]
+        },
+        {
+            "name": "id",
+            "schema": {},
+            "editor": {
+                "type": "map",
+                "items": [
+                    {
+                        "key": "id",
+                        "value": "com.k2view.default"
+                    },
+                    {
+                        "key": "syncOutput",
+                        "value": true
+                    }
+                ]
+            },
+            "mandatory": true,
+            "doc": [
+                "The 'id' input defines the unique identifier for the document in Elasticsearch."
+            ]
+        },
+        {
+            "name": "index",
+            "schema": {},
+            "editor": {
+                "type": "map",
+                "items": [
+                    {
+                        "key": "id",
+                        "value": "com.k2view.default"
+                    },
+                    {
+                        "key": "syncOutput",
+                        "value": true
+                    }
+                ]
+            },
+            "mandatory": true,
+            "doc": [
+                "The 'index' input defines the Elasticsearch index in which the documents will be stored."
+            ]
+        },
+        {
+            "name": "flowName",
+            "schema": {
+                "type": "string"
+            },
+            "const": "ESLoad",
+            "mandatory": true,
+            "hidden": true,
+            "doc": [
+                "The 'flowName' input is a constant field used to identify the flow type.",
+                "This is set to 'ESLoad' to indicate that the flow pertains to data loading into Elasticsearch."
+            ]
+        },
+        {
+            "name": "innerFlowConst",
+            "schema": {
+                "type": "string"
+            },
+            "const": "ESLoad",
+            "mandatory": true,
+            "hidden": true,
+            "doc": [
+                "The 'innerFlowConst' input is a constant used for identifying the inner flow.",
+                "This is also set to 'ESLoad', ensuring consistency across related flows."
+            ]
+        },
+        {
+            "name": "isBulk",
+            "schema": {
+                "type": "boolean"
+            },
+            "mandatory": false
+        },
+        {
+            "name": "interface",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": false
+        },
+        {
+            "name": "routingKey",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": false
+        }
+    ],
+    "outputs": [],
+    "tags": null,
+    "doc": [
+        "The ESLoad actor is used for loading data into Elasticsearch.",
+        "It allows users to provide input data in the form of an array of objects ('maps'), where each object corresponds to a record to be indexed.",
+        "The input 'id' specifies a unique identifier that links each document to its corresponding record in Elasticsearch, and 'index' defines the target index for the documents.",
+        "This actor is essential for efficiently moving data to Elasticsearch while ensuring synchronization and accurate handling of errors."
+    ]
+}

@@ -1,0 +1,413 @@
+stages:
+  Create ES Document:
+    remark: |-
+      Create
+       * Elastic Search document
+       * Elastic Index
+       * Elastic id
+    actors:
+      MapMerge2:
+        parent: MapMerge
+        in:
+          maps:
+            external: maps
+            mandatory: false
+        out:
+          map:
+            schema: '#ref'
+      id:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: id
+        out:
+          value:
+            schema: integer
+      index:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: index
+        out:
+          value:
+            schema: string
+      Count Records:
+        parent: JavaScript
+        in:
+          script:
+            const: |
+              var i = flowGlobals.rohith;
+              flowArgs["data"] = [];
+              if (i == null) {
+                  i = 0;
+              }
+              flowGlobals.rohith = ++i;
+              var result = flowGlobals.rohith;
+              result;
+          commitSize:
+            schema: boolean
+            mandatory: false
+        out:
+          result:
+            schema: integer
+      JavaScript1:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs;
+        out:
+          result:
+            schema: '#ref'
+      routingKey:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: routingKey
+            schema: string
+        out:
+          value:
+            schema: string
+  including_id:
+    dependsOn: Create ES Document
+    actors:
+      NotNull1:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: id/value
+      indexCreation1:
+        parent: StringFormat
+        in:
+          format:
+            const: '{ "index": { "_index": "${index}", "_id": "${id}" '
+          index:
+            link: id/value
+            schema: string
+            mandatory: false
+          id:
+            link: id/value
+            schema: any
+            mandatory: false
+    split: '--------------------'
+  Stage 10:
+    else: true
+    dependsOn: Create ES Document
+    actors:
+      indexCreation:
+        parent: StringFormat
+        in:
+          format:
+            const: '{ "index": { "_index": "${index}" '
+          index:
+            link: index/value
+            schema: string
+            mandatory: false
+  Stage 12: {
+    }
+  Stage 3:
+    dependsOn: Stage 12
+    actors:
+      NotNull2:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: routingKey/value
+      StringFormat1:
+        parent: StringFormat
+        in:
+          format:
+            const: '${input} ,"routing": "${routingKey}" } }'
+          input:
+            link:
+            - indexCreation1/string
+            - indexCreation/string
+            schema: string
+            mandatory: false
+          routingKey:
+            link: routingKey/value
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 11:
+    else: true
+    dependsOn: Stage 12
+    actors:
+      StringFormat2:
+        parent: StringFormat
+        in:
+          format:
+            const: ${input}  } }
+          input:
+            link:
+            - indexCreation1/string
+            - indexCreation/string
+            schema: string
+            mandatory: false
+  Stage 13: {
+    }
+  LowerKeys:
+    remark: "* Converting map keys to lowercase\n* Building the insertion path index/_doc/id\
+      \ \n"
+    actors:
+      toLowerKeys:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |
+                // Convert all keys to lowercase
+                let newJson = {};
+                for (let key in jsonString) {
+                    newJson[key.toLowerCase()] = jsonString[key]; // Copy values with lowercase keys
+                }
+
+                newJson; // Return the modified object
+              script: |-
+                // Convert all keys to lowercase
+                var newJson = {};
+
+                for (var key in jsonString) {
+                  newJson[key.toLowerCase()] = jsonString[key]; // Copy values with lowercase keys
+                }
+
+                newJson; // Return the modified object
+          jsonString:
+            link: MapMerge2/map
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  Converting to json stream:
+    remark: Converting Map to json data
+    actors:
+      ToString2:
+        parent: ToString
+        in:
+          value:
+            link: toLowerKeys/result
+  Stage 6: {
+    }
+  Stage 1:
+    actors:
+      dataAgrregator:
+        parent: JavaScript
+        in:
+          script:
+            const: |
+              flowArgs["data"].push(indexJson);
+              flowArgs["data"].push(dataJson);
+              flowArgs["data"];
+          indexJson:
+            link:
+            - StringFormat1/string
+            - StringFormat2/string
+            schema: string
+            mandatory: false
+          dataJson:
+            link: ToString2/string
+            schema: blob
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  Load Stream:
+    remark: Loading the data to Elastic Search using the http method
+    actors:
+      JavaScript3:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var s = flowGlobals.check;
+
+              if(s==null){
+                  flowGlobals.check = input + "\n";
+              }else{
+                  flowGlobals.check = flowGlobals.check+input + "\n";
+              }
+              flowGlobals.check;
+          input:
+            link: dataAgrregator/result
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  Stage 2:
+    actors:
+      ToString1:
+        parent: ToString
+        in:
+          value:
+            link: JavaScript3/result
+  Stage 4:
+    actors:
+      FabricSetRead1:
+        parent: FabricSetRead
+        in:
+          key:
+            const: BulkDataCount
+            default: false
+        out:
+          result:
+            schema: integer
+  Stage 8:
+    actors:
+      JavaScript2:
+        parent: JavaScript
+        in:
+          script:
+            const: parseInt(a);
+          a:
+            link: FabricSetRead1/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: integer
+      JavaScript4:
+        parent: JavaScript
+        in:
+          script:
+            const: |
+              var  final = String(input1).replace(/[\[\]]/g, "");
+              final.replace(/},/g, '}\n');
+          input1:
+            link: JavaScript3/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Stage 5:
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            link: Count Records/result
+          a:
+            link: JavaScript2/result
+      Http1:
+        parent: Http
+        in:
+          interface:
+            const: null
+            external: interface
+          path:
+            const: _bulk
+          method:
+            const: POST
+          format:
+            const: JSON
+          stream:
+            link: JavaScript4/result
+        out:
+          header:
+            external: header
+            schema: '#ref'
+          stream:
+            external: stream
+          status:
+            external: status
+      JavaScript5:
+        parent: JavaScript
+        in:
+          script:
+            const: flowGlobals.rohith = 0;
+        out:
+          result:
+            schema: integer
+  Stage 7: {
+    }
+  Stage 9: {
+    }
+schemas:
+  MapMerge2.out.map:
+    type: object
+    properties:
+      CUSTOMER_ID:
+        type: string
+      ORDER_ID:
+        type: integer
+      STATUS:
+        type: string
+      TOTAL_AMOUNT:
+        type: integer
+      ORDERITEM_ID: {
+        }
+  JavaScript1.out.result:
+    type: object
+    properties:
+      innerFlowClose:
+        type: boolean
+      maps:
+        type: array
+        items:
+          type: object
+          properties:
+            CUSTOMER_ID:
+              type: string
+            CONTRACT_ID:
+              type: string
+            CONTRACT_REF_ID:
+              type: integer
+            ASSOCIATED_LINE:
+              type: string
+            CONTRACT_DESCRIPTION:
+              type: string
+            FROM_DATE:
+              type: date
+            TO_DATE:
+              type: date
+            ASSOCIATED_LINE_FMT:
+              type: string
+      data:
+        type: object
+        properties: {
+          }
+      index:
+        type: string
+      innerFlowConst:
+        type: string
+      id:
+        type: integer
+      flowName:
+        type: string
+      isBulk:
+        type: boolean
+  toLowerKeys.in.jsonString:
+    type: object
+    properties:
+      ADDRESS:
+        type: string
+      CUSTOMER_ID:
+        type: integer
+      EMAIL:
+        type: string
+      FIRST_NAME:
+        type: string
+      LAST_NAME:
+        type: string
+      PHONE:
+        type: string
+      SSN:
+        type: string
+  Http1.out.header:
+    type: object
+    properties:
+      Content-Length:
+        type: integer
+      content-type:
+        type: string
+      location:
+        type: string
+      x-elastic-product:
+        type: string

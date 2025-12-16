@@ -1,0 +1,157 @@
+tags: Masking
+stages:
+  Stage 1:
+    actors:
+      Flow Data:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs;
+        out:
+          result:
+            schema: '#ref'
+      TaskExecutionID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+      SourceEnviornment:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+      CurrentDateTime:
+        parent: Now
+      Const1:
+        parent: Const
+        in:
+          value:
+            const: 12
+            schema: integer
+        out:
+          value:
+            schema: integer
+  Stage 2:
+    actors:
+      RandomSSN1:
+        parent: RandomSSN
+        in:
+          delimiter:
+            const: --
+        out:
+          value:
+            external: value
+  Stage 3:
+    actors:
+      DbLoad1:
+        parent: DbLoad
+        in:
+          interface:
+            const: TDM
+          schema:
+            const: public
+          table:
+            const: masking_audit_log
+          fields:
+            const:
+            - task_execution_id
+            - source_env_name
+            - masking_id
+            - dataplatform
+            - dataset
+            - masked_value
+            - creation_date
+          dialect:
+            const: postgres
+          task_execution_id:
+            link: TaskExecutionID/result
+            schema: integer
+            mandatory: false
+          source_env_name:
+            link: SourceEnviornment/result
+            schema: string
+            mandatory: false
+          masking_id:
+            link: Flow Data/result/maskingId
+            schema: string
+            mandatory: false
+          dataplatform:
+            link: Flow Data/result/dataPlatform
+            schema: string
+            mandatory: false
+          dataset:
+            link: Flow Data/result/dataset
+            schema: string
+            mandatory: false
+          masked_value:
+            link: RandomSSN1/value
+            schema: string
+            mandatory: false
+          creation_date:
+            schema: date
+            mandatory: false
+  Stage 4: {
+    }
+schemas:
+  Flow Data.out.result:
+    type: object
+    properties:
+      schema:
+        type: string
+      maskingId:
+        type: string
+      dataPlatform:
+        type: string
+      onEmpty:
+        type: string
+      useInstanceId:
+        type: string
+      threadCount:
+        type: integer
+      hashedInputValue:
+        type: boolean
+      interface:
+        type: string
+      TTL:
+        type: integer
+      ttl:
+        type: string
+      flowName:
+        type: string
+      script:
+        type: string
+      formatter:
+        type: string
+      mtable:
+        type: string
+      verifyUnique:
+        type: boolean
+      field:
+        type: string
+      useEnvironment:
+        type: string
+      useExecutionId:
+        type: string
+      record:
+        type: object
+        properties:
+          customer_id:
+            type: integer
+          ssn:
+            type: string
+          first_name:
+            type: string
+          last_name:
+            type: string
+          email:
+            type: string
+          birthday:
+            type: date
+      lruCacheSize:
+        type: integer
+      category:
+        type: string
+      dataset:
+        type: string
+      value:
+        type: string

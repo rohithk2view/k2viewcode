@@ -1,0 +1,87 @@
+{
+    "type": "ESDeleteById",
+    "badge": "~",
+    "inputs": [
+        {
+            "name": "flowName",
+            "const": "ESDeleteById",
+            "editor": {
+                "id": "com.k2view.innerFlow",
+                "selectedCategory": "all"
+            }
+        },
+        {
+            "name": "id",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": true
+        },
+        {
+            "name": "interface",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.interface",
+                "interfaceType": [
+                    "HTTP"
+                ],
+                "interfaces": [
+                    "http://hostname"
+                ]
+            },
+            "mandatory": true
+        },
+        {
+            "name": "index",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": true
+        }
+    ],
+    "outputs": [
+        {
+            "name": "header",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "Content-Length": {
+                        "type": "integer"
+                    },
+                    "content-type": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "x-elastic-product": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        {
+            "name": "stream",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "blob"
+                }
+            }
+        },
+        {
+            "name": "status",
+            "schema": {
+                "type": "integer"
+            }
+        }
+    ],
+    "tags": [
+        "basic"
+    ],
+    "addInput": true,
+    "addOutput": true,
+    "parentType": "InnerFlow"
+}

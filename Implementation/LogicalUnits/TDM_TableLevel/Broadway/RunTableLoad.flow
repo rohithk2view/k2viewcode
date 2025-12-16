@@ -15,6 +15,10 @@ stages:
             external: refInstanceId
             schema: string
             mandatory: false
+          taskExeId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
         out:
           result:
             schema: '#ref'
@@ -32,6 +36,21 @@ stages:
           b:
             const: 0
             schema: integer
+      Error Handler For Fabric Data:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
       Get Data From Fabric:
         parent: InnerFlow
         in:
@@ -63,6 +82,14 @@ stages:
             link: Get Table Details/result/number_of_records_to_process
             schema: integer
             mandatory: false
+          retention:
+            link: Get Table Details/result/retention
+            schema: integer
+            mandatory: false
+          syncMode:
+            external: syncMode
+            schema: string
+            mandatory: false
         out:
           result:
             schema: '#ref'
@@ -72,6 +99,21 @@ stages:
     transactional: false
     dependsOn: Get Fields
     actors:
+      Error Handler For Source Data:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
       Get Source Data:
         parent: InnerFlow
         in:
@@ -107,13 +149,35 @@ stages:
             link: Get Table Details/result/task_execution_id
             schema: integer
             mandatory: false
+          filterParametersInfo:
+            link: Get Table Details/result/filter_fields
+            schema: any
+            mandatory: false
+          filterGUI:
+            schema: any
+            mandatory: false
         out:
           result:
             schema: '#ref'
   Load Data To Target:
     transactional: false
     actors:
-      set Target Environment:
+      Error Handler For Load Data:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Set Target Environment:
         parent: InnerFlow
         in:
           flowName:
@@ -141,14 +205,32 @@ stages:
             - Get Source Data/result
             schema: '#ref'
             mandatory: false
-          refInstanceId:
-            external: refInstanceId
+          taskExeId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
+          sourceTableName:
+            link: Get Table Details/result/ref_table_name
             schema: string
+            mandatory: false
+          sourceInterfaceName:
+            link: Get Table Details/result/interface_name
+            schema: string
+            mandatory: false
+          sourceSchemaName:
+            link: Get Table Details/result/schema_name
+            schema: string
+            mandatory: false
+          tableId:
+            link: Get Table Details/result/ref_table_id
+            schema: integer
             mandatory: false
 schemas:
   Get Table Details.out.result:
     type: object
     properties:
+      lu_name:
+        type: string
       ref_table_id:
         type: integer
       ref_table_name:
@@ -156,6 +238,8 @@ schemas:
       source_env:
         type: string
       task_type:
+        type: string
+      selection_method:
         type: string
       interface_name:
         type: string
@@ -171,6 +255,8 @@ schemas:
         type: string
       filter_parameters:
         type: string
+      filter_fields: {
+        }
       retention_period_type:
         type: string
       retention_period_value:

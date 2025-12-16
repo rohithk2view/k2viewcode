@@ -39,15 +39,15 @@ stages:
         out:
           value:
             schema: string
-      Now:
-        parent: Now
       Execution Params Base:
         parent: Const
+        remark: Set the skip_logical_Relations to true
         in:
           value:
             const: |-
               {
                 "skip_logical_relations": false,
+                "special_column_force_gte_nunique_values": 5000,
                 "numeric_normalisation_min_val": -1,
                 "numeric_normalisation_max_val": 1,
                 "high_cardinality_column_ratio_threshold": 0.2,
@@ -55,23 +55,28 @@ stages:
                 "categorical_force_if_nunique_lt": 10,
                 "categorical_reject_gte_nunique_values": 150,
                 "logical_relations": {
-                 "prevalence_threshold_eq": 0.98,
-                 "prevalence_threshold_1_1": 0.98,
-                 "prevalence_threshold_1_n": 0.85,
-                 "lt_random_pairs_percent_threshold": 20,
-                 "cut_off_threshold": 10,
-                 "sig_level": 0.01,
-                 "correlation_strength": "strong",
-                 "logical_relations_root_table_sampling": 1000,
-                 "logical_relations_training_rows_sampling": 200000,
-                 "root_table_n_rows_for_fully_joined_table": null,
-                 "root_table_n_rows_for_memory_estimation_for_fully_joined_table": 20,
-                 "ram_safety_factor_for_fully_joined_table": 0.4,
-                 "meaningful_less_than_comparison_threshold": 0.5,
-                 "set_forming_threshold": 0.12,
-                 "border_tolerance": 0.25,
-                 "dense_1_to_n_threshold": 3,
-                 "logical_relations_overrides": {
+                  "prevalence_threshold_eq": 0.98,
+                  "prevalence_threshold_1_1": 0.98,
+                  "prevalence_threshold_1_n": 0.85,
+                  "lt_random_pairs_percent_threshold": 20,
+                  "max_fully_joined_n_rows": 1000000,
+                  "max_one_to_many_rows": 10,
+                  "cut_off_threshold": 10,
+                  "cut_off_threshold_for_less_than": 50,
+                  "cut_off_threshold_for_corr": 50,
+                  "cut_off_threshold_for_sub": 90,
+                  "sig_level": 0.01,
+                  "correlation_strength": "strong",
+                  "logical_relations_root_table_sampling": 2000,
+                  "logical_relations_training_rows_sampling": 400000,
+                  "root_table_n_rows_for_fully_joined_table": null,
+                  "root_table_n_rows_for_memory_estimation_for_fully_joined_table": 20,
+                  "ram_safety_factor_for_fully_joined_table": 0.2,
+                  "meaningful_less_than_comparison_threshold": 0.5,
+                  "set_forming_threshold": 0.3,
+                  "border_tolerance": 0.15,
+                  "dense_1_to_n_threshold": 3,
+                  "logical_relations_overrides": {
                     "groups": [],
                     "participation": []
                   }
@@ -82,11 +87,16 @@ stages:
                   "n_gradient_accumulation_steps": 1,
                   "train_size": 0.8,
                   "early_stopping_patience": 5,
-                  "early_stopping_threshold": 0
+                  "early_stopping_threshold": 0,
+                  "max_one_to_many_rows": 500,
+                  "ram_safety_factor_for_fully_joined_table": 0.6,
+                   "root_table_n_rows_for_fully_joined_table": null,
+                   "root_table_n_rows_for_memory_estimation_for_fully_joined_table": 20
                 },
                 "logical_relations_table_generation": {
-                  "batch_size": 64,
-                  "n_samples": 10000
+                  "batch_size": 768,
+                  "n_samples": 268800,
+                  "skip_row_pruning_threshold": 0.8
                 },
                 "table_training": {
                   "n_epochs": 2,
@@ -96,23 +106,29 @@ stages:
                   "early_stopping_patience": 5,
                   "early_stopping_threshold": 0,
                   "root_table_sampling": null,
-                  "output_max_length": null
+                  "output_max_length": null,
+                  "n_embd":128,
+                  "n_layer":1,
+                  "n_head":2
                 },
-                "special_column_training": {
-                  "n_epochs": 5,
-                  "batch_size": 32,
+                  "special_column_training": {
+                  "n_epochs": 60,
+                  "batch_size": 1024,
+                  "min_samples": 32,
                   "shuffle": true,
                   "window_size": 32,
-                  "num_workers": 1,
+                  "num_workers": 0,
                   "print_every_n_epochs": 1,
-                  "learning_rate": 0.0005,
+                  "learning_rate": 0.00075,
+                  "max_samples": 16384,
                   "meta_token": "<meta>",
                   "pad_token": "<pad>",
                   "embedding_dim": 128,
-                  "rnn_size": 128,
-                  "rnn_layers": 1,
+                  "rnn_size": 256,
+                  "rnn_layers": 3,
                   "dropout": 0,
                   "bidirectional": false,
+                  "early_stopping_patience": 2,
                   "gradient_clipping_max_norm": 5
                 },
                 "special_column_ratio_threshold": 0.05,
@@ -123,6 +139,8 @@ stages:
         out:
           value:
             schema: string
+      Now:
+        parent: Now
       getMappingAndSpecialColumns1:
         parent: InnerFlow
         in:
@@ -162,12 +180,6 @@ stages:
         in:
           string:
             link: luName/value
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
       'Format the current date to load it ':
         parent: DateFormat
         in:
@@ -328,8 +340,8 @@ stages:
             link: AI_DB_K2SYSTEM1/result
           sql:
             const: |-
-              insert into ${@K2SCHEMA_NAME}.entity_list (task_execution_id,schema,iid,creation_time)
-              Values (${task_execution_id},${schema_name},${iid},${creation_time})
+              insert into ${@K2SCHEMA_NAME}.entity_list (task_execution_id,task_type,schema,iid,creation_time)
+              Values (${task_execution_id},'TRAINING',${schema_name},${iid},${creation_time})
           task_execution_id:
             link: taskExecutionID/value
             schema: string

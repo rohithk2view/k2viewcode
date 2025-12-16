@@ -1,0 +1,65 @@
+tags: Masking
+stages:
+  Stage 1:
+    actors:
+      JavaScript1:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                let fruits = ["apple", "banana", "mango"];
+                fruits;
+              script: |-
+                var fruits = ["apple", "banana", "mango"];
+                fruits;
+        out:
+          result:
+            schema: '#ref'
+      Const1:
+        parent: Const
+        in:
+          value:
+            const:
+            - '"shipped ok nope"'
+            - '"shipped ok fine"'
+            schema: '#ref'
+        out:
+          value:
+            schema: '#ref'
+  Stage 2:
+    actors:
+      JsonParser1:
+        parent: JsonParser
+        in:
+          stream:
+            link:
+              path: Const1/value
+              iterate: Iterate
+        out:
+          object:
+            schema: string
+  Stage 3:
+    actors:
+      ArrayBuilder1:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: JsonParser1/object
+              pos: 0
+  Stage 4: {
+    }
+schemas:
+  JavaScript1.out.result:
+    type: array
+    items:
+      type: string
+  Const1.in.value:
+    type: array
+    items: {
+      }
+  Const1.out.value:
+    type: array
+    items:
+      type: string

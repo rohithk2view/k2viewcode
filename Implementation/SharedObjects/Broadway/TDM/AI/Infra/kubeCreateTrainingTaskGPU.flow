@@ -2,16 +2,6 @@ tags: Medoid,TDM
 stages:
   Get Params:
     actors:
-      namespace:
-        parent: Const
-        in:
-          value:
-            const: null
-            external: namespace
-            schema: string
-        out:
-          value:
-            schema: string
       training_image:
         parent: Const
         in:
@@ -46,16 +36,16 @@ stages:
               \     imagePullPolicy: IfNotPresent\r\n        command: [\"python\"\
               , \"main.py\"]\r\n        args: [\"--task_execution_id\", \"${id}\"\
               ]\r\n        resources:\r\n          requests:\r\n            memory:\
-              \ \"20Gi\"\r\n          limits:\r\n            memory: \"80Gi\"\r\n\
-              \            nvidia.com/gpu: 1\r\n        volumeMounts:\r\n        -\
-              \ name: shared-storage\r\n          mountPath: /app/artifacts\r\n  \
-              \      - name: dshm\r\n          mountPath: /dev/shm\r\n        env:\r\
-              \n        - name: POSTGRES_USER\r\n          valueFrom:\r\n        \
-              \    secretKeyRef:\r\n              name: medoid-secrets\r\n       \
-              \       key: pg-user\r\n        - name: POSTGRES_PASSWORD\r\n      \
-              \    valueFrom:\r\n            secretKeyRef:\r\n              name:\
-              \ medoid-secrets\r\n              key: pg-password\r\n        - name:\
-              \ POSTGRES_DB\r\n          valueFrom:\r\n            secretKeyRef:\r\
+              \ \"150Gi\"\r\n            nvidia.com/gpu: 1\r\n          limits:\r\n\
+              \            memory: \"165Gi\"\r\n            nvidia.com/gpu: 1\r\n\
+              \        volumeMounts:\r\n        - name: shared-storage\r\n       \
+              \   mountPath: /app/artifacts\r\n        - name: dshm\r\n          mountPath:\
+              \ /dev/shm\r\n        env:\r\n        - name: POSTGRES_USER\r\n    \
+              \      valueFrom:\r\n            secretKeyRef:\r\n              name:\
+              \ medoid-secrets\r\n              key: pg-user\r\n        - name: POSTGRES_PASSWORD\r\
+              \n          valueFrom:\r\n            secretKeyRef:\r\n            \
+              \  name: medoid-secrets\r\n              key: pg-password\r\n      \
+              \  - name: POSTGRES_DB\r\n          valueFrom:\r\n            secretKeyRef:\r\
               \n              name: medoid-secrets\r\n              key: pg-db\r\n\
               \        - name: POSTGRES_HOST\r\n          valueFrom:\r\n         \
               \   secretKeyRef:\r\n              name: medoid-secrets\r\n        \

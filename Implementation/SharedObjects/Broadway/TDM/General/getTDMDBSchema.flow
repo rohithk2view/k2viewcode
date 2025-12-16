@@ -1,0 +1,33 @@
+tags: TDM
+stages:
+  Get TDMDB_SCHEMA:
+    actors:
+      Get TDMDB Schema:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+            default: false
+      SysEnv:
+        parent: SysEnv
+        in:
+          name:
+            const: CLUSTER_ID
+        out:
+          value:
+            schema: string
+  Result:
+    actors:
+      Replace:
+        parent: Replace
+        in:
+          search:
+            const: ${ClusterID}
+          replace:
+            const: null
+            link: SysEnv/value
+          string:
+            link: Get TDMDB Schema/result
+        out:
+          string:
+            external: schema

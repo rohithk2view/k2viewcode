@@ -1,0 +1,46 @@
+tags: Masking
+stages:
+  Stage 1:
+    actors:
+      Const1:
+        parent: Const
+        in:
+          value:
+            const: Rohith check
+            schema: string
+        out:
+          value:
+            schema: string
+      Logger1:
+        parent: Logger
+        in:
+          message:
+            const: ===================================================================================================
+          level:
+            const: info
+  Stage 2:
+    actors:
+      RandomSSN1:
+        parent: RandomSSN
+        in:
+          delimiter:
+            const: '-'
+        out:
+          value:
+            external: value
+      JavaScript1:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs;
+  Stage 3:
+    actors:
+      Const2:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Const1/value
+        out:
+          value:
+            schema: string

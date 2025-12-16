@@ -1,0 +1,31 @@
+tags: Masking
+stages:
+  Stage 1:
+    actors:
+      Get TDMDM_SCHEMA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+  Stage 2:
+    actors:
+      Create Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "-- New Table masking_audit_log\nCREATE TABLE IF NOT EXISTS ${@schema}.masking_audit_log\n\
+              (\n\ttask_execution_id bigint NOT NULL,\n\tsource_env_name character\
+              \ varying(300),\n\tmasking_id character varying(300),\n\tdataPlatform\
+              \ character varying(300),\n\tdataset  character varying(300),\n\tmasked_value\
+              \ character varying(300),\n\tcreation_date timestamp without time zone\
+              \  DEFAULT now()\n);"
+          schema:
+            link: Get TDMDM_SCHEMA/result
+            schema: any
+            mandatory: false
+  Stage 3: {
+    }
+  Stage 4: {
+    }

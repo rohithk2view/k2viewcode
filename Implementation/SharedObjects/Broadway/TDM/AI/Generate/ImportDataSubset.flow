@@ -16,12 +16,6 @@ stages:
         out:
           value:
             schema: string
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
       LuID:
         parent: Const
         in:
@@ -42,6 +36,17 @@ stages:
           value:
             const: null
             external: beID
+        out:
+          value:
+            schema: string
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Get Inputs:
     actors:
       luName:
@@ -137,6 +142,7 @@ stages:
         in:
           format:
             const: select iid as IID from ${k2system}.entity_list where task_execution_id=${task_execution_id}
+              and task_type='GENERATION'
           task_execution_id:
             link: taskExecutionID/value
             schema: string
@@ -300,7 +306,7 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
     split: '--------------------'
@@ -335,7 +341,7 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
   Output:

@@ -1,0 +1,183 @@
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          customer_id:
+            external: customer_id
+            schema: any
+            mandatory: false
+          contract_id:
+            external: contract_id
+            schema: any
+            mandatory: false
+          contract_ref_id:
+            external: contract_ref_id
+            schema: any
+            mandatory: false
+          associated_line:
+            external: associated_line
+            schema: any
+            mandatory: false
+          contract_description:
+            external: contract_description
+            schema: any
+            mandatory: false
+          from_date:
+            external: from_date
+            schema: any
+            mandatory: false
+          to_date:
+            external: to_date
+            schema: any
+            mandatory: false
+          associated_line_fmt:
+            external: associated_line_fmt
+            schema: any
+            mandatory: false
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Source:
+    actors:
+      Get Sync Source Data Indicator:
+        parent: InnerFlow
+        condition: value
+        in:
+          flowName:
+            const: GetSyncSourceDataIndicator
+        out:
+          value:
+            schema: boolean
+      Query:
+        parent: SourceDbQuery
+        in:
+          interface:
+            const: CRM_DB
+          sql:
+            const: select * from public.contract
+          parent_rows:
+            link: PopulationArgs/parent_rows
+        out:
+          result:
+            schema: '#ref'
+      Get SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+      Get MASKING_CACHE_TTL:
+        parent: FabricSetRead
+        in:
+          key:
+            const: MASKING_CACHE_TTL
+            default: false
+  Mask Data Based On Catalog:
+    actors:
+      Catalog Masking Mapper:
+        parent: CatalogMaskingMapper
+        in:
+          interface:
+            const: null
+            link: Get SEQ_CACHE_INTERFACE/result
+          mtable:
+            schema: any
+          dataPlatform:
+            const: CRM_DB
+          schema:
+            const: public
+          dataset:
+            const: contract
+          ttl:
+            link: Get MASKING_CACHE_TTL/result
+            schema: number
+            mandatory: false
+          values:
+            link: Query/result
+  LU Table:
+    last: 1
+    actors:
+      contract:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - customer_id
+            - contract_id
+            - contract_ref_id
+            - associated_line
+            - contract_description
+            - from_date
+            - to_date
+            - associated_line_fmt
+          keys:
+            const:
+            - contract_id
+          dialect:
+            const: sqlite
+          customer_id:
+            schema: any
+          contract_id:
+            schema: any
+          contract_ref_id:
+            schema: any
+          associated_line:
+            schema: any
+          contract_description:
+            schema: any
+          from_date:
+            schema: any
+          to_date:
+            schema: any
+          associated_line_fmt:
+            schema: any
+          params:
+            link:
+              path: Catalog Masking Mapper/values
+              iterate: Iterate
+  Post Load: {
+    }
+schemas:
+  Query.out.result:
+    type: object
+    properties:
+      customer_id:
+        type: {
+          }
+      contract_id:
+        type: {
+          }
+      contract_ref_id:
+        type: {
+          }
+      associated_line:
+        type: {
+          }
+      contract_description:
+        type: {
+          }
+      from_date:
+        type: {
+          }
+      to_date:
+        type: {
+          }
+      associated_line_fmt:
+        type: {
+          }

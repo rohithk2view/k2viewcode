@@ -215,22 +215,22 @@
             {
               "name": "Number of Copied Entities",
               "type": "sql",
-              "code": "select count(*) as number_of_copied_root_entities from (Select distinct be_root_entity_id, TARGET_ROOT_ENTITY_ID from TDM.TASK_EXECUTION_LINK_ENTITIES where root_entity_status = 'completed' \nEXCEPT Select be_root_entity_id, TARGET_ROOT_ENTITY_ID from TDM.TASK_EXECUTION_LINK_ENTITIES where root_entity_status <> 'completed')"
+              "code": "Select count(Distinct ENTITY_ID) as number_of_copied_root_entities\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere LU_NAME = ROOT_LU_NAME and root_entity_status = 'completed'\nAND ID_TYPE = 'ENTITY'"
             },
             {
               "name": "List of Copied Entities",
               "type": "sql",
-              "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And EXECUTION_STATUS = 'completed'\nEXCEPT Select ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id \nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And EXECUTION_STATUS <> 'completed'\nlimit ${i_numOfRecsLimit}"
+              "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere LU_NAME = ROOT_LU_NAME And root_entity_status = 'completed'\nAND ID_TYPE = 'ENTITY'\nlimit ${i_numOfRecsLimit}"
             },
             {
               "name": "Number of Failed Entities",
               "type": "sql",
-              "code": "Select count(Distinct ENTITY_ID) as number_of_failed_root_entities\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' and execution_status <> 'completed'"
+              "code": "Select count(Distinct ENTITY_ID) as number_of_failed_root_entities\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere LU_NAME = ROOT_LU_NAME and root_entity_status <> 'completed'\nAND ID_TYPE = 'ENTITY'"
             },
             {
               "name": "List of Failed Entities",
               "type": "sql",
-              "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And EXECUTION_STATUS <> 'completed'\nlimit ${i_numOfRecsLimit}"
+              "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere LU_NAME = ROOT_LU_NAME And root_entity_status <> 'completed'\nAND ID_TYPE = 'ENTITY'\nlimit ${i_numOfRecsLimit}"
             }
           ]
         },
@@ -273,7 +273,7 @@
         {
           "name": "Statistics Report",
           "type": "sql",
-          "code": "select lu_name, table_name, target_count, source_count, diff, results \nfrom task_exe_stats_summary"
+          "code": "select lu_name, table_name, target_count, source_count, suppressed_error_count, diff, results \nfrom task_exe_stats_summary"
         },
         {
           "name": "Replace Sequence Summary Report",

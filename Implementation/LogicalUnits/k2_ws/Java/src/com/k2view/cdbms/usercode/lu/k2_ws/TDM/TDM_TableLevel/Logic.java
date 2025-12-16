@@ -23,7 +23,8 @@ import com.k2view.fabric.common.mtable.MTable;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetTableFields;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
@@ -174,6 +175,12 @@ public class Logic extends WebServiceUserCode {
                             String interfaceName = "" + map.get("interface_name");
                             String schemaName = "" + map.get("schema_name");
                             String tableName = "" + map.get("reference_table_name");
+
+                            //TDM9.3.1 - Support dynamitc schema name
+                            if (schemaName.startsWith("@")) {
+                                String globalName = schemaName.replaceAll("@", "");
+                                schemaName = getGlobal(globalName, luName);
+                            }
                             
                             tables.add(interfaceName + "##" + schemaName + "##" + luName + "##" + tableName);
                         }
@@ -285,6 +292,8 @@ public class Logic extends WebServiceUserCode {
 		    "and (l.expiration_date is null OR l.expiration_date ='1970-01-01 00:00:00.0' OR l.expiration_date > CURRENT_TIMESTAMP AT TIME ZONE 'UTC')" +
 		    "and l.task_id = t.task_id " +
             "and ref.task_id = t.task_id " +
+            "and t.sync_mode != 'OFF' " +
+            "and t.retention_period_value != 0 " +
             "order by exe.task_execution_id desc";
 		    
 		Db.Rows rows = db(TDM).fetch(sql, table_name, env_name);
@@ -468,10 +477,13 @@ public class Logic extends WebServiceUserCode {
             "WHERE rt.ref_table_name = ? AND rt.task_ref_table_id = s.task_ref_table_id " +
             "AND rt.schema_name = ? AND rt.interface_name = ? AND rt.task_id = t.task_id " +
             "AND t.source_env_name = ? AND s.task_execution_id = (select MAX(s2.task_execution_id) " + 
-            "FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats s2, " + TDMDB_SCHEMA + ".task_execution_list l " +
+            "FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats s2, " + TDMDB_SCHEMA + ".task_execution_list l, " +
+            TDMDB_SCHEMA + ".tasks t2 " +
             "WHERE s2.ref_table_name = ? " +
+            "AND s2.task_ref_table_id = s.task_ref_table_id " +
             "AND s2.execution_status = 'completed' " + 
             "AND s2.task_execution_id = l.task_execution_id " +
+            "AND t2.task_id = l.task_id AND t2.sync_mode != 'OFF' and t2.retention_period_value != 0 " +
             "AND (l.expiration_date is null OR l.expiration_date ='1970-01-01 00:00:00.0' OR l.expiration_date > CURRENT_TIMESTAMP AT TIME ZONE 'UTC'))";
         
         Db.Row tableData = db(TDM).fetch(sql, tableName, schemaName, interfaceName, envName, tableName).firstRow();

@@ -1,0 +1,273 @@
+stages:
+  Get TDM_SYNC_SOURCE_DATA:
+    transactional: false
+    actors:
+      Get Variable TDM_SYNC_SOURCE_DATA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SYNC_SOURCE_DATA
+            default: false
+      Get Delete Only Task Indicator:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_DELETE_ONLY_TASK
+            default: false
+      Get Delete Before Load indicator:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_DELETE_BEFORE_LOAD
+            default: false
+      Get Is Child LU Indicator:
+        parent: FabricSetRead
+        in:
+          key:
+            const: CHILD_LU_IND
+            default: false
+  Check Variable And Delete Root Table:
+    dependsOn: Get TDM_SYNC_SOURCE_DATA
+    actors:
+      Check TDM_SYNC_SOURCE_DATA:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Variable TDM_SYNC_SOURCE_DATA/result
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      Delete Root Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: delete from CUSTOMER.CUSTOMER
+          table:
+            external: table
+            schema: string
+    split: '--------------------'
+  Instance should not be synced:
+    else: true
+    transactional: false
+    dependsOn: Get TDM_SYNC_SOURCE_DATA
+    actors:
+      Check if first Sync:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnIsFirstSync
+        out:
+          firstSyncInd:
+            schema: boolean
+      Not1:
+        parent: Not
+        in:
+          value:
+            link: Get Delete Only Task Indicator/result
+            schema: string
+  Input:
+    dependsOn: Check Variable And Delete Root Table
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          customer_id:
+            external: customer_id
+            schema: any
+            mandatory: false
+      Init Instance As Not Found:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs.instanceFound = false;
+        out:
+          result:
+            schema: boolean
+    split: '--------------------'
+  if First Sync Throw Exception:
+    transactional: false
+    dependsOn: Instance should not be synced
+    actors:
+      First Sync Is True and Not A Delete Only Task:
+        parent: And
+        condition: result
+        in:
+          a:
+            link: Check if first Sync/firstSyncInd
+          b:
+            link: Not1/result
+      Throw Exception:
+        parent: JavaScript
+        in:
+          script:
+            const: throw "The instance does not exist in Fabric and sync from source
+              is off"
+  Source:
+    dependsOn: Input
+    actors:
+      Query:
+        parent: SourceDbQuery
+        in:
+          interface:
+            const: CRM_DB
+          sql:
+            const: select * from CUSTOMER
+          rowsGeneratorDistribution:
+            const: '1'
+            schema: object
+          parent_rows:
+            link: PopulationArgs/parent_rows
+      Get Tables Fields:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getLuTableColumns
+          luName:
+            const: CUSTOMER
+            schema: any
+          table:
+            const: CUSTOMER
+            schema: any
+        out:
+          res:
+            schema: '#ref'
+      ToBool1:
+        parent: ToBool
+        in:
+          value:
+            link: Get Delete Before Load indicator/result
+      ToBool2:
+        parent: ToBool
+        in:
+          value:
+            link: Get Is Child LU Indicator/result
+      Get SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+      Get MASKING_CACHE_TTL:
+        parent: FabricSetRead
+        in:
+          key:
+            const: MASKING_CACHE_TTL
+            default: false
+    split: '--------------------'
+  Do Nothing:
+    transactional: false
+    dependsOn: if First Sync Throw Exception
+  Catalog masking:
+    dependsOn: Source
+    actors:
+      Catalog Masking Mapper:
+        parent: CatalogMaskingMapper
+        in:
+          interface:
+            const: null
+            link: Get SEQ_CACHE_INTERFACE/result
+          mtable:
+            schema: any
+          dataPlatform:
+            const: CRM_DB
+          schema:
+            const: '{{SOURCE_SCHEMA}}'
+          dataset:
+            const: CUSTOMER
+          ttl:
+            link: Get MASKING_CACHE_TTL/result
+            schema: number
+            mandatory: false
+          values:
+            link: Query/result
+    split: '--------------------'
+  Stage 2:
+    transactional: false
+    dependsOn: Do Nothing
+  Set instance As Found:
+    dependsOn: Catalog masking
+    actors:
+      Instance Is Found In Source:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs.instanceFound = true;
+        out:
+          result:
+            schema: boolean
+    split: '--------------------'
+  Do Nothing 1:
+    transactional: false
+    dependsOn: Stage 2
+  LU Table:
+    last: 1
+    dependsOn: Set instance As Found
+    actors:
+      Root Table:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const: null
+            link: Get Tables Fields/res
+          keys:
+            const:
+            - ''
+          dialect:
+            const: sqlite
+          params:
+            link:
+              path: Catalog Masking Mapper/values
+              iterate: Iterate
+    split: '--------------------'
+  Do Nothing 2:
+    last: 1
+    transactional: false
+    dependsOn: Do Nothing 1
+  Post Load:
+    dependsOn: LU Table
+    actors:
+      Check if Instance Was Not Found In Source:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "if ((deleteBeforeLoad == false || isChildLu == false ) \r\
+                \n  && flowArgs.instanceFound == false) {\r\n    throw \"Instance\
+                \ \" + iid + \" is not found in the Source\"\r\n}"
+              script: |-
+                if ((deleteBeforeLoad == false || isChildLu == false) && flowArgs.instanceFound == false) {
+                  throw "Instance " + iid + " is not found in the Source";
+                }
+          iid:
+            link: PopulationArgs/iid
+            schema: string
+          deleteBeforeLoad:
+            link: ToBool1/bool
+            schema: boolean
+            mandatory: false
+          isChildLu:
+            link: ToBool2/bool
+            schema: boolean
+            mandatory: false
+    split: '--------------------'
+  Do Nothing 3:
+    transactional: false
+    dependsOn: Do Nothing 2
+schemas:
+  Get Tables Fields.out.res:
+    type: array
+    items:
+      type: string

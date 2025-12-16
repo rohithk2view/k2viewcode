@@ -30,23 +30,6 @@ stages:
         parent: Now
   Continue Preparing:
     actors:
-      Get Task Execution ID:
-        parent: FabricSetRead
-        in:
-          interface:
-            default: false
-          key:
-            const: TDM_TASK_EXE_ID
-            default: false
-      No Target Entity ID?:
-        parent: Equals
-        in:
-          a:
-            link: Get Target Entity ID/result
-            schema: string
-          b:
-            const: NO_ID
-            schema: string
       Get the Error Fields:
         parent: ErrorFields
         in:
@@ -57,6 +40,23 @@ stages:
             schema: '#ref'
           additional:
             schema: '#ref'
+      Get Task Execution ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+          interface:
+            schema: any
+      No Target Entity ID?:
+        parent: Equals
+        in:
+          a:
+            link: Get Target Entity ID/result
+            schema: string
+          b:
+            const: NO_ID
+            schema: string
       'Format the current date to load it ':
         parent: DateFormat
         in:
@@ -98,6 +98,21 @@ stages:
             schema: '#ref'
   Format the actor's parameters:
     actors:
+      Build string from input parameters:
+        parent: CsvBuilder
+        in:
+          header:
+            const: false
+          maps:
+            link: Remove none ASC Characters/result
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
       If No Target Entity ID Set to Source Entity ID:
         parent: IfElse
         in:
@@ -112,13 +127,6 @@ stages:
         out:
           result:
             schema: string
-      Build string from input parameters:
-        parent: CsvBuilder
-        in:
-          header:
-            const: false
-          maps:
-            link: Remove none ASC Characters/result
   Load Data to Detailed Error table:
     actors:
       Load Data To Error Table:
@@ -127,7 +135,8 @@ stages:
           interface:
             const: TDM
           schema:
-            const: '@TDMDB_SCHEMA@'
+            const: null
+            link: getTDMDBSchema/schema
           table:
             const: task_exe_error_detailed
           fields:
@@ -151,8 +160,10 @@ stages:
             link: Format Task Execution ID/number
             schema: string
           lu_name:
+            const: ''
             link: Get LU Type/result
             schema: string
+            default: true
           entity_id:
             link: Get Source Entity ID/result
             schema: string
@@ -231,4 +242,5 @@ schemas:
     properties: null
   Remove none ASC Characters.out.result:
     type: object
-    properties: null
+    properties: {
+      }

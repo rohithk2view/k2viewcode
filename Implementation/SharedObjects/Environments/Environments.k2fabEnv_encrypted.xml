@@ -10,6 +10,76 @@
                   
             <DbInterfacesList>
                         
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="CRM_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>CRM_DB</dbScheme>
+                              
+                    <dbUser>CRM_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABlma7jps=:x5/LixyKCyVEguOPv9LJ/4HxRVRX47vXRJbVIJKcbnFfDNIG+IAadQ==</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="LBSDummyC" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost/>
+                              
+                    <dbPort/>
+                              
+                    <dbScheme/>
+                              
+                    <dbUser/>
+                              
+                    <dbPasswordEncrypted/>
+                              
+                    <connString>jdbc:sqlite:</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>SQLite</JdbcDriverName>
+                              
+                    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="LOGICAL" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost/>
+                              
+                    <dbPort/>
+                              
+                    <dbScheme/>
+                              
+                    <dbUser/>
+                              
+                    <dbPasswordEncrypted/>
+                              
+                    <connString>jdbc:sqlite:</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>SQLite</JdbcDriverName>
+                              
+                    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+                            
+                </DbInterface>
+                        
                 <DbInterface active="true" dbType="genericdb" k2StudioObjectName="POSTGRESQL_ADMIN" xsi:type="DBSourceGenericDb">
                               
                     <dbHost>postgres-service</dbHost>
@@ -20,7 +90,7 @@
                               
                     <dbUser>postgres</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:898Q+V4zoI09GeK3eB3vOQYanL8g+uyWSmxXd3HdqS8kymdxvcUpcg==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlma7jps=:y4NhUVbVGKrqdPb/++GBO1g8UKpOOQ/rGswQ7UG1Eqab1nmYBGnEdA==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/postgres?stringtype=unspecified</connString>
                               
@@ -43,7 +113,7 @@
                               
                     <dbUser>tdm</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:OMxaCbryVdmqhw5Ccy7HrBWRNyp6okzKFYGJGHdxA+eAPb8=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlma7jps=:xOrli+M9MpB4jzuGTHlXvYI2JOezW5pIPUWokdFE42hbGRE=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
                               
@@ -55,25 +125,99 @@
                             
                 </DbInterface>
                         
-                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="CRM_DB" xsi:type="DBSourceGenericDb">
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="AI_DB" xsi:type="DBSourceGenericDb">
                               
-                    <dbHost>postgres-service</dbHost>
+                    <dbHost/>
                               
                     <dbPort>5432</dbPort>
                               
-                    <dbScheme>CRM_DB</dbScheme>
+                    <dbScheme/>
                               
-                    <dbUser>CRM_USER</dbUser>
+                    <dbUser/>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:5raiwXragAe1xcoIpyi7Mvr5XVJmbBhdEB/Ku8kPx4qZs6lBRTY9uw==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted/>
                               
-                    <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype=unspecified</connString>
+                    <connString>jdbc:postgresql://:5432/?stringtype=unspecified</connString>
                               
                     <minConnectionsNumber>0</minConnectionsNumber>
                               
                     <maxConnectionsNumber>60</maxConnectionsNumber>
                               
                     <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                              
+                    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="LBSDummyP" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost/>
+                              
+                    <dbPort/>
+                              
+                    <dbScheme/>
+                              
+                    <dbUser/>
+                              
+                    <dbPasswordEncrypted/>
+                              
+                    <connString>jdbc:sqlite:</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>SQLite</JdbcDriverName>
+                              
+                    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="LBSDummyS" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost/>
+                              
+                    <dbPort/>
+                              
+                    <dbScheme/>
+                              
+                    <dbUser/>
+                              
+                    <dbPasswordEncrypted/>
+                              
+                    <connString>jdbc:sqlite:</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>SQLite</JdbcDriverName>
+                              
+                    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="OracleTest" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>34.89.246.193</dbHost>
+                              
+                    <dbPort>1521</dbPort>
+                              
+                    <dbScheme>XEPDB1</dbScheme>
+                              
+                    <dbUser>Customer</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABlma7jps=:Q77s/7Js3V59eq5lWrXxPiy4DdHoWtlCt2n1T4uqnGDVHHS2gz6LHUdJ3w==</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:oracle:thin:@34.89.246.193:1521/XEPDB1</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>Oracle</JdbcDriverName>
+                              
+                    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
                             
                 </DbInterface>
                       
@@ -483,7 +627,7 @@
                         
                 <Global luName="" name="TDM_TAR_ENV_NAME">
                               
-                    <Value>UAT</Value>
+                    <Value>Development</Value>
                               
                     <Comment/>
                             
@@ -568,11 +712,226 @@
                     <Comment/>
                             
                 </Global>
+                        
+                <Global luName="CUSTOMER" name="ROOT_COLUMN_NAME">
+                              
+                    <Value/>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="CUSTOMER" name="ROOT_TABLE_NAME">
+                              
+                    <Value>customer</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="CREATE_PHYSICAL_FK_IN_MDB_EXPORT_SCHEMA">
+                              
+                    <Value>true</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="POP_FULL_LU_HIERARCHY_IN_TDM_LU">
+                              
+                    <Value>true</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="REPLACE_SEQ_BY_LUI_SYNC">
+                              
+                    <Value>false</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="TDM_USING_CATALOG_SEQUENCES">
+                              
+                    <Value>false</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="UPDATE_MDB_EXPORTED_SCHEMA">
+                              
+                    <Value>false</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
                       
             </GlobalsList>
                   
             <GenericInterfacesList>
-      </GenericInterfacesList>
+                        
+                <GenericInterface enabled="true" type="CUSTOM" version="">
+                              
+                    <Name>AI_DB_External</Name>
+                              
+                    <Properties>
+                                    
+                        <Property name="Host">
+                                          
+                            <Value>local</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="Port">
+                                          
+                            <Value>5432</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="User">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Password">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Data">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ioprovider">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="TechType">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                  
+                    </Properties>
+                            
+                </GenericInterface>
+                        
+                <GenericInterface enabled="true" type="HTTP" version="">
+                              
+                    <Name>AI_Execution</Name>
+                              
+                    <Properties>
+                                    
+                        <Property name="ProtocolType">
+                                          
+                            <Value>HTTPS</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="HOST">
+                                          
+                            <Value>local</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="PORT">
+                                          
+                            <Value>443</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="Path">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AuthenticationType">
+                                          
+                            <Value>Bearer</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="User">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Password">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Token">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AccessTokenUrl">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AccessTokenBodyParams">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ClientId">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ClientSecret">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Scope">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="TokenTimeout">
+                                          
+                            <Value>0</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="TestConnectionValidStatus">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Certificate">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                  
+                    </Properties>
+                            
+                </GenericInterface>
+                      
+            </GenericInterfacesList>
                 
         </Environment>
             
@@ -581,6 +940,76 @@
             <Comments/>
                   
             <DbInterfacesList>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="CRM_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TAR_CRM_DB</dbScheme>
+                              
+                    <dbUser>TAR_CRM_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABlma7jps=:sbinwL246+sK+g8KBBY23a2hfrZjMDsH58+9LEaztbvz6Qcz4iHkxGcrXRU=</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="LBSDummyC" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost/>
+                              
+                    <dbPort/>
+                              
+                    <dbScheme/>
+                              
+                    <dbUser/>
+                              
+                    <dbPasswordEncrypted/>
+                              
+                    <connString>jdbc:sqlite:</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>SQLite</JdbcDriverName>
+                              
+                    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="LOGICAL" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost/>
+                              
+                    <dbPort/>
+                              
+                    <dbScheme/>
+                              
+                    <dbUser/>
+                              
+                    <dbPasswordEncrypted/>
+                              
+                    <connString>jdbc:sqlite:</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>SQLite</JdbcDriverName>
+                              
+                    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+                            
+                </DbInterface>
                         
                 <DbInterface active="true" dbType="genericdb" k2StudioObjectName="POSTGRESQL_ADMIN" xsi:type="DBSourceGenericDb">
                               
@@ -592,7 +1021,7 @@
                               
                     <dbUser>postgres</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:IuHbXe0EpxqSmndqC8fPfq7ZvwcqLPEQEUnkMSIPimKx1Po58mS1SA==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlma7jps=:MIOM2eU54pWJtjtJJFoEatQZi207pEL38EpcaINeyIpZdo3iUwMrrg==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/postgres?stringtype=unspecified</connString>
                               
@@ -614,7 +1043,7 @@
                               
                     <dbUser>TAR_CRM_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:ljKO2zRp3SbizSUUuyVxESc4NXKhSb5RbW3GjSGEZTn2iz2sNMdbJbvMnRQ=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlma7jps=:i2RpGhwv/FBnUWViLKx1JVM61/nXZAfJWARuuPeLdbzcB1F3+IQC9OEsZbg=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
                               
@@ -636,7 +1065,7 @@
                               
                     <dbUser>tdm</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:KmTz5oHbo3kB+Wy8PbbZ5f92LZciQcNlJ3trdrzbRedN50U=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlma7jps=:egwl+kL64IZlw4WUyyvs2Vq5tWOPAZv7jOYa/LVB1uqDF6c=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
                               
@@ -648,25 +1077,99 @@
                             
                 </DbInterface>
                         
-                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="CRM_DB" xsi:type="DBSourceGenericDb">
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="AI_DB" xsi:type="DBSourceGenericDb">
                               
-                    <dbHost>postgres-service</dbHost>
+                    <dbHost/>
                               
                     <dbPort>5432</dbPort>
                               
-                    <dbScheme>CRM_DB</dbScheme>
+                    <dbScheme/>
                               
-                    <dbUser>CRM_USER</dbUser>
+                    <dbUser/>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:BuJzzySByMDLOxkihr5S3K3ta3OGvvGZd3gZWbDjBusOymvuExAsuQ==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted/>
                               
-                    <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype=unspecified</connString>
+                    <connString>jdbc:postgresql://:5432/?stringtype=unspecified</connString>
                               
                     <minConnectionsNumber>0</minConnectionsNumber>
                               
                     <maxConnectionsNumber>60</maxConnectionsNumber>
                               
                     <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                              
+                    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="LBSDummyP" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost/>
+                              
+                    <dbPort/>
+                              
+                    <dbScheme/>
+                              
+                    <dbUser/>
+                              
+                    <dbPasswordEncrypted/>
+                              
+                    <connString>jdbc:sqlite:</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>SQLite</JdbcDriverName>
+                              
+                    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="LBSDummyS" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost/>
+                              
+                    <dbPort/>
+                              
+                    <dbScheme/>
+                              
+                    <dbUser/>
+                              
+                    <dbPasswordEncrypted/>
+                              
+                    <connString>jdbc:sqlite:</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>SQLite</JdbcDriverName>
+                              
+                    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="OracleTest" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>34.89.246.193</dbHost>
+                              
+                    <dbPort>1521</dbPort>
+                              
+                    <dbScheme>XEPDB1</dbScheme>
+                              
+                    <dbUser>Customer</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABlma7jps=:6ocTvRgnqigT3+3uLk3xUMIhH7XuNpKDt1C8HjzJSiJwjEHcryS82WgfRA==</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:oracle:thin:@34.89.246.193:1521/XEPDB1</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>Oracle</JdbcDriverName>
+                              
+                    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
                             
                 </DbInterface>
                       
@@ -1076,7 +1579,7 @@
                         
                 <Global luName="" name="TDM_TAR_ENV_NAME">
                               
-                    <Value>UAT</Value>
+                    <Value>Development</Value>
                               
                     <Comment/>
                             
@@ -1161,11 +1664,226 @@
                     <Comment/>
                             
                 </Global>
+                        
+                <Global luName="CUSTOMER" name="ROOT_COLUMN_NAME">
+                              
+                    <Value/>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="CUSTOMER" name="ROOT_TABLE_NAME">
+                              
+                    <Value>customer</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="CREATE_PHYSICAL_FK_IN_MDB_EXPORT_SCHEMA">
+                              
+                    <Value>true</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="POP_FULL_LU_HIERARCHY_IN_TDM_LU">
+                              
+                    <Value>true</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="REPLACE_SEQ_BY_LUI_SYNC">
+                              
+                    <Value>false</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="TDM_USING_CATALOG_SEQUENCES">
+                              
+                    <Value>false</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="UPDATE_MDB_EXPORTED_SCHEMA">
+                              
+                    <Value>false</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
                       
             </GlobalsList>
                   
             <GenericInterfacesList>
-      </GenericInterfacesList>
+                        
+                <GenericInterface enabled="true" type="CUSTOM" version="">
+                              
+                    <Name>AI_DB_External</Name>
+                              
+                    <Properties>
+                                    
+                        <Property name="Host">
+                                          
+                            <Value>local</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="Port">
+                                          
+                            <Value>5432</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="User">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Password">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Data">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ioprovider">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="TechType">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                  
+                    </Properties>
+                            
+                </GenericInterface>
+                        
+                <GenericInterface enabled="true" type="HTTP" version="">
+                              
+                    <Name>AI_Execution</Name>
+                              
+                    <Properties>
+                                    
+                        <Property name="ProtocolType">
+                                          
+                            <Value>HTTPS</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="HOST">
+                                          
+                            <Value>local</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="PORT">
+                                          
+                            <Value>443</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="Path">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AuthenticationType">
+                                          
+                            <Value>Bearer</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="User">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Password">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Token">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AccessTokenUrl">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AccessTokenBodyParams">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ClientId">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ClientSecret">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Scope">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="TokenTimeout">
+                                          
+                            <Value>0</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="TestConnectionValidStatus">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Certificate">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                  
+                    </Properties>
+                            
+                </GenericInterface>
+                      
+            </GenericInterfacesList>
                 
         </Environment>
             
@@ -1176,6 +1894,30 @@
                   
             <DbInterfacesList>
                         
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="CRM_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost/>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>CRM_DB</dbScheme>
+                              
+                    <dbUser/>
+                              
+                    <dbPasswordEncrypted/>
+                              
+                    <connString>jdbc:postgresql://:5432/CRM_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                              
+                    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+                            
+                </DbInterface>
+                        
                 <DbInterface active="true" dbType="genericdb" k2StudioObjectName="POSTGRESQL_ADMIN" xsi:type="DBSourceGenericDb">
                               
                     <dbHost>postgres-service</dbHost>
@@ -1186,7 +1928,7 @@
                               
                     <dbUser>postgres</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:2J8l0Ag3WLCwy7BVS8KOaXrPdlwasPsx61/p9bGiAtfSCMKutpwqmg==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlma7jps=:cI0HXGgHZmpoa1fMiAia6ffBEaNaSFZ4CqHdFY+IDHUbnrES5UAfrg==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/postgres?stringtype=unspecified</connString>
                               
@@ -1208,7 +1950,7 @@
                               
                     <dbUser>TAR_CRM_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:HGtv27qHikabrKrXWVdXrPxMnVM4ue2LSJAYMVnFSI2L+5rPE8fbD0Nfe6I=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlma7jps=:Yp2BA566MoEmCl3q+/5hUmHFFL+y7C9nYWMP2j+Gzo75D+YZuxwiSgVxVnk=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
                               
@@ -1230,7 +1972,7 @@
                               
                     <dbUser>tdm</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:EbcaLZnrMqfloW6MkPOuFaIjAc8p9aK278cZP0o+GJS4AbU=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlma7jps=:QnkaLgEwFVbE6QhoGWjHG6MyiPXsKJRMpHqh4Qfu5DjJQUU=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
                               
@@ -1648,7 +2390,7 @@
                         
                 <Global luName="" name="TDM_TAR_ENV_NAME">
                               
-                    <Value>UAT</Value>
+                    <Value>Development</Value>
                               
                     <Comment/>
                             
@@ -1727,6 +2469,62 @@
                 </Global>
                         
                 <Global luName="" name="TDM_SUPPRESS_TEST_CONNECTION">
+                              
+                    <Value>false</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="CUSTOMER" name="ROOT_COLUMN_NAME">
+                              
+                    <Value/>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="CUSTOMER" name="ROOT_TABLE_NAME">
+                              
+                    <Value>customer</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="CREATE_PHYSICAL_FK_IN_MDB_EXPORT_SCHEMA">
+                              
+                    <Value>true</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="POP_FULL_LU_HIERARCHY_IN_TDM_LU">
+                              
+                    <Value>true</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="REPLACE_SEQ_BY_LUI_SYNC">
+                              
+                    <Value>false</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="TDM_USING_CATALOG_SEQUENCES">
+                              
+                    <Value>false</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="UPDATE_MDB_EXPORTED_SCHEMA">
                               
                     <Value>false</Value>
                               

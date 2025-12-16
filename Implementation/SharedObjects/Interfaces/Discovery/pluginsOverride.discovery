@@ -1,0 +1,36 @@
+{
+  "Rules" : [ {
+    "name" : "Baseline",
+    "connectToSource" : true,
+    "sampleSize" : {
+      "percentage" : 10,
+      "min" : 100,
+      "max" : 500
+    },
+    "globalSchemaExclude" : [ "SYS.*", ".*SYS$", "USER.*", ".*USER$" ],
+    "pluginsOverride" : {
+      "Metadata Logical Reference" : { },
+      "MetaData File Analyzer" : {
+        "name" : "MetaData File Analyzer",
+        "active" : true,
+        "ordinalPosition" : 9,
+        "class" : "com.k2view.discovery.plugins.MetadataFileAnalyzerPlugin",
+        "inputParameters" : {
+          "file_path" : "/opt/apps/fabric/workspace/project/Implementation/SharedObjects/Interfaces/Discovery/Mtable/inputPayment.csv"
+        }
+      },
+      "Complex Field Parser" : { },
+      "Data Regex Classifier" : { },
+      "Metadata Regex Classifier" : { },
+      "Classification PII Marker" : { }
+    },
+    "override" : true
+  }, {
+    "name" : "LogicalRule",
+    "enabled" : true,
+    "dataPlatform" : "LBSDummyP",
+    "connectToSource" : false,
+    "override" : true,
+    "pluginsOverride" : { }
+  } ]
+}

@@ -1,0 +1,204 @@
+stages:
+  Create ES Document:
+    remark: |-
+      Create
+       * Elastic Search document
+       * Elastic Index
+       * Elastic id
+    actors:
+      ES Document:
+        parent: MapMerge
+        in:
+          maps:
+            external: maps
+            mandatory: false
+        out:
+          map:
+            schema: '#ref'
+      ES id:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: id
+        out:
+          value:
+            schema: integer
+      ES index:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: index
+        out:
+          value:
+            schema: string
+      RoutingKey:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: routingKey
+            schema: string
+        out:
+          value:
+            schema: string
+  buildPath:
+    dependsOn: Create ES Document
+    actors:
+      NotNull1:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: RoutingKey/value
+      buildInsertPath:
+        parent: StringFormat
+        in:
+          format:
+            const: ${index}/_doc/${id}?routing=${routingKey}
+          index:
+            link: ES index/value
+            schema: string
+            mandatory: false
+          id:
+            link: ES id/value
+            schema: any
+            mandatory: false
+          routingKey:
+            link: RoutingKey/value
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 2:
+    else: true
+    dependsOn: Create ES Document
+    actors:
+      buildInsertPath1:
+        parent: StringFormat
+        in:
+          format:
+            const: ${index}/_doc/${id}
+          index:
+            link: ES index/value
+            schema: string
+            mandatory: false
+          id:
+            link: ES id/value
+            schema: any
+            mandatory: false
+  Stage 3: {
+    }
+  building ES Data:
+    remark: "* Converting map keys to lowercase\n* Building the insertion path index/_doc/id\
+      \ \n"
+    actors:
+      toLowerKeys:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |
+                // Convert all keys to lowercase
+                let newJson = {};
+                for (let key in jsonString) {
+                    newJson[key.toLowerCase()] = jsonString[key]; // Copy values with lowercase keys
+                }
+
+                newJson; // Return the modified object
+              script: |-
+                // Convert all keys to lowercase
+                var newJson = {};
+
+                for (var key in jsonString) {
+                  newJson[key.toLowerCase()] = jsonString[key]; // Copy values with lowercase keys
+                }
+
+                newJson; // Return the modified object
+          jsonString:
+            link: ES Document/map
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  Converting to json stream:
+    remark: Converting Map to json data
+    actors:
+      ToStream:
+        parent: ToBuffer
+        in:
+          value:
+            link: toLowerKeys/result
+  Load Stream:
+    remark: Loading document to Elastic Search using the http method
+    actors:
+      ES Load:
+        parent: Http
+        in:
+          interface:
+            const: null
+            external: interface
+          path:
+            const: null
+            link:
+            - buildInsertPath/string
+            - buildInsertPath1/string
+          method:
+            const: POST
+          format:
+            const: JSON
+          stream:
+            link: ToStream/buffer
+        out:
+          header:
+            external: header
+            schema: '#ref'
+          stream:
+            external: stream
+          status:
+            external: status
+  Stage 1: {
+    }
+schemas:
+  ES Document.out.map:
+    type: object
+    properties:
+      CUSTOMER_ID:
+        type: string
+      ORDER_ID:
+        type: integer
+      STATUS:
+        type: string
+      TOTAL_AMOUNT:
+        type: integer
+      ORDERITEM_ID: {
+        }
+  toLowerKeys.in.jsonString:
+    type: object
+    properties:
+      ADDRESS:
+        type: string
+      CUSTOMER_ID:
+        type: integer
+      EMAIL:
+        type: string
+      FIRST_NAME:
+        type: string
+      LAST_NAME:
+        type: string
+      PHONE:
+        type: string
+      SSN:
+        type: string
+  ES Load.out.header:
+    type: object
+    properties:
+      Content-Length:
+        type: integer
+      content-type:
+        type: string
+      location:
+        type: string
+      x-elastic-product:
+        type: string

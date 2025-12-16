@@ -1,0 +1,226 @@
+stages:
+  stage1: {
+    }
+  Create ES Document:
+    remark: |+
+      Create
+       * Elastic Search document
+       * Elastic Index
+       * Elastic id
+      * Check whether it is a bulk load or not
+
+
+    actors:
+      create ES document:
+        parent: MapMerge
+        in:
+          maps:
+            external: maps
+            mandatory: false
+        out:
+          map:
+            schema: '#ref'
+      ES id:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: id
+        out:
+          value:
+            schema: integer
+      ES index:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: index
+        out:
+          value:
+            schema: string
+      ES isBulk?:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: isBulk
+        out:
+          value:
+            schema: string
+      ES Load Interface:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: interface
+            schema: string
+        out:
+          value:
+            schema: string
+      ES routingKey:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: routingKey
+            schema: string
+        out:
+          value:
+            schema: string
+  condition isBulk Load:
+    dependsOn: Create ES Document
+    actors:
+      If not bulk load:
+        parent: NotEquals
+        condition: result
+        in:
+          b:
+            const: true
+            schema: boolean
+          a:
+            link:
+            - ES isBulk?/value
+            - ES isBulk?/value
+      ESLoadIndexDocument1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ESLoadIndexDocument
+          maps:
+            link:
+              path: create ES document/map
+              pos: 0
+            schema: '#ref'
+            mandatory: false
+          id:
+            link: ES id/value
+            schema: any
+            mandatory: false
+          index:
+            link: ES index/value
+            schema: any
+            mandatory: false
+          routingKey:
+            link: ES routingKey/value
+            schema: string
+            mandatory: false
+          interface:
+            link: ES Load Interface/value
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - HTTP
+              interfaces:
+              - http://hostname
+            mandatory: false
+        out:
+          header:
+            schema: '#ref'
+          stream:
+            schema: '#ref'
+          status:
+            schema: integer
+    split: '--------------------'
+  Stage 1:
+    else: true
+    dependsOn: Create ES Document
+    actors:
+      ESLoadBulkIndexDocuments1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ESLoadBulkIndexDocuments
+          maps:
+            link:
+              path: create ES document/map
+              pos: 0
+            schema: '#ref'
+            mandatory: false
+          id:
+            link: ES id/value
+            schema: any
+            mandatory: false
+          index:
+            link: ES index/value
+            schema: any
+            mandatory: false
+          routingKey:
+            link: ES routingKey/value
+            schema: string
+            mandatory: false
+          interface:
+            link: ES Load Interface/value
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - HTTP
+              interfaces:
+              - http://hostname
+            mandatory: false
+        out:
+          header:
+            schema: '#ref'
+          stream:
+            schema: '#ref'
+          status:
+            schema: integer
+  Stage 2: {
+    }
+schemas:
+  create ES document.out.map:
+    type: object
+    properties:
+      CUSTOMER_ID:
+        type: string
+      ORDER_ID:
+        type: integer
+      STATUS:
+        type: string
+      TOTAL_AMOUNT:
+        type: integer
+      ORDERITEM_ID: {
+        }
+  ESLoadIndexDocument1.in.maps:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  ESLoadIndexDocument1.out.header:
+    type: object
+    properties:
+      Content-Length:
+        type: integer
+      content-type:
+        type: string
+      location:
+        type: string
+      x-elastic-product:
+        type: string
+  ESLoadIndexDocument1.out.stream:
+    type: array
+    items:
+      type: blob
+  ESLoadBulkIndexDocuments1.in.maps:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  ESLoadBulkIndexDocuments1.out.header:
+    type: object
+    properties:
+      Content-Length:
+        type: integer
+      content-type:
+        type: string
+      location:
+        type: string
+      x-elastic-product:
+        type: string
+  ESLoadBulkIndexDocuments1.out.stream:
+    type: array
+    items:
+      type: blob

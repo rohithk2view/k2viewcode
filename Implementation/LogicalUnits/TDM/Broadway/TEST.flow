@@ -1,0 +1,52 @@
+stages:
+  Stage 1: {
+    }
+  Stage 2:
+    actors:
+      Const1:
+        parent: Const
+        in:
+          value:
+            const: rohith_siva
+            schema: string
+        out:
+          value:
+            schema: string
+  Stage 3:
+    actors:
+      JavaScript1:
+        parent: JavaScript
+        in:
+          script:
+            const: |+
+              var split = str.split("_");
+
+              var map = {};
+
+              var id = split[0];
+              var cloneid = split[1];
+
+              map['id'] = id;
+              map['cloneid'] = cloneid;
+
+              map;
+
+          str:
+            link: Const1/value
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Stage 4: {
+    }
+  Stage 5: {
+    }
+schemas:
+  JavaScript1.out.result:
+    type: object
+    properties:
+      id:
+        type: string
+      cloneid:
+        type: string

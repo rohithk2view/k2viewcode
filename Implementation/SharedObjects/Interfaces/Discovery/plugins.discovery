@@ -6,23 +6,44 @@
 		"percentage": 10,
 		"min_size": 100,
 		"max_size": 10000
-	 },
-	 "data_platforms":{
-	         "data_platform_1": {
-	           "exclude_list": ["schema"]
-	         },
-	         "data_platform_2": {
-	           "include_list": ["main.PATIENT","main.INVOICE"]
-	         },
-	         "description": "<data_platform_1>/<data_platform_2> are placeholders for Project interface names. The <exclude_list> and <include_list> arrays should be defined in the following format: <schema> or <schema>.<table> or *.<table>."
-       },
-	"plugins": [{
-		    "name": "Complex Field Parser",
-		    "class": "com.k2view.discovery.plugins.complexfield.ComplexFieldPlugin",
-		    "active": true,
-		    "monitor_desc": "Complex Field Parser",
-		    "input_parameters": {
-		   }
+	},
+	"data_platforms": {
+			"LOGICAL": {
+				"connectToSource": false
+			},
+		"data_platform_1": {
+			"exclude_list": [
+				"schema"
+			]
+		},
+		"data_platform_2": {
+			"include_list": [
+				"main.PATIENT",
+				"main.INVOICE"
+			]
+		},
+		"description": "<data_platform_1>/<data_platform_2> are placeholders for Project interface names. The <exclude_list> and <include_list> arrays should be defined in the following format: <schema> or <schema>.<table> or *.<table>."
+	},
+	"plugins": [
+		{
+			"name": "Metadata File Analyzer",
+			"type": "plugin",
+			"class": "com.k2view.MetadataFileAnalyzerPlugin.MetadataFileAnalyzerPlugin",
+			"active": true,
+			"connectToSource": false,
+			"factor": 0.2,
+			"threshold": 0.4,
+			"input_parameters": {
+				"file_path": "/opt/apps/fabric/workspace/project/Implementation/SharedObjects/Interfaces/Discovery/Mtable/sample.csv"
+				
+			}
+		},
+		{
+			"name": "Complex Field Parser",
+			"class": "com.k2view.discovery.plugins.complexfield.ComplexFieldPlugin",
+			"active": true,
+			"monitor_desc": "Complex Field Parser",
+			"input_parameters": {}
 		},
 		{
 			"name": "Metadata Logical Reference",
@@ -31,37 +52,34 @@
 			"threshold": 0.4,
 			"monitor_desc": "Refers To Relations",
 			"input_parameters": {
-			    "rules": {
-	                          "field_name_is_id_and_pk": {
-	                            "score": 0.8,
-	                            "description": "Dataset1 has a PK field \"id\\“ and dataset2 has a field \\”dataset1id\\” (normalized)\n"
-	                          },
-	                          "field_name_is_id_and_not_pk": {
-	                            "score": 0.6,
-	                            "description": "Dataset1 has a non-PK field called \"id\\“ and dataset2 has a field called \\”dataset1id\\”"
-	                          },
-	                          "single_field_pk_and_not_pk": {
-	                            "score": 0.8,
-	                            "description": "Dataset1 has a PK field and dataset2 has a field with the same name (normalized), non-PK"
-	                          },
-	                          "common_fields_in_both_pk": {
-	                            "score": 0.8,
-	                            "description": "Common fields which a part of PK in both datasets, but dataset1 has less PKs than dataset2"
-	                          },
-	                          "same_field_names_pk": {
-	                            "score": 0.4,
-	                            "description": "Common fields, a part of PK in both datasets, and both datasets have identical number of PKs"
-	                          },
-	                          "same_field_names_not_pk": {
-	                            "score": 0.2,
-	                            "description": "Both datasets have fields with the same names (normalized, not in field_name_blk), both are non-PK"
-	                          }
-	                        },
-				"field_name_exclude_list": [
-                    
-				],
-				"field_type_exclude_list": [
-				]
+				"rules": {
+					"field_name_is_id_and_pk": {
+						"score": 0.8,
+						"description": "Dataset1 has a PK field \"id\\“ and dataset2 has a field \\”dataset1id\\” (normalized)\n"
+					},
+					"field_name_is_id_and_not_pk": {
+						"score": 0.6,
+						"description": "Dataset1 has a non-PK field called \"id\\“ and dataset2 has a field called \\”dataset1id\\”"
+					},
+					"single_field_pk_and_not_pk": {
+						"score": 0.8,
+						"description": "Dataset1 has a PK field and dataset2 has a field with the same name (normalized), non-PK"
+					},
+					"common_fields_in_both_pk": {
+						"score": 0.8,
+						"description": "Common fields which a part of PK in both datasets, but dataset1 has less PKs than dataset2"
+					},
+					"same_field_names_pk": {
+						"score": 0.4,
+						"description": "Common fields, a part of PK in both datasets, and both datasets have identical number of PKs"
+					},
+					"same_field_names_not_pk": {
+						"score": 0.2,
+						"description": "Both datasets have fields with the same names (normalized, not in field_name_blk), both are non-PK"
+					}
+				},
+				"field_name_exclude_list": [],
+				"field_type_exclude_list": []
 			}
 		},
 		{
@@ -79,10 +97,8 @@
 			"threshold": 0.4,
 			"monitor_desc": "Classifications",
 			"input_parameters": {
-			    "field_name_exclude_list": [
-			    ],
-			    "field_type_exclude_list": [
-			    ]
+				"field_name_exclude_list": [],
+				"field_type_exclude_list": []
 			}
 		},
 		{
@@ -92,11 +108,10 @@
 			"threshold": 0.2,
 			"monitor_desc": "PII Fields",
 			"input_parameters": {
-			    "field_name_exclude_list": [
-                    "^(?i)[a-z]+_?ID$"
-			    ],
-			    "field_type_exclude_list": [
-			    ]
+				"field_name_exclude_list": [
+					"^(?i)[a-z]+_?ID$"
+				],
+				"field_type_exclude_list": []
 			}
 		},
 		{

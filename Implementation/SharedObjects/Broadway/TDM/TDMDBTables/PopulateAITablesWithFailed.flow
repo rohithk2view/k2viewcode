@@ -14,12 +14,6 @@ stages:
           key:
             const: TDM_LU_NAME
             default: false
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
       Now:
         parent: Now
       AI_DB_K2SYSTEM:
@@ -27,29 +21,29 @@ stages:
         in:
           key:
             const: AI_DB_INTERFACE
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Set Task execution List:
     actors:
-      Update task_execution_summary:
-        parent: DbCommand
-        in:
-          interface:
-            const: TDM
-          sql:
-            const: update ${@TDMDB_SCHEMA}.task_execution_summary set execution_status
-              = 'failed' where task_execution_id =${execution_id} ;
-          TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
-            schema: string
-            mandatory: false
-          execution_id:
-            link: TDM_TASK_EXE_ID/result
-            schema: string
-            mandatory: false
       'Format the current date to load it ':
         parent: DateFormat
         in:
           date:
             link: Now/date
+      Getk2SystemSchemaName:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
+            schema: string
       Get Status:
         parent: DbCommand
         in:
@@ -65,14 +59,6 @@ stages:
         out:
           result:
             schema: '#ref'
-      Getk2SystemSchemaName:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: Getk2SystemSchemaName
-        out:
-          result:
-            schema: string
   Set Task Execution Summary:
     dependsOn: Set Task execution List
     actors:
@@ -149,13 +135,9 @@ stages:
               UPDATE ${@TDMDB_SCHEMA}.task_execution_list
               SET execution_status = 'failed'
               WHERE task_execution_id = ${execution_id}
-              AND (
-                  (task_type = 'TRAINING' AND process_id < 0)
-                  OR
-                  (task_type != 'TRAINING' AND process_id <= 0)
-              );
+              and execution_status <> 'completed';
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           execution_id:
@@ -170,11 +152,28 @@ stages:
             link: AI_DB_K2SYSTEM/result
           sql:
             const: update ${@k2system}.task_executions set status='FAILED' where id=${id}
+              and status <> 'DONE'
           k2system:
             link: Getk2SystemSchemaName/result
             schema: string
             mandatory: false
           id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+      Update task_execution_summary:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@TDMDB_SCHEMA}.task_execution_summary set execution_status
+              = 'failed' where task_execution_id =${execution_id} ;
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+          execution_id:
             link: TDM_TASK_EXE_ID/result
             schema: string
             mandatory: false
@@ -187,7 +186,7 @@ stages:
             const: TDM
           schema:
             const: null
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
           table:
             const: task_exe_error_summary
           fields:
@@ -235,10 +234,12 @@ stages:
             default: true
             mandatory: false
           error_msg:
+            const: AI Task Failed
             link:
             - Get the Error Fields/message
             - Get Error Msg/object/result/value
             schema: string
+            default: true
             mandatory: false
           creation_date:
             link: Format the current date to load it /string
@@ -263,7 +264,7 @@ stages:
             const: TDM
           schema:
             const: null
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
           table:
             const: task_exe_error_detailed
           fields:

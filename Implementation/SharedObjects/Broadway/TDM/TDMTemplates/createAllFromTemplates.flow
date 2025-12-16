@@ -45,6 +45,10 @@ stages:
             schema: boolean
             default: true
             mandatory: false
+          TARGET_ENVIRONMENT:
+            external: TARGET_ENVIRONMENT
+            schema: string
+            mandatory: false
     split: '--------------------'
   Do Not Create Delete Tables:
     else: true
@@ -132,7 +136,6 @@ stages:
               id: com.k2view.interface
               interfaceType:
               - database
-              - CassandraLoader
             mandatory: false
           SOURCE_SCHEMA:
             external: SOURCE_SCHEMA

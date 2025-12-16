@@ -1,0 +1,175 @@
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          case_id:
+            external: case_id
+            schema: any
+            mandatory: false
+          note_id:
+            external: note_id
+            schema: any
+            mandatory: false
+          note_date:
+            external: note_date
+            schema: any
+            mandatory: false
+          note_text:
+            external: note_text
+            schema: any
+            mandatory: false
+        out:
+          parent_rows:
+            schema: '#ref'
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Source:
+    actors:
+      Get Sync Source Data Indicator:
+        parent: InnerFlow
+        condition: value
+        in:
+          flowName:
+            const: GetSyncSourceDataIndicator
+        out:
+          value:
+            schema: boolean
+      Query:
+        parent: SourceDbQuery
+        in:
+          interface:
+            const: CRM_DB
+          sql:
+            const: select * from public.case_note
+          parent_rows:
+            link: PopulationArgs/parent_rows
+        out:
+          result:
+            schema: '#ref'
+      Get SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+      Get MASKING_CACHE_TTL:
+        parent: FabricSetRead
+        in:
+          key:
+            const: MASKING_CACHE_TTL
+            default: false
+  Mask Data Based On Catalog:
+    actors:
+      Catalog Masking Mapper:
+        parent: CatalogMaskingMapper
+        in:
+          interface:
+            const: null
+            link: Get SEQ_CACHE_INTERFACE/result
+          mtable:
+            schema: any
+          dataPlatform:
+            const: CRM_DB
+          schema:
+            const: public
+          dataset:
+            const: case_note
+          ttl:
+            link: Get MASKING_CACHE_TTL/result
+            schema: number
+            mandatory: false
+          values:
+            link: Query/result
+        out:
+          values:
+            schema: '#ref'
+  LU Table:
+    last: 1
+    actors:
+      case_note:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - case_id
+            - note_id
+            - note_date
+            - note_text
+          keys:
+            const:
+            - note_id
+          dialect:
+            const: sqlite
+          case_id:
+            schema: any
+          note_id:
+            schema: any
+          note_date:
+            schema: any
+          note_text:
+            schema: any
+          params:
+            link:
+              path: Catalog Masking Mapper/values
+              iterate: Iterate
+  Post Load:
+    actors:
+      JavaScript1:
+        parent: JavaScript
+        height: 166
+        in:
+          script:
+            const: flowArgs;
+schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        case_id:
+          type: integer
+  Query.out.result:
+    type: object
+    properties:
+      case_id:
+        type: {
+          }
+      note_id:
+        type: {
+          }
+      note_date:
+        type: {
+          }
+      note_text:
+        type: {
+          }
+  Catalog Masking Mapper.out.values:
+    type: array
+    items:
+      type: object
+      properties:
+        case_id:
+          type: integer
+        note_id:
+          type: integer
+        note_date:
+          type: date
+        note_text:
+          type: string

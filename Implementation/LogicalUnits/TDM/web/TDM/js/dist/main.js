@@ -473,7 +473,7 @@ var react = __webpack_require__(1);
 var react_default = /*#__PURE__*/__webpack_require__.n(react);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/asyncToGenerator.js
-var asyncToGenerator = __webpack_require__(11);
+var asyncToGenerator = __webpack_require__(10);
 var asyncToGenerator_default = /*#__PURE__*/__webpack_require__.n(asyncToGenerator);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/toConsumableArray.js
@@ -903,14 +903,15 @@ function TDMInput(props) {
       children: [title, /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_MadatoryAsterisk, {
         children: mandatory && title ? '*' : ''
       })]
-    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Input, {
-      required: mandatory,
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Input
+    // required={mandatory}
+    , {
       min: min,
       max: max,
       placeholder: placeholder,
       type: type,
       name: name,
-      value: value,
+      value: value || '',
       onChange: onChangeLocal,
       disabled: disabled
     }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_FieldError, {
@@ -947,7 +948,8 @@ function FabricWidget(props) {
       updateValues(editors.map(function (it) {
         return {
           value: it.value,
-          name: it.name
+          name: it.name,
+          schema: it.schema
         };
       }));
     }
@@ -955,6 +957,12 @@ function FabricWidget(props) {
   Object(react["useEffect"])(function () {
     var _window, _window$k2widgets;
     var onWidgetLoad = function onWidgetLoad(data) {
+      var editors = !Array.isArray(editor) ? [editor] : editor;
+      editors.forEach(function (editor) {
+        if (editor && editor.schema2) {
+          data.updateValue(editor.name, editor.value, editor.schema2);
+        }
+      });
       setWidgetRefData(data);
       saveRef(data);
       // save it in task Data
@@ -2469,8 +2477,8 @@ var exampleAPIs = {
         "LU_NAME": "Customer",
         "PARAM_NAME": "CUSTOMER.NO_OF_OPEN_CASES",
         "PARAM_TYPE": "INTEGER",
-        "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["0"],
+        "COMBO_INDICATOR": "false",
+        "VALID_VALUES": null,
         "MIN_VALUE": "0",
         "MAX_VALUE": "0",
         "LU_PARAMS_TABLE_NAME": "customer_params"
@@ -3444,34 +3452,66 @@ var getExecutionProcessParams = /*#__PURE__*/function () {
     return _ref35.apply(this, arguments);
   };
 }();
-var saveTaskAPI = /*#__PURE__*/function () {
-  var _ref36 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee36(taskData) {
+var getCheckIfParamsCoupling = /*#__PURE__*/function () {
+  var _ref36 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee36() {
     return regenerator_default.a.wrap(function _callee36$(_context36) {
       while (1) switch (_context36.prev = _context36.next) {
         case 0:
-          if (!taskData.task_id) {
-            _context36.next = 2;
-            break;
-          }
-          return _context36.abrupt("return", invokeFabricWebService("task/".concat(taskData.task_id), taskData, 'PUT'));
-        case 2:
-          return _context36.abrupt("return", invokeFabricWebService('task', taskData, 'POST'));
-        case 3:
+          return _context36.abrupt("return", invokeFabricWebService("wsCheckIfParamsCoupling", {}, 'GET'));
+        case 1:
         case "end":
           return _context36.stop();
       }
     }, _callee36);
   }));
-  return function saveTaskAPI(_x55) {
+  return function getCheckIfParamsCoupling() {
     return _ref36.apply(this, arguments);
   };
 }();
-var getVersionsForLoad = /*#__PURE__*/function () {
-  var _ref37 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee37(fromDate, toDate, entitiesList, lu_list, source_env_name, target_env_name, be_id, filterout_reserved) {
+var getTaskLuEditForTesters = /*#__PURE__*/function () {
+  var _ref37 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee37() {
     return regenerator_default.a.wrap(function _callee37$(_context37) {
       while (1) switch (_context37.prev = _context37.next) {
         case 0:
-          return _context37.abrupt("return", invokeFabricWebService('tasks/versionsForLoad', {
+          return _context37.abrupt("return", invokeFabricWebService("wsGetTaskLuEditForTesters", {}, 'GET'));
+        case 1:
+        case "end":
+          return _context37.stop();
+      }
+    }, _callee37);
+  }));
+  return function getTaskLuEditForTesters() {
+    return _ref37.apply(this, arguments);
+  };
+}();
+var saveTaskAPI = /*#__PURE__*/function () {
+  var _ref38 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee38(taskData) {
+    return regenerator_default.a.wrap(function _callee38$(_context38) {
+      while (1) switch (_context38.prev = _context38.next) {
+        case 0:
+          if (!taskData.task_id) {
+            _context38.next = 2;
+            break;
+          }
+          return _context38.abrupt("return", invokeFabricWebService("task/".concat(taskData.task_id), taskData, 'PUT'));
+        case 2:
+          return _context38.abrupt("return", invokeFabricWebService('task', taskData, 'POST'));
+        case 3:
+        case "end":
+          return _context38.stop();
+      }
+    }, _callee38);
+  }));
+  return function saveTaskAPI(_x55) {
+    return _ref38.apply(this, arguments);
+  };
+}();
+var getVersionsForLoad = /*#__PURE__*/function () {
+  var _ref39 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee39(fromDate, toDate, entitiesList, lu_list, source_env_name, target_env_name, be_id, filterout_reserved) {
+    return regenerator_default.a.wrap(function _callee39$(_context39) {
+      while (1) switch (_context39.prev = _context39.next) {
+        case 0:
+          return _context39.abrupt("return", invokeFabricWebService('tasks/versionsForLoad', {
             fromDate: fromDate,
             toDate: toDate,
             entitiesList: entitiesList,
@@ -3483,20 +3523,20 @@ var getVersionsForLoad = /*#__PURE__*/function () {
           }, 'POST'));
         case 1:
         case "end":
-          return _context37.stop();
+          return _context39.stop();
       }
-    }, _callee37);
+    }, _callee39);
   }));
   return function getVersionsForLoad(_x56, _x57, _x58, _x59, _x60, _x61, _x62, _x63) {
-    return _ref37.apply(this, arguments);
+    return _ref39.apply(this, arguments);
   };
 }();
 var getGenerationExecutions = /*#__PURE__*/function () {
-  var _ref38 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee38(fromDate, toDate, envName, beID, selectedLogicalUnits) {
-    return regenerator_default.a.wrap(function _callee38$(_context38) {
-      while (1) switch (_context38.prev = _context38.next) {
+  var _ref40 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee40(fromDate, toDate, envName, beID, selectedLogicalUnits) {
+    return regenerator_default.a.wrap(function _callee40$(_context40) {
+      while (1) switch (_context40.prev = _context40.next) {
         case 0:
-          return _context38.abrupt("return", invokeFabricWebService('tasks/getGenerationModels', {
+          return _context40.abrupt("return", invokeFabricWebService('tasks/getGenerationModels', {
             fromDate: fromDate,
             toDate: toDate,
             envName: envName,
@@ -3505,12 +3545,12 @@ var getGenerationExecutions = /*#__PURE__*/function () {
           }, 'POST'));
         case 1:
         case "end":
-          return _context38.stop();
+          return _context40.stop();
       }
-    }, _callee38);
+    }, _callee40);
   }));
   return function getGenerationExecutions(_x64, _x65, _x66, _x67, _x68) {
-    return _ref38.apply(this, arguments);
+    return _ref40.apply(this, arguments);
   };
 }();
 var taskAPIs = {
@@ -3548,7 +3588,9 @@ var taskAPIs = {
   checkAIInstallation: checkAIInstallation,
   validateReservedEntitiesList: validateReservedEntitiesList,
   getExecutionProcessParams: getExecutionProcessParams,
-  getParamsLUName: getParamsLUName
+  getParamsLUName: getParamsLUName,
+  getCheckIfParamsCoupling: getCheckIfParamsCoupling,
+  getTaskLuEditForTesters: getTaskLuEditForTesters
 };
 /* harmony default export */ var apis_task = (taskAPIs);
 // CONCATENATED MODULE: ./src/components/task/AdvancedBE/styles.ts
@@ -3644,6 +3686,7 @@ function Tabs(props) {
 
 
 
+
 function AdvancedBE() {
   var _useContext = Object(react["useContext"])(TaskContext),
     taskData = _useContext.taskData,
@@ -3663,7 +3706,8 @@ function AdvancedBE() {
   var selected_logical_units = taskData.selected_logical_units,
     execution_mode = taskData.execution_mode,
     dataSourceType = taskData.dataSourceType,
-    source_type = taskData.source_type;
+    source_type = taskData.source_type,
+    enable_advanced_for_testers = taskData.enable_advanced_for_testers;
   var _useState5 = Object(react["useState"])(false),
     _useState6 = slicedToArray_default()(_useState5, 2),
     open = _useState6[0],
@@ -3681,6 +3725,8 @@ function AdvancedBE() {
     _useState12 = slicedToArray_default()(_useState11, 2),
     selectedTab = _useState12[0],
     setSelectedTab = _useState12[1];
+  var AuthService = getService('AuthService');
+  var role = AuthService === null || AuthService === void 0 ? void 0 : AuthService.getRole();
   Object(react["useEffect"])(function () {
     if (execution_mode) {
       setLocalExecutionMode(execution_mode);
@@ -3933,6 +3979,7 @@ function AdvancedBE() {
                 onChange: function onChange() {
                   systemToggle(it.system);
                 },
+                disabled: role && role.type === 'tester' && !enable_advanced_for_testers,
                 value: it.selected
               }), /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedBE_styles_Icon, {
                 onClick: function onClick() {
@@ -3949,6 +3996,7 @@ function AdvancedBE() {
                     onChange: function onChange() {
                       logicalUnitToggle(luItem.lu_id, it.system);
                     },
+                    disabled: role && role.type === 'tester' && !enable_advanced_for_testers,
                     value: luItem.selected
                   })
                 });
@@ -3990,7 +4038,7 @@ function AdvancedBE() {
       });
     }
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {});
-  }, [selectedTab, setLocalExecutionMode, localExecutionMode, allAction, data, systemClick, openedSystems, logicalUnitToggle]);
+  }, [selectedTab, setLocalExecutionMode, localExecutionMode, allAction, data, systemClick, openedSystems, logicalUnitToggle, role, enable_advanced_for_testers]);
   var getLogicalUnitTemplate = function getLogicalUnitTemplate() {
     return /*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitsContainer, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitTitle, {
@@ -4178,6 +4226,7 @@ function DataMovmentSettings(props) {
       be_id: item && item.be_id || undefined,
       be_name: item && item.be_name || '',
       selected_logical_units: [],
+      selected_logical_units_names: [],
       generation_type: 'all',
       selection_method: 'L',
       selection_param_value: undefined,
@@ -4617,7 +4666,7 @@ var useTable_useTable = function useTable(saveLocalData) {
     }), columnHelper.accessor('execution_note', {
       header: function header() {
         return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "Exection note"
+          children: "Execution note"
         });
       },
       cell: function cell(info) {
@@ -6114,9 +6163,9 @@ function DataSourceSettingsForm(props) {
   }, [mask_sensitive_data]);
   Object(react["useEffect"])(function () {
     if (dataSourceType === 'synthetic') {
-      saveForm({
-        selection_method: 'GENERATE'
-      });
+      // saveForm({
+      //     selection_method: 'GENERATE',
+      // });
     }
   }, [dataSourceType]);
 
@@ -6275,7 +6324,11 @@ function DataSourceSettingsForm(props) {
       updateData.version_ind = false;
     } else if ((item === null || item === void 0 ? void 0 : item.value) === 'all_data') {
       updateData.sync_mode = 'FORCE';
-      updateData.version_ind = false;
+      if (dataSourceType === 'data_source' && source_type === 'tables') {
+        updateData.version_ind = true;
+      } else {
+        updateData.version_ind = false;
+      }
     } else if ((item === null || item === void 0 ? void 0 : item.value) === 'available_data') {
       updateData.sync_mode = 'OFF';
       updateData.version_ind = false;
@@ -6287,7 +6340,7 @@ function DataSourceSettingsForm(props) {
     if (Object.keys(updateData).length > 0) {
       saveForm(updateData);
     }
-  }, [saveForm]);
+  }, [saveForm, dataSourceType, source_type]);
   Object(react["useEffect"])(function () {
     if ((fecthDataPolicyLocal === null || fecthDataPolicyLocal === void 0 ? void 0 : fecthDataPolicyLocal.value) !== fetchPolicy) {
       saveForm({
@@ -6488,9 +6541,9 @@ function EntityList(props) {
       num_of_entities: (value || '').split(',').length
     });
   }, [saveForm]);
-  var validateEntites = function validateEntites(value) {
+  var validateEntites = Object(react["useCallback"])(function (value) {
     if (value && value.split(',').length > (maxToCopy || 0)) {
-      return "The number of entities cannot exceed ".concat(maxToCopy, " entities.");
+      return "The number of entities cannot exceed ".concat(maxToCopy || 0, " entities.");
     }
     // const pattern = new RegExp(
     //     '^((\\s*\\w\\s*|-)+(?:,(\\s*\\w\\s*|-)+){0,' +
@@ -6501,7 +6554,7 @@ function EntityList(props) {
     //     return 'The entity ID must consist of letters, numbers or a dash only. Other characters are not supported.';
     // }
     return true;
-  };
+  }, [maxToCopy]);
   Object(react["useEffect"])(function () {
     return function () {
       unregister('selection_param_value');
@@ -6886,7 +6939,7 @@ var SelectDataVerioning_useTable_useTable = function useTable(selected_version_t
       clickAble: false
     }, {
       column: 'execution_note',
-      name: 'Exection Note',
+      name: 'Execution Note',
       clickAble: false
     }, {
       column: 'task_last_updated_by',
@@ -7332,25 +7385,29 @@ function SelectGeneratedExecution(props) {
     generationEndDate = taskData.generationEndDate,
     source_environment_name = taskData.source_environment_name,
     be_id = taskData.be_id,
-    selected_logical_units_names = taskData.selected_logical_units_names;
-  var _useState = Object(react["useState"])(new Date(Date.now() - 2592000000)),
+    selected_logical_units_names = taskData.selected_logical_units_names,
+    onReset = taskData.onReset;
+  var _useState = Object(react["useState"])([]),
     _useState2 = slicedToArray_default()(_useState, 2),
-    startDate = _useState2[0],
-    setStartDate = _useState2[1];
-  var _useState3 = Object(react["useState"])(new Date()),
+    data = _useState2[0],
+    setData = _useState2[1];
+  var _useState3 = Object(react["useState"])(true),
     _useState4 = slicedToArray_default()(_useState3, 2),
-    endDate = _useState4[0],
-    setEndDate = _useState4[1];
-  var _useState5 = Object(react["useState"])([]),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    data = _useState6[0],
-    setData = _useState6[1];
-  var _useState7 = Object(react["useState"])(true),
-    _useState8 = slicedToArray_default()(_useState7, 2),
-    loading = _useState8[0],
-    setLoading = _useState8[1];
+    loading = _useState4[0],
+    setLoading = _useState4[1];
   var _useTable = SelectGeneratedExecution_useTable(),
     columns = _useTable.columns;
+  Object(react["useEffect"])(function () {
+    console.log("onReset=".concat(onReset));
+    if (onReset) {
+      var updateData = {};
+      updateData.generationStartDate = new Date(Date.now() - 2592000000);
+      updateData.generationEndDate = new Date();
+      if (Object.keys(updateData).length > 0) {
+        saveForm(updateData);
+      }
+    }
+  }, [onReset]);
   Object(react["useEffect"])(function () {
     var fetchData = setTimeout( /*#__PURE__*/asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
       var _data, newData, sortedData;
@@ -7358,7 +7415,7 @@ function SelectGeneratedExecution(props) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
-            if (!(!startDate || !endDate || !source_environment_name || !be_id || (selected_logical_units_names === null || selected_logical_units_names === void 0 ? void 0 : selected_logical_units_names.length) === 0)) {
+            if (!(!generationStartDate || !generationEndDate || !source_environment_name || !be_id || (selected_logical_units_names === null || selected_logical_units_names === void 0 ? void 0 : selected_logical_units_names.length) === 0)) {
               _context.next = 3;
               break;
             }
@@ -7366,7 +7423,7 @@ function SelectGeneratedExecution(props) {
           case 3:
             setLoading(true);
             _context.next = 6;
-            return apis_task.getGenerationExecutions(startDate, endDate, source_environment_name, be_id, selected_logical_units_names);
+            return apis_task.getGenerationExecutions(generationStartDate, generationEndDate, source_environment_name, be_id, selected_logical_units_names);
           case 6:
             _data = _context.sent;
             newData = groupData(_data, selected_logical_units_names || [], allLogicalUnits);
@@ -7391,7 +7448,7 @@ function SelectGeneratedExecution(props) {
     return function () {
       return clearTimeout(fetchData);
     };
-  }, [startDate, endDate, source_environment_name, be_id, selected_logical_units_names, allLogicalUnits]);
+  }, [generationStartDate, generationEndDate, source_environment_name, be_id, selected_logical_units_names, allLogicalUnits]);
   Object(react["useEffect"])(function () {
     var updateData = {};
     if (!generationStartDate) {
@@ -8042,6 +8099,9 @@ var getSubWhereInNotIn = function getSubWhereInNotIn(param, condition, value, ty
   if (!value || value.length === 0) {
     return '';
   }
+  if (!Array.isArray(value)) {
+    value = [value];
+  }
   var operator = 'or';
   var equality = '=';
   if (condition !== 'IN') {
@@ -8061,7 +8121,7 @@ var getSubWhereInNotIn = function getSubWhereInNotIn(param, condition, value, ty
   }
   return result;
 };
-var getSubQuery = function getSubQuery(rule, parameters, type, resultValues) {
+var getSubQuery = function getSubQuery(rule, parameters, type, resultValues, filter_types) {
   if (!rule) {
     return '';
   }
@@ -8084,9 +8144,19 @@ var getSubQuery = function getSubQuery(rule, parameters, type, resultValues) {
         values.forEach(function (value) {
           data.push('?');
           resultValues === null || resultValues === void 0 ? void 0 : resultValues.push(value);
+          filter_types === null || filter_types === void 0 ? void 0 : filter_types.push({
+            field_name: rule.field,
+            field_type: rule.original_type,
+            field_value: value
+          });
         });
       } else {
         resultValues === null || resultValues === void 0 ? void 0 : resultValues.push(data);
+        filter_types === null || filter_types === void 0 ? void 0 : filter_types.push({
+          field_name: rule.field,
+          field_type: rule.original_type,
+          field_value: data
+        });
         data = '?';
       }
     } else {
@@ -8145,15 +8215,15 @@ var getSubQuery = function getSubQuery(rule, parameters, type, resultValues) {
     }
   }
 };
-var computeQuery = function computeQuery(group, parametersList, type, resultValues) {
+var computeQuery = function computeQuery(group, parametersList, type, resultValues, filter_types) {
   if (!group) return '';
   var str = '(';
   var _loop = function _loop(i) {
       if (group.rules[i].group) {
         if (i === group.rules.length - 1) {
-          str += computeQuery(group.rules[i].group, parametersList, type, resultValues);
+          str += computeQuery(group.rules[i].group, parametersList, type, resultValues, filter_types);
         } else {
-          str += computeQuery(group.rules[i].group, parametersList, type, resultValues) + ' ' + (group.rules[i].operator === 'AND' ? 'INTERSECT' : 'UNION') + ' ';
+          str += computeQuery(group.rules[i].group, parametersList, type, resultValues, filter_types) + ' ' + (group.rules[i].operator === 'AND' ? 'INTERSECT' : 'UNION') + ' ';
         }
       } else {
         var data;
@@ -8192,9 +8262,9 @@ var computeQuery = function computeQuery(group, parametersList, type, resultValu
           data = '';
         }
         if (i === group.rules.length - 1) {
-          str += getSubQuery(group.rules[i], parametersList, type, resultValues);
+          str += getSubQuery(group.rules[i], parametersList, type, resultValues, filter_types);
         } else {
-          str += getSubQuery(group.rules[i], parametersList, type, resultValues);
+          str += getSubQuery(group.rules[i], parametersList, type, resultValues, filter_types);
           if (type === 1) {
             str += ' \n' + group.rules[i].operator + ' \n';
           } else {
@@ -8212,6 +8282,7 @@ var computeQuery = function computeQuery(group, parametersList, type, resultValu
 };
 var getSelectionParamValue = function getSelectionParamValue(filter, parametersList, type) {
   var resultValues = [];
+  var filter_types = [];
   var validStatement = false;
   var checkRule = function checkRule(rule, type) {
     if (rule.group) {
@@ -8248,11 +8319,12 @@ var getSelectionParamValue = function getSelectionParamValue(filter, parametersL
     return true;
   };
   if (filter && checkGroup(filter.group, type, true) === true) {
-    var result = computeQuery(filter.group, parametersList, type, resultValues);
+    var result = computeQuery(filter.group, parametersList, type, resultValues, filter_types);
     if (type === 1) {
       return {
         sqlQuery: result,
-        values: resultValues
+        values: resultValues,
+        filter_types: filter_types
       };
     }
     return result;
@@ -9291,8 +9363,8 @@ function Parameters(props) {
                       value: it
                     };
                   }) : value['VALID_VALUES'],
-                  min_value: value.PARAM_TYPE === 'REAL' || value.PARAM_TYPE === 'INTEGER' ? parseFloat(value['MIN_VALUE']) : 0,
-                  max_value: value.PARAM_TYPE === 'REAL' || value.PARAM_TYPE === 'INTEGER' ? parseFloat(value['MAX_VALUE']) : 0
+                  min_value: value.PARAM_TYPE === 'REAL' || value.PARAM_TYPE === 'INTEGER' || value.PARAM_TYPE === 'NUMBER' ? parseFloat(value['MIN_VALUE']) : 0,
+                  max_value: value.PARAM_TYPE === 'REAL' || value.PARAM_TYPE === 'INTEGER' || value.PARAM_TYPE === 'NUMBER' ? parseFloat(value['MAX_VALUE']) : 0
                 });
               });
               setParametersList(result);
@@ -9562,7 +9634,7 @@ function TableSubset(props) {
                   name: item.column_name,
                   table: tableData.reference_table_name,
                   param_type: 'TEXT',
-                  original_type: item.column_type === 'TEXT' ? 'TEXT' : 'NUMBER',
+                  original_type: item.column_sqlite_type,
                   table_filter: true,
                   COMBO_INDICATOR: false,
                   valid_values: [],
@@ -9605,6 +9677,7 @@ function TableSubset(props) {
     var sqlQueryData = getSelectionParamValue(filter, parametersList, 1);
     tableData.table_filter = sqlQueryData.sqlQuery === '()' ? null : sqlQueryData.sqlQuery;
     tableData.filter_parameters = sqlQueryData.values;
+    tableData.filter_fields = sqlQueryData.filter_types;
     saveForm({
       tableList: toConsumableArray_default()(tableList || [])
     });
@@ -9805,7 +9878,8 @@ function DataSubsetForm(props) {
     synthetic_type = taskData.synthetic_type,
     source_type = taskData.source_type,
     userRole = taskData.userRole,
-    sourceUserRole = taskData.sourceUserRole;
+    sourceUserRole = taskData.sourceUserRole,
+    isCoupling = taskData.isCoupling;
   var _useState = Object(react["useState"])(null),
     _useState2 = slicedToArray_default()(_useState, 2),
     localSelectionMethod = _useState2[0],
@@ -9831,7 +9905,7 @@ function DataSubsetForm(props) {
     var result = entitySeletionMethods;
     var changedLabel = false;
     if (sync_mode === 'OFF' && version_ind) {
-      result = entitySeletionMethods.filter(function (it) {
+      result = result.filter(function (it) {
         return it.value === 'L' || it.value === 'ALL';
       });
       var _found = result.find(function (it) {
@@ -9842,9 +9916,14 @@ function DataSubsetForm(props) {
         _found.label = 'Select all entities of the selected version';
       }
     } else if (dataSourceType !== 'data_source' && synthetic_type === 'generated_data') {
-      result = entitySeletionMethods.filter(function (it) {
+      result = result.filter(function (it) {
         return it.value !== 'L' && it.value !== 'ALL';
       });
+      if (!isCoupling && dataSourceType === 'ai_generated') {
+        result = result.filter(function (it) {
+          return it.value !== 'P';
+        });
+      }
     }
     if (!((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'admin' || (!userRole || userRole !== null && userRole !== void 0 && userRole.allowed_random_entity_selection) && (!sourceUserRole || sourceUserRole !== null && sourceUserRole !== void 0 && sourceUserRole.allowed_random_entity_selection) && (userRole || sourceUserRole))) {
       result = result.filter(function (it) {
@@ -10043,9 +10122,13 @@ var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourc
     var maxReservationPeriod = periodsData.maxReservationPeriod;
     var retentionDefaultPeriod = periodsData.retentionDefaultPeriod;
     var reservationDefaultPeriod = periodsData.reservationDefaultPeriod;
-    var versioningPeriod = function versioningPeriod() {
+    var versioningPeriod = function versioningPeriod(isTester) {
       var _retentionDefaultPeri;
-      retentionDefaultPeriod = periodsData === null || periodsData === void 0 ? void 0 : periodsData.versioningRetentionPeriod;
+      if (isTester) {
+        retentionDefaultPeriod = periodsData === null || periodsData === void 0 ? void 0 : periodsData.versioningRetentionPeriodForTesters;
+      } else {
+        retentionDefaultPeriod = periodsData === null || periodsData === void 0 ? void 0 : periodsData.versioningRetentionPeriod;
+      }
       periodTypes.unshift({
         name: PeriodUnitType.Do_Not_Retain,
         units: -1,
@@ -10071,7 +10154,7 @@ var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourc
       maxRetentionPeriod = periodsData === null || periodsData === void 0 ? void 0 : periodsData.maxRetentionPeriodForTesters;
       maxReservationPeriod = periodsData === null || periodsData === void 0 ? void 0 : periodsData.maxReservationPeriodForTesters;
       if (version_ind) {
-        versioningPeriod();
+        versioningPeriod(true);
       } else {
         periodTypes.unshift({
           name: PeriodUnitType.Do_Not_Retain,
@@ -10118,13 +10201,13 @@ var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourc
     updateData.reservationPeriodTypes = reservationPeriodTypes;
     updateData.maxReservationPeriod = maxReservationPeriod;
     updateData.maxRetentionPeriod = maxRetentionPeriod;
-    if (onLoad && !retention_period_value || !onLoad) {
+    if (onLoad && retention_period_value === undefined) {
       if (retentionDefaultPeriod) {
         updateData.retention_period_type = retentionDefaultPeriod.units;
         updateData.retention_period_value = retentionDefaultPeriod.value;
       }
     }
-    if (onLoad && !reserve_retention_period_value || !onLoad) {
+    if (onLoad && reserve_retention_period_value === undefined) {
       if (reservationDefaultPeriod) {
         updateData.reserve_retention_period_type = reservationDefaultPeriod.units;
         updateData.reserve_retention_period_value = reservationDefaultPeriod.value;
@@ -10180,6 +10263,10 @@ var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourc
     if (retention_period_value === 0) {
       saveForm({
         version_ind: false
+      });
+    } else if (retention_period_value === -1 && dataSourceType === 'data_source' && source_type === 'tables') {
+      saveForm({
+        version_ind: true
       });
     }
   }, [retention_period_value]);
@@ -10515,7 +10602,7 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
     if (currentStep !== 'target' && (statuses === null || statuses === void 0 ? void 0 : statuses.targetStatus) !== StatusEnum.completed && (statuses === null || statuses === void 0 ? void 0 : statuses.subsetPosition) === SubsetPossition.target) {
       return StatusEnum.blink;
     }
-    if (taskData.environment_id && (taskData.load_entity && (taskData.clone_ind && taskData.num_of_entities || !taskData.clone_ind) || taskData.delete_before_load || taskData.reserve_ind)) {
+    if (taskData.environment_id && (taskData.load_entity && (taskData.clone_ind && taskData.num_of_clones || !taskData.clone_ind) || taskData.delete_before_load || taskData.reserve_ind)) {
       if (taskData.reserve_ind && (!taskData.reserve_retention_period_type || (systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) !== 'admin' && (taskData.reserve_retention_period_value || 0) <= 0 || (systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'admin' && taskData.reserve_retention_period_value === undefined)) {
         return StatusEnum.partial;
       }
@@ -10525,7 +10612,7 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
       return StatusEnum.completed;
     }
     if (!(taskData.target_env === 'target_env' && !taskData.environment_id && !taskData.load_entity && !taskData.delete_before_load && !taskData.reserve_ind)) {
-      if (touchedForms.indexOf('target') >= 0) {
+      if (touchedForms.indexOf('target') >= 0 && !(taskData.dataSourceType === 'data_source' && taskData.source_type === 'tables')) {
         return StatusEnum.partial;
       }
     }
@@ -10552,9 +10639,9 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
         return checkVersioningStatus();
       } else if (taskData.selection_method === 'ALL') {
         return checkVersioningStatus();
-      } else if (taskData.selection_method === 'R' && taskData.num_of_entities) {
+      } else if (taskData.selection_method === 'R' && (taskData.num_of_entities || taskData.clone_ind)) {
         return StatusEnum.completed;
-      } else if ((taskData.selection_method === 'P' || taskData.selection_method === 'PR') && taskData.selection_param_value && taskData.num_of_entities) {
+      } else if ((taskData.selection_method === 'P' || taskData.selection_method === 'PR') && taskData.selection_param_value && (taskData.num_of_entities || taskData.clone_ind)) {
         return StatusEnum.completed;
       } else if (taskData.selection_method === 'C') {
         return StatusEnum.completed;
@@ -10852,7 +10939,8 @@ function TargetForm(props) {
     maxToCopy = taskData.maxToCopy,
     userRole = taskData.userRole,
     deleteWarning = taskData.deleteWarning,
-    source_environment_id = taskData.source_environment_id;
+    source_environment_id = taskData.source_environment_id,
+    reserve_only_task = taskData.reserve_only_task;
   var toast = hooks_useToast();
   var _useState = Object(react["useState"])(false),
     _useState2 = slicedToArray_default()(_useState, 2),
@@ -11116,7 +11204,7 @@ function TargetForm(props) {
               }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(ActionContainer, {
                 children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(CheckBoxContainer, {
                   children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
-                    disabled: delete_before_load && reserve_ind || dataSourceType === 'data_source' && source_type === 'tables',
+                    disabled: reserve_only_task || delete_before_load && reserve_ind || dataSourceType === 'data_source' && source_type === 'tables',
                     title: "Load",
                     onChange: function onChange(value) {
                       return actionChange('load_entity', value || false);
@@ -11221,7 +11309,7 @@ var TableWrapper = styled_components_browser_esm["b" /* default */].div(Advanced
 var ActionsColumn = styled_components_browser_esm["b" /* default */].div(Advanced_styles_templateObject5 || (Advanced_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    display:flex;\n    align-items: center;\n    gap: 7px;\n"])));
 var ButtonContainer = styled_components_browser_esm["b" /* default */].div(Advanced_styles_templateObject6 || (Advanced_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    padding-bottom: 9px;\n    width: 100%;\n    display: flex;\n    justify-content: flex-end;\n"])));
 var Advanced_styles_Icon = styled_components_browser_esm["b" /* default */].img(Advanced_styles_templateObject7 || (Advanced_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n"])));
-var styles_ResetButton = styled_components_browser_esm["b" /* default */].div(Advanced_styles_templateObject8 || (Advanced_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    z-index: 1;\n    position: absolute;\n    right: 0px;\n    top: -50px;\n    z-index: 1000;\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #1683f2;\n    display: flex;\n    gap: 6px;\n    align-items: center;\n    cursor: pointer;\n"])));
+var styles_ResetButton = styled_components_browser_esm["b" /* default */].div(Advanced_styles_templateObject8 || (Advanced_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    z-index: 1;\n    position: absolute;\n    right: 0px;\n    top: -50px;\n    z-index: 100;\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #1683f2;\n    display: flex;\n    gap: 6px;\n    align-items: center;\n    cursor: pointer;\n"])));
 // CONCATENATED MODULE: ./src/containers/Task/Froms/Scheduler/styles.ts
 
 var Scheduler_styles_templateObject, Scheduler_styles_templateObject2, Scheduler_styles_templateObject3, Scheduler_styles_templateObject4, Scheduler_styles_templateObject5, Scheduler_styles_templateObject6, Scheduler_styles_templateObject7, Scheduler_styles_templateObject8;
@@ -12084,6 +12172,7 @@ function ExecutionPorcesses(props) {
                     if (foundEditor) {
                       foundEditor.value = param.value || null;
                       foundEditor.editor.value = param.value || null;
+                      foundEditor.editor.schema2 = param.schema || null;
                     }
                   });
                 }
@@ -12118,10 +12207,10 @@ function ExecutionPorcesses(props) {
   }, [setExpandedRows]);
   var updateFabricEditorValues = function updateFabricEditorValues(processName, values) {
     values.forEach(function (data) {
-      updateParamsValue(processName, data.name, data.value);
+      updateParamsValue(processName, data.name, data.value, data.schema);
     });
   };
-  var updateParamsValue = Object(react["useCallback"])(function (processName, name, value) {
+  var updateParamsValue = Object(react["useCallback"])(function (processName, name, value, schema) {
     var processData = processesData.find(function (it) {
       return it.process_name === processName;
     });
@@ -12134,13 +12223,15 @@ function ExecutionPorcesses(props) {
     });
     if (index >= 0) {
       newParams[index].value = value;
+      newParams[index].schema = schema;
       newParams[index].editor.value = value;
       var parameters = {
         inputs: (newParams || []).map(function (it) {
           return {
             name: it.name,
             type: it.type,
-            value: it.value
+            value: it.value,
+            schema: it.schema
           };
         })
       };
@@ -12761,15 +12852,13 @@ var useLogicalUnits_useLogicalUnits = function useLogicalUnits(initFinished, sav
       return;
     }
     if (be_id) {
+      setTargetLogicalUnits([]);
+      setSourceLogicalUnits([]);
       if (be_type === 'source') {
         getLogicalUnits(be_id, setSourceLogicalUnits, source_environment_id);
       } else if (be_type === 'target') {
         getLogicalUnits(be_id, setTargetLogicalUnits, environment_id);
       }
-      saveForm({
-        selected_logical_units: [],
-        selected_logical_units_names: []
-      });
     }
   }, [be_id]);
   Object(react["useEffect"])(function () {
@@ -13422,7 +13511,7 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
   var authService = getService('AuthService');
   var systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
   var userId = authService === null || authService === void 0 ? void 0 : authService.getUserId();
-  var _useState = Object(react["useState"])([]),
+  var _useState = Object(react["useState"])(null),
     _useState2 = slicedToArray_default()(_useState, 2),
     userFabricRoles = _useState2[0],
     setUserFabricRoles = _useState2[1];
@@ -13459,7 +13548,9 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
     targetEnvOwner = taskData.targetEnvOwner,
     sourceEnvOwner = taskData.sourceEnvOwner,
     maxToCopy = taskData.maxToCopy,
-    userRole = taskData.userRole;
+    maxToCopyType = taskData.maxToCopyType,
+    userRole = taskData.userRole,
+    sync_mode = taskData.sync_mode;
   var getRoleForUserInEnv = Object(react["useCallback"])( /*#__PURE__*/function () {
     var _ref = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee2(env_id, isSource) {
       var data, updateData, temp_data, task_type, minRead, minWrite;
@@ -13483,22 +13574,28 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
             task_type = temp_data.task_type;
             minRead = parseInt(data.minRead || '0');
             minWrite = parseInt(data.minWrite || '0');
-            if (task_type === 'RESERVE' && userRole) {
-              minWrite = userRole.allowed_number_of_reserved_entities;
-            }
             if (minRead > -1 || minWrite > -1) {
               if (isSource) {
-                if (maxToCopy && maxToCopy > minRead || !maxToCopy) {
-                  updateData.maxToCopy = minRead;
+                if (sync_mode !== 'OFF') {
+                  if (maxToCopy && maxToCopy > minRead || !maxToCopy && minRead > -1) {
+                    updateData.maxToCopy = minRead;
+                    updateData.maxToCopyType = 'source';
+                  }
+                } else if (maxToCopyType === 'source') {
+                  updateData.maxToCopy = undefined;
                 }
               } else {
-                if (maxToCopy && maxToCopy > minWrite || !maxToCopy) {
+                if (maxToCopy && maxToCopy > minWrite || !maxToCopy && minWrite > -1) {
                   updateData.maxToCopy = minWrite;
+                  updateData.maxToCopyType = 'target';
                 }
               }
             }
-            if (reserve_ind && !load_entity && userRole) {
-              updateData.maxToCopy = userRole.allowed_number_of_reserved_entities;
+            if (reserve_ind && !load_entity && !isSource && data.userRole) {
+              updateData.maxToCopy = data.userRole.allowed_number_of_reserved_entities;
+            }
+            if (parseInt(data.minWrite || '0') === 0 && data.userRole.allowed_number_of_reserved_entities > 0) {
+              updateData.reserve_only_task = true;
             }
             saveForm(updateData);
           case 16:
@@ -13510,7 +13607,7 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
     return function (_x, _x2) {
       return _ref.apply(this, arguments);
     };
-  }(), [sourceEnvOwner, targetEnvOwner, maxToCopy, userRole, saveForm, reserve_ind, load_entity]);
+  }(), [sourceEnvOwner, targetEnvOwner, maxToCopy, maxToCopyType, userRole, saveForm, reserve_ind, load_entity, sync_mode]);
   var getEnvironmentOwners = Object(react["useCallback"])( /*#__PURE__*/function () {
     var _ref2 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee3(env_id, isSource) {
       var data, ownerFound, _loop, i, _saveForm;
@@ -13566,23 +13663,27 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
             _context4.next = 7;
             break;
           case 14:
-            if (ownerFound) {
-              saveForm((_saveForm = {}, defineProperty_default()(_saveForm, isSource ? 'sourceUserRole' : 'userRole', {
-                allowed_random_entity_selection: true,
-                allowed_creation_of_synthetic_data: true,
-                allowed_refresh_reference_data: true,
-                allowed_request_of_fresh_data: true,
-                allowed_delete_before_load: true,
-                allowed_task_scheduling: true,
-                allowed_replace_sequences: true,
-                allow_read: true,
-                allow_write: true,
-                userType: 'owner'
-              }), defineProperty_default()(_saveForm, "maxToCopy", 9007199254740992), defineProperty_default()(_saveForm, isSource ? 'sourceEnvOwner' : 'targetEnvOwner', true), _saveForm));
-            } else {
-              saveForm(defineProperty_default()({}, isSource ? 'sourceEnvOwner' : 'targetEnvOwner', false));
+            if (!ownerFound) {
+              _context4.next = 19;
+              break;
             }
-          case 15:
+            saveForm((_saveForm = {}, defineProperty_default()(_saveForm, isSource ? 'sourceUserRole' : 'userRole', {
+              allowed_random_entity_selection: true,
+              allowed_creation_of_synthetic_data: true,
+              allowed_refresh_reference_data: true,
+              allowed_request_of_fresh_data: true,
+              allowed_delete_before_load: true,
+              allowed_task_scheduling: true,
+              allowed_replace_sequences: true,
+              allow_read: true,
+              allow_write: true,
+              userType: 'owner'
+            }), defineProperty_default()(_saveForm, "maxToCopy", 9007199254740992), defineProperty_default()(_saveForm, isSource ? 'sourceEnvOwner' : 'targetEnvOwner', true), _saveForm));
+            return _context4.abrupt("return", isSource ? 'source_owner' : 'target_owner');
+          case 19:
+            saveForm(defineProperty_default()({}, isSource ? 'sourceEnvOwner' : 'targetEnvOwner', false));
+            return _context4.abrupt("return", isSource ? 'not_source_owner' : 'not_target_owner');
+          case 22:
           case "end":
             return _context4.stop();
         }
@@ -13600,6 +13701,9 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
     }
   }, [reserve_ind]);
   Object(react["useEffect"])(function () {
+    if (!userFabricRoles) {
+      return;
+    }
     if ((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'admin' || "production" === 'development') {
       saveForm({
         sourceUserRole: {
@@ -13649,14 +13753,14 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
           return regenerator_default.a.wrap(function _callee4$(_context5) {
             while (1) switch (_context5.prev = _context5.next) {
               case 0:
-                if (!(source_environment_id && !(reserve_ind && !load_entity || delete_before_load && !load_entity))) {
+                if (!(result.indexOf('not_source_owner') >= 0 && source_environment_id && !(reserve_ind && !load_entity || delete_before_load && !load_entity))) {
                   _context5.next = 3;
                   break;
                 }
                 _context5.next = 3;
                 return getRoleForUserInEnv(source_environment_id, true);
               case 3:
-                if (!environment_id) {
+                if (!(result.indexOf('not_target_owner') >= 0 && environment_id)) {
                   _context5.next = 6;
                   break;
                 }
@@ -13673,7 +13777,7 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
         };
       }());
     }
-  }, [source_environment_id, environment_id, load_entity, reserve_ind, delete_before_load]);
+  }, [userFabricRoles, source_environment_id, environment_id, load_entity, reserve_ind, delete_before_load, sync_mode]);
 
   // useEffect(() => {
   //     saveForm({
@@ -13713,56 +13817,112 @@ function useInit_objectSpread(target) { for (var i = 1; i < arguments.length; i+
 
 
 
-
 var useInit_useInit = function useInit(saveForm, taskData) {
-  var authService = getService('AuthService');
-  var enable_masking_only = (authService === null || authService === void 0 ? void 0 : authService.getEnableMaskingOnly()) || false;
   Object(react["useEffect"])(function () {
-    var updateData = {
-      enable_masking_only: enable_masking_only
-    };
-    if (enable_masking_only) {
-      updateData.dataSourceType = 'data_source';
-      updateData.source_type = 'tables';
-      updateData.selection_method = 'TABLES';
-      updateData.be_id = -1;
+    function fetchActiveBE() {
+      return _fetchActiveBE.apply(this, arguments);
     }
-    saveForm(updateData);
+    function _fetchActiveBE() {
+      _fetchActiveBE = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
+        var data, updateData;
+        return regenerator_default.a.wrap(function _callee$(_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              _context.prev = 0;
+              _context.next = 3;
+              return apis_task.getActiveBEs();
+            case 3:
+              data = _context.sent;
+              updateData = {
+                enable_masking_only: !data || data.length === 0 ? true : false
+              };
+              if (updateData.enable_masking_only) {
+                updateData.dataSourceType = 'data_source';
+                updateData.source_type = 'tables';
+                updateData.selection_method = 'TABLES';
+                updateData.be_id = -1;
+              }
+              saveForm(updateData);
+              _context.next = 11;
+              break;
+            case 9:
+              _context.prev = 9;
+              _context.t0 = _context["catch"](0);
+            case 11:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, null, [[0, 9]]);
+      }));
+      return _fetchActiveBE.apply(this, arguments);
+    }
+    fetchActiveBE();
   }, []);
   Object(react["useEffect"])(function () {
     function fetchEnableParamsLUName() {
       return _fetchEnableParamsLUName.apply(this, arguments);
     }
     function _fetchEnableParamsLUName() {
-      _fetchEnableParamsLUName = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
+      _fetchEnableParamsLUName = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee2() {
         var result;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
+        return regenerator_default.a.wrap(function _callee2$(_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
             case 0:
-              _context.prev = 0;
-              _context.next = 3;
+              _context2.prev = 0;
+              _context2.next = 3;
               return apis_task.getParamsLUName();
             case 3:
-              result = _context.sent;
+              result = _context2.sent;
               saveForm({
                 enable_param_lu_name: result === "true"
               });
-              _context.next = 9;
+              _context2.next = 9;
               break;
             case 7:
-              _context.prev = 7;
-              _context.t0 = _context["catch"](0);
+              _context2.prev = 7;
+              _context2.t0 = _context2["catch"](0);
             case 9:
             case "end":
-              return _context.stop();
+              return _context2.stop();
           }
-        }, _callee, null, [[0, 7]]);
+        }, _callee2, null, [[0, 7]]);
       }));
       return _fetchEnableParamsLUName.apply(this, arguments);
     }
+    function fetchEnableAdvancedSystemsForTesters() {
+      return _fetchEnableAdvancedSystemsForTesters.apply(this, arguments);
+    }
+    function _fetchEnableAdvancedSystemsForTesters() {
+      _fetchEnableAdvancedSystemsForTesters = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee3() {
+        var result;
+        return regenerator_default.a.wrap(function _callee3$(_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.prev = 0;
+              _context3.next = 3;
+              return apis_task.getTaskLuEditForTesters();
+            case 3:
+              result = _context3.sent;
+              saveForm({
+                enable_advanced_for_testers: result === "true"
+              });
+              _context3.next = 9;
+              break;
+            case 7:
+              _context3.prev = 7;
+              _context3.t0 = _context3["catch"](0);
+            case 9:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3, null, [[0, 7]]);
+      }));
+      return _fetchEnableAdvancedSystemsForTesters.apply(this, arguments);
+    }
     fetchEnableParamsLUName();
+    fetchEnableAdvancedSystemsForTesters();
   }, []);
-  var _useState = Object(react["useState"])(7),
+  var _useState = Object(react["useState"])(8),
     _useState2 = slicedToArray_default()(_useState, 2),
     fetchCounter = _useState2[0],
     setFetchCounter = _useState2[1];
@@ -13775,38 +13935,72 @@ var useInit_useInit = function useInit(saveForm, taskData) {
       return _fetchEnableParamWidth.apply(this, arguments);
     }
     function _fetchEnableParamWidth() {
-      _fetchEnableParamWidth = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee2() {
+      _fetchEnableParamWidth = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee4() {
         var result;
-        return regenerator_default.a.wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
+        return regenerator_default.a.wrap(function _callee4$(_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
             case 0:
-              _context2.prev = 0;
-              _context2.next = 3;
+              _context4.prev = 0;
+              _context4.next = 3;
               return apis_task.getEnableParamWidth();
             case 3:
-              result = _context2.sent;
+              result = _context4.sent;
               saveForm({
                 enable_param_auto_width: result === "true"
               });
               setFetchCounter(function (prevCount) {
                 return prevCount - 1;
               });
-              _context2.next = 10;
+              _context4.next = 10;
               break;
             case 8:
-              _context2.prev = 8;
-              _context2.t0 = _context2["catch"](0);
+              _context4.prev = 8;
+              _context4.t0 = _context4["catch"](0);
             case 10:
             case "end":
-              return _context2.stop();
+              return _context4.stop();
           }
-        }, _callee2, null, [[0, 8]]);
+        }, _callee4, null, [[0, 8]]);
       }));
       return _fetchEnableParamWidth.apply(this, arguments);
     }
+    function fetchParamCoupling() {
+      return _fetchParamCoupling.apply(this, arguments);
+    }
+    function _fetchParamCoupling() {
+      _fetchParamCoupling = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee5() {
+        var coupling_result;
+        return regenerator_default.a.wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
+            case 0:
+              _context5.prev = 0;
+              _context5.next = 3;
+              return apis_task.getCheckIfParamsCoupling();
+            case 3:
+              coupling_result = _context5.sent;
+              saveForm({
+                isCoupling: coupling_result === "true"
+              });
+              setFetchCounter(function (prevCount) {
+                return prevCount - 1;
+              });
+              _context5.next = 10;
+              break;
+            case 8:
+              _context5.prev = 8;
+              _context5.t0 = _context5["catch"](0);
+            case 10:
+            case "end":
+              return _context5.stop();
+          }
+        }, _callee5, null, [[0, 8]]);
+      }));
+      return _fetchParamCoupling.apply(this, arguments);
+    }
     if (!taskData.task_id) {
       fetchEnableParamWidth();
-      setFetchCounter(1);
+      fetchParamCoupling();
+      setFetchCounter(2);
       return;
     }
     var task_id = taskData.task_id;
@@ -13814,16 +14008,16 @@ var useInit_useInit = function useInit(saveForm, taskData) {
       return _fetchTaskPostExecutionProcess.apply(this, arguments);
     }
     function _fetchTaskPostExecutionProcess() {
-      _fetchTaskPostExecutionProcess = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee3() {
+      _fetchTaskPostExecutionProcess = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee6() {
         var data;
-        return regenerator_default.a.wrap(function _callee3$(_context3) {
-          while (1) switch (_context3.prev = _context3.next) {
+        return regenerator_default.a.wrap(function _callee6$(_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
             case 0:
-              _context3.prev = 0;
-              _context3.next = 3;
+              _context6.prev = 0;
+              _context6.next = 3;
               return apis_task.getTaskPostExecutionProcess(task_id);
             case 3:
-              data = _context3.sent;
+              data = _context6.sent;
               saveForm({
                 postExecutionProcesses: data.map(function (it) {
                   if (!it.parameters) {
@@ -13840,16 +14034,16 @@ var useInit_useInit = function useInit(saveForm, taskData) {
               setFetchCounter(function (prevCount) {
                 return prevCount - 1;
               });
-              _context3.next = 10;
+              _context6.next = 10;
               break;
             case 8:
-              _context3.prev = 8;
-              _context3.t0 = _context3["catch"](0);
+              _context6.prev = 8;
+              _context6.t0 = _context6["catch"](0);
             case 10:
             case "end":
-              return _context3.stop();
+              return _context6.stop();
           }
-        }, _callee3, null, [[0, 8]]);
+        }, _callee6, null, [[0, 8]]);
       }));
       return _fetchTaskPostExecutionProcess.apply(this, arguments);
     }
@@ -13857,32 +14051,32 @@ var useInit_useInit = function useInit(saveForm, taskData) {
       return _fetchTaskVariables.apply(this, arguments);
     }
     function _fetchTaskVariables() {
-      _fetchTaskVariables = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee4() {
+      _fetchTaskVariables = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee7() {
         var data;
-        return regenerator_default.a.wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
+        return regenerator_default.a.wrap(function _callee7$(_context7) {
+          while (1) switch (_context7.prev = _context7.next) {
             case 0:
-              _context4.prev = 0;
-              _context4.next = 3;
+              _context7.prev = 0;
+              _context7.next = 3;
               return apis_task.getTaskVariables(task_id);
             case 3:
-              data = _context4.sent;
+              data = _context7.sent;
               saveForm({
                 globals: data
               });
               setFetchCounter(function (prevCount) {
                 return prevCount - 1;
               });
-              _context4.next = 10;
+              _context7.next = 10;
               break;
             case 8:
-              _context4.prev = 8;
-              _context4.t0 = _context4["catch"](0);
+              _context7.prev = 8;
+              _context7.t0 = _context7["catch"](0);
             case 10:
             case "end":
-              return _context4.stop();
+              return _context7.stop();
           }
-        }, _callee4, null, [[0, 8]]);
+        }, _callee7, null, [[0, 8]]);
       }));
       return _fetchTaskVariables.apply(this, arguments);
     }
@@ -13890,16 +14084,16 @@ var useInit_useInit = function useInit(saveForm, taskData) {
       return _fetchTaskPreExecutionProcess.apply(this, arguments);
     }
     function _fetchTaskPreExecutionProcess() {
-      _fetchTaskPreExecutionProcess = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee5() {
+      _fetchTaskPreExecutionProcess = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee8() {
         var data;
-        return regenerator_default.a.wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
+        return regenerator_default.a.wrap(function _callee8$(_context8) {
+          while (1) switch (_context8.prev = _context8.next) {
             case 0:
-              _context5.prev = 0;
-              _context5.next = 3;
+              _context8.prev = 0;
+              _context8.next = 3;
               return apis_task.getTaskPreExecutionProcess(task_id);
             case 3:
-              data = _context5.sent;
+              data = _context8.sent;
               saveForm({
                 preExecutionProcesses: data.map(function (it) {
                   if (!it.parameters) {
@@ -13916,135 +14110,6 @@ var useInit_useInit = function useInit(saveForm, taskData) {
               setFetchCounter(function (prevCount) {
                 return prevCount - 1;
               });
-              _context5.next = 10;
-              break;
-            case 8:
-              _context5.prev = 8;
-              _context5.t0 = _context5["catch"](0);
-            case 10:
-            case "end":
-              return _context5.stop();
-          }
-        }, _callee5, null, [[0, 8]]);
-      }));
-      return _fetchTaskPreExecutionProcess.apply(this, arguments);
-    }
-    function fetchTaskTables() {
-      return _fetchTaskTables.apply(this, arguments);
-    }
-    function _fetchTaskTables() {
-      _fetchTaskTables = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee6() {
-        var data;
-        return regenerator_default.a.wrap(function _callee6$(_context6) {
-          while (1) switch (_context6.prev = _context6.next) {
-            case 0:
-              _context6.prev = 0;
-              if (!(taskData.refcount === 0)) {
-                _context6.next = 4;
-                break;
-              }
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              return _context6.abrupt("return");
-            case 4:
-              _context6.next = 6;
-              return apis_task.getTaskTables(task_id);
-            case 6:
-              data = _context6.sent;
-              saveForm({
-                tableList: data.map(function (it) {
-                  return useInit_objectSpread(useInit_objectSpread({}, it), {}, {
-                    filter_parameters: it.filter_parameters ? it.filter_parameters.split("<#>") : it.filter_parameters,
-                    reference_table_name: it.ref_table_name
-                  });
-                })
-              });
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              _context6.next = 13;
-              break;
-            case 11:
-              _context6.prev = 11;
-              _context6.t0 = _context6["catch"](0);
-            case 13:
-            case "end":
-              return _context6.stop();
-          }
-        }, _callee6, null, [[0, 11]]);
-      }));
-      return _fetchTaskTables.apply(this, arguments);
-    }
-    function fetchSourceEnvironment() {
-      return _fetchSourceEnvironment.apply(this, arguments);
-    }
-    function _fetchSourceEnvironment() {
-      _fetchSourceEnvironment = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee7() {
-        var data;
-        return regenerator_default.a.wrap(function _callee7$(_context7) {
-          while (1) switch (_context7.prev = _context7.next) {
-            case 0:
-              _context7.prev = 0;
-              if (taskData.source_environment_id) {
-                _context7.next = 4;
-                break;
-              }
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              return _context7.abrupt("return");
-            case 4:
-              _context7.next = 6;
-              return apis_task.getEnvironmentByID(taskData.source_environment_id);
-            case 6:
-              data = _context7.sent;
-              if (data && data[0]) {
-                saveForm({
-                  mask_sensitive_data: data[0].mask_sensitive_data
-                });
-              }
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              _context7.next = 13;
-              break;
-            case 11:
-              _context7.prev = 11;
-              _context7.t0 = _context7["catch"](0);
-            case 13:
-            case "end":
-              return _context7.stop();
-          }
-        }, _callee7, null, [[0, 11]]);
-      }));
-      return _fetchSourceEnvironment.apply(this, arguments);
-    }
-    function fetchLogicalUntis() {
-      return _fetchLogicalUntis.apply(this, arguments);
-    }
-    function _fetchLogicalUntis() {
-      _fetchLogicalUntis = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee8() {
-        var selectedData;
-        return regenerator_default.a.wrap(function _callee8$(_context8) {
-          while (1) switch (_context8.prev = _context8.next) {
-            case 0:
-              _context8.prev = 0;
-              _context8.next = 3;
-              return apis_task.getTaskLogicalUnits(taskData.task_id || 0);
-            case 3:
-              selectedData = _context8.sent;
-              saveForm({
-                selected_logical_units: selectedData.map(function (it) {
-                  return it.lu_id;
-                }),
-                selected_logical_units_names: selectedData.map(function (it) {
-                  return it.lu_name;
-                })
-              });
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
               _context8.next = 10;
               break;
             case 8:
@@ -14056,6 +14121,135 @@ var useInit_useInit = function useInit(saveForm, taskData) {
           }
         }, _callee8, null, [[0, 8]]);
       }));
+      return _fetchTaskPreExecutionProcess.apply(this, arguments);
+    }
+    function fetchTaskTables() {
+      return _fetchTaskTables.apply(this, arguments);
+    }
+    function _fetchTaskTables() {
+      _fetchTaskTables = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee9() {
+        var data;
+        return regenerator_default.a.wrap(function _callee9$(_context9) {
+          while (1) switch (_context9.prev = _context9.next) {
+            case 0:
+              _context9.prev = 0;
+              if (!(taskData.refcount === 0)) {
+                _context9.next = 4;
+                break;
+              }
+              setFetchCounter(function (prevCount) {
+                return prevCount - 1;
+              });
+              return _context9.abrupt("return");
+            case 4:
+              _context9.next = 6;
+              return apis_task.getTaskTables(task_id);
+            case 6:
+              data = _context9.sent;
+              saveForm({
+                tableList: data.map(function (it) {
+                  return useInit_objectSpread(useInit_objectSpread({}, it), {}, {
+                    filter_parameters: it.filter_parameters ? it.filter_parameters.split("<#>") : it.filter_parameters,
+                    reference_table_name: it.ref_table_name
+                  });
+                })
+              });
+              setFetchCounter(function (prevCount) {
+                return prevCount - 1;
+              });
+              _context9.next = 13;
+              break;
+            case 11:
+              _context9.prev = 11;
+              _context9.t0 = _context9["catch"](0);
+            case 13:
+            case "end":
+              return _context9.stop();
+          }
+        }, _callee9, null, [[0, 11]]);
+      }));
+      return _fetchTaskTables.apply(this, arguments);
+    }
+    function fetchSourceEnvironment() {
+      return _fetchSourceEnvironment.apply(this, arguments);
+    }
+    function _fetchSourceEnvironment() {
+      _fetchSourceEnvironment = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee10() {
+        var data;
+        return regenerator_default.a.wrap(function _callee10$(_context10) {
+          while (1) switch (_context10.prev = _context10.next) {
+            case 0:
+              _context10.prev = 0;
+              if (taskData.source_environment_id) {
+                _context10.next = 4;
+                break;
+              }
+              setFetchCounter(function (prevCount) {
+                return prevCount - 1;
+              });
+              return _context10.abrupt("return");
+            case 4:
+              _context10.next = 6;
+              return apis_task.getEnvironmentByID(taskData.source_environment_id);
+            case 6:
+              data = _context10.sent;
+              if (data && data[0]) {
+                saveForm({
+                  mask_sensitive_data: data[0].mask_sensitive_data
+                });
+              }
+              setFetchCounter(function (prevCount) {
+                return prevCount - 1;
+              });
+              _context10.next = 13;
+              break;
+            case 11:
+              _context10.prev = 11;
+              _context10.t0 = _context10["catch"](0);
+            case 13:
+            case "end":
+              return _context10.stop();
+          }
+        }, _callee10, null, [[0, 11]]);
+      }));
+      return _fetchSourceEnvironment.apply(this, arguments);
+    }
+    function fetchLogicalUntis() {
+      return _fetchLogicalUntis.apply(this, arguments);
+    }
+    function _fetchLogicalUntis() {
+      _fetchLogicalUntis = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee11() {
+        var selectedData;
+        return regenerator_default.a.wrap(function _callee11$(_context11) {
+          while (1) switch (_context11.prev = _context11.next) {
+            case 0:
+              _context11.prev = 0;
+              _context11.next = 3;
+              return apis_task.getTaskLogicalUnits(taskData.task_id || 0);
+            case 3:
+              selectedData = _context11.sent;
+              saveForm({
+                selected_logical_units: selectedData.map(function (it) {
+                  return it.lu_id;
+                }),
+                selected_logical_units_names: selectedData.map(function (it) {
+                  return it.lu_name;
+                })
+              });
+              setFetchCounter(function (prevCount) {
+                return prevCount - 1;
+              });
+              _context11.next = 10;
+              break;
+            case 8:
+              _context11.prev = 8;
+              _context11.t0 = _context11["catch"](0);
+            case 10:
+            case "end":
+              return _context11.stop();
+          }
+        }, _callee11, null, [[0, 8]]);
+      }));
       return _fetchLogicalUntis.apply(this, arguments);
     }
     fetchTaskPostExecutionProcess();
@@ -14065,6 +14259,7 @@ var useInit_useInit = function useInit(saveForm, taskData) {
     fetchSourceEnvironment();
     fetchLogicalUntis();
     fetchEnableParamWidth();
+    fetchParamCoupling();
   }, [taskData.task_id]);
   Object(react["useEffect"])(function () {
     if (fetchCounter === 0) {
@@ -14081,15 +14276,22 @@ var useInit_useInit = function useInit(saveForm, taskData) {
 
 
 
-var useGenerationParams_useGenerationParams = function useGenerationParams(saveForm, task_id, selected_logical_units_names, generateParams) {
+var useGenerationParams_useGenerationParams = function useGenerationParams(saveForm, dataSourceType, task_id, selected_logical_units_names, generateParams) {
   var getDataGenerationParams = Object(react["useCallback"])( /*#__PURE__*/asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
     var data, updateData, selectedParams;
     return regenerator_default.a.wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
-          _context.next = 2;
-          return apis_task.getDataGenerationParams(task_id, selected_logical_units_names || []);
+          if (!(dataSourceType !== 'synthetic')) {
+            _context.next = 2;
+            break;
+          }
+          return _context.abrupt("return");
         case 2:
+          console.log('getDataGenerationParams');
+          _context.next = 5;
+          return apis_task.getDataGenerationParams(task_id, selected_logical_units_names || []);
+        case 5:
           data = _context.sent;
           updateData = {};
           selectedParams = [];
@@ -14125,12 +14327,12 @@ var useGenerationParams_useGenerationParams = function useGenerationParams(saveF
           });
           updateData.dataGenerationParams = data;
           saveForm(updateData);
-        case 9:
+        case 12:
         case "end":
           return _context.stop();
       }
     }, _callee);
-  })), [saveForm, task_id, selected_logical_units_names, generateParams]);
+  })), [saveForm, task_id, selected_logical_units_names, generateParams, dataSourceType]);
   Object(react["useEffect"])(function () {
     if (selected_logical_units_names && selected_logical_units_names.length > 0) {
       getDataGenerationParams();
@@ -14320,7 +14522,7 @@ function TaskMain(props) {
   Main_usePeriods(saveForm, taskData.version_ind, taskData.dataSourceType, taskData.source_type, taskData.retention_period_value, taskData.retention_period_type, taskData.reserve_retention_period_value);
   Main_useExecutionMode(initFinished, taskData);
   Main_useRoles(saveForm, taskData);
-  Main_useGenerationParams(saveForm, taskData.task_id, taskData.selected_logical_units_names, taskData.dataGenerationParams);
+  Main_useGenerationParams(saveForm, taskData.dataSourceType, taskData.task_id, taskData.selected_logical_units_names, taskData.dataGenerationParams);
   var onReset = Object(react["useCallback"])(function () {
     var authService = getService('AuthService');
     var systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
@@ -14335,6 +14537,16 @@ function TaskMain(props) {
         saveForm({
           subsetReset: true,
           tableList: toConsumableArray_default()(tableList)
+        });
+      } else if (taskData.dataSourceType !== 'data_source' && taskData.synthetic_type === 'generated_data') {
+        saveForm({
+          onReset: true,
+          generation_type: 'all',
+          selection_method: 'L',
+          selection_param_value: undefined,
+          num_of_entities: undefined,
+          parameters: undefined,
+          selected_subset_task_exe_id: undefined
         });
       } else {
         saveForm({
@@ -14425,6 +14637,11 @@ function TaskMain(props) {
         });
       });
     }
+    setTimeout(function () {
+      saveForm({
+        onReset: false
+      });
+    }, 500);
   }, [currentStep, saveForm, touchedForms, setTouchedForms, clearErrors, taskData]);
 
   // useEffect(() => {

@@ -1,0 +1,13 @@
+dataPlatform,schema,dataset,class,field,sourceDataType,sourceEntityType,columnSize,sourceNullable,Primary Key (PK)           Foreign Key (FK)
+LOGICAL,Customer TS2-PP1,account,lbs_account,ACCOUNT_ID,VARBINARY/BLOB,Column,10,FALSE,TRUE
+LOGICAL,Customer TS2-PP1,account,lbs_account,FULL_ACCOUNT_NUMBER,VARCHAR,Column,10,TRUE,
+LOGICAL,Customer TS2-PP1,account,lbs_account,OWNER_ID,UNIQUEID,Column,,FALSE,
+LOGICAL,Customer TS2-PP1,account,lbs_account,NAME,VARCHAR,Column,100,TRUE,
+LOGICAL,Customer TS2-PP1,account,lbs_account,CREATED_BY,UNIQUEID,Column,,TRUE,
+LOGICAL,Customer TS2-PP1,account,lbs_account,CREATED_ON,DATETIME,Column,,TRUE,
+LOGICAL,Customer TS2-PP1,account,lbs_account,MODIFIED_ON,DATETIME,Column,,TRUE,
+LOGICAL,Customer TS2-PP1,account,lbs_account,RECORD_STATUS_CODE,INTEGER,Column,,TRUE,
+LOGICAL,Customer TS2-PP1,account,lbs_account,RECORD_UPDATE_REASON_CODE,INTEGER,Column,,TRUE,
+LOGICAL,Customer TS2-PP1,account,lbs_account,MODIFIED_BY,UNIQUEID,Column,,TRUE,
+LOGICAL,Customer TS2-PP1,account,lbs_account,SAVING_ACCOUNT_DETAIL_APP_ID_HOLDER,VARCHAR,Column,100,TRUE,
+,,,,,,,,,

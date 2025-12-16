@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DBConn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="DBConnGenericAdoJdbc" name="OracleTest" type="genericdb" version="8.3.1">
+    <JdbcDriverName>Oracle</JdbcDriverName>
+    <Active>true</Active>
+    <ConnectionProperties>
+        <Property name="includeSynonyms">
+            <Value><![CDATA[true]]></Value>
+        </Property>
+    </ConnectionProperties>
+    <ConnectionStringServerSide>jdbc:oracle:thin:@34.89.246.193:1521/XEPDB1</ConnectionStringServerSide>
+    <PortNum>1521</PortNum>
+    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+    <MinConnectionsNumber>0</MinConnectionsNumber>
+    <MaxConnectionsNumber>60</MaxConnectionsNumber>
+    <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>
+    <AutomaticMetadataLoading>false</AutomaticMetadataLoading>
+    <OfflineMode>true</OfflineMode>
+    <DataSource>34.89.246.193</DataSource>
+    <DataBase>XEPDB1</DataBase>
+    <UserId>Customer</UserId>
+    <Password>~encs2~9f4+WQarDzhCsPMMfKcfIQN8oBBwMu2CnpSRyoKu/iVl7Lq1yZ4ly4YMQw==</Password>
+    <Certificate></Certificate>
+    <SchemaFilter></SchemaFilter>
+    <CommandList></CommandList>
+</DBConn>

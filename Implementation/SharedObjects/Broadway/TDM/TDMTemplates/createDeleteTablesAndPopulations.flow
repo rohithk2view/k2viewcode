@@ -17,6 +17,16 @@ stages:
         out:
           res:
             schema: '#ref'
+      Set Target Environment:
+        parent: FabricSet
+        in:
+          key:
+            const: ENVIRONMENT
+            default: false
+          value:
+            const: null
+            external: TARGET_ENVIRONMENT
+            default: false
       Get Delete Table Prefix:
         parent: FabricSetRead
         in:
@@ -85,7 +95,6 @@ stages:
             schema: string
             editor:
               id: com.k2view.logicalUnit
-              addEmptyEntry: true
           table:
             link:
               path: geLuTables/res
@@ -128,7 +137,6 @@ stages:
             schema: string
             editor:
               id: com.k2view.logicalUnit
-              addEmptyEntry: true
           table:
             link:
               path: geLuTables/res
@@ -190,6 +198,10 @@ stages:
           interfaceName:
             external: TARGET_INTERFACE
             schema: string
+            mandatory: false
+          useFabric:
+            external: useFabric
+            schema: boolean
             mandatory: false
 schemas:
   geLuTables.out.res:

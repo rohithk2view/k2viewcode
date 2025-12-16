@@ -1,0 +1,81 @@
+stages:
+  Set ES id and index:
+    remark: |-
+      Create
+       * Elastic Search document
+       * Elastic Index
+       * Elastic id
+    actors:
+      ES Query:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: ESQuery
+            schema: string
+        out:
+          value:
+            schema: integer
+      ES index:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: index
+            schema: string
+        out:
+          value:
+            schema: string
+  build path:
+    remark: "* Converting map keys to lowercase\n* Building the insertion path index/_doc/id\
+      \ \n"
+    actors:
+      build Delete path:
+        parent: StringFormat
+        in:
+          format:
+            const: ${index}/_delete_by_query
+          index:
+            link: ES index/value
+            schema: string
+            mandatory: false
+  Load Stream:
+    remark: Loading document to Elastic Search using the http method
+    actors:
+      ES Delete:
+        parent: Http
+        in:
+          interface:
+            const: null
+            external: interface
+          path:
+            const: null
+            link: build Delete path/string
+          method:
+            const: POST
+          format:
+            const: JSON
+          stream:
+            link: ES Query/value
+        out:
+          header:
+            external: header
+            schema: '#ref'
+          stream:
+            external: stream
+          status:
+            external: status
+  Stage 1: {
+    }
+schemas:
+  ES Delete.out.header:
+    type: object
+    properties:
+      Content-Length:
+        type: integer
+      content-type:
+        type: string
+      location:
+        type: string
+      x-elastic-product:
+        type: string
