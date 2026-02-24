@@ -1,0 +1,13 @@
+tags: DataverseCheck
+stages:
+  Stage 1: {
+    }
+  Stage 2:
+    actors:
+      DataverseTableQuery1:
+        parent: DataverseTableQuery
+        in:
+          interface:
+            const: dataverseSource
+          table:
+            const: accounts

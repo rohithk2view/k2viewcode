@@ -1,0 +1,2 @@
+dataPlatform,schema,dataset,class,field,sqlDataType,sourceDataType,sourceEntityType,sourceNullable,columnSize,definedBy,ordinalPosition,pk,pii,classification,encodingType,V1
+{YOUR_INTERFACE},main,_updateLookups,_updateLookups,id,10,N/A,N/A,,,INTEGER,0,,,,,

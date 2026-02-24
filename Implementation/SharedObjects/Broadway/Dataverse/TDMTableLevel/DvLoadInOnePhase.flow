@@ -1,0 +1,76 @@
+tags: Dataverse
+stages:
+  Inputs:
+    actors:
+      Target Interface:
+        parent: Const
+        remark: The target interface
+        in:
+          value:
+            const: null
+            external: targetInterface
+            schema: string
+        out:
+          value:
+            schema: string
+      Target Table Name:
+        parent: Const
+        remark: The name of the target table.
+        in:
+          value:
+            const: null
+            external: targetTable
+            schema: string
+        out:
+          value:
+            schema: string
+      Input Records:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: inputRecords
+            schema: '#ref'
+        out:
+          value:
+            schema: '#ref'
+  Load with lookups:
+    transactional: true
+    actors:
+      DataverseTableLoad1:
+        parent: DataverseTableLoad
+        in:
+          interface:
+            const: null
+            link: Target Interface/value
+          async:
+            const: true
+          operation:
+            const: update
+          table:
+            link: Target Table Name/value
+          payload:
+            link:
+              path: Input Records/value
+              iterate: Iterate
+      Count1:
+        parent: Count
+        out:
+          value:
+            external: result
+schemas:
+  Input Records.in.value:
+    type: array
+    items: {
+      }
+  Input Records.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        contract_ref_id:
+          type: integer
+        offer_ref_id:
+          type: integer
+        offer_contract_description:
+          type: string

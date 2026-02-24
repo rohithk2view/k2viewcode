@@ -1,0 +1,618 @@
+tags: Dataverse
+stages:
+  Inputs:
+    actors:
+      Source Interface:
+        parent: Const
+        remark: The Source Interface
+        in:
+          value:
+            const: null
+            external: sourceInterface
+            schema: string
+        out:
+          value:
+            schema: string
+      Source Table Name:
+        parent: Const
+        remark: The ame of the source table.
+        in:
+          value:
+            const: null
+            external: sourceTableName
+            schema: string
+        out:
+          value:
+            schema: string
+      GUI Filter:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: filterGUI
+        out:
+          value:
+            schema: string
+      Source Schema:
+        parent: Const
+        remark: The Source Schema
+        disabled: true
+        in:
+          value:
+            const: null
+            external: sourceSchema
+            schema: string
+        out:
+          value:
+            schema: string
+      Where Claוse:
+        parent: Const
+        remark: The Where Cluase created based on the parameters when the task was
+          created/edited.
+        disabled: true
+        in:
+          value:
+            const: null
+            external: whereClause
+            schema: string
+        out:
+          value:
+            schema: string
+      Query's Parameters Values as a String:
+        parent: Const
+        remark: A String including the list of  parameters sent for the query. The
+          values are separated by global - TDM_PARAMETERS_SEPARATOR
+        disabled: true
+        in:
+          value:
+            const: null
+            external: paramtersStr
+            schema: string
+        out:
+          value:
+            schema: string
+      Array of TheQuery's Parameters Values:
+        parent: Const
+        remark: An array with the values sent to the query.
+        disabled: true
+        in:
+          value:
+            const: null
+            external: queryParameters
+            schema: string
+        out:
+          value:
+            schema: string
+      Select Query Statement:
+        parent: Const
+        remark: The Sql statement including the where clause if exists to select the
+          data from source.
+        disabled: true
+        in:
+          value:
+            const: null
+            external: selectStatement
+            schema: string
+        out:
+          value:
+            schema: string
+      Count Query Statement:
+        parent: Const
+        remark: The Sql statement including the where clause if exists to count the
+          total number of records to be loaded.
+        disabled: true
+        in:
+          value:
+            const: null
+            external: countStatement
+            schema: string
+        out:
+          value:
+            schema: string
+      'Array of The Query''s Parameters ':
+        parent: Const
+        remark: An array with the map of name, type and value of each parameter sent
+          in the filter.
+        disabled: true
+        in:
+          value:
+            const: null
+            external: filterParametersInfo
+            schema: Any
+        out:
+          value:
+            schema: string
+  Prepare for fetch:
+    actors:
+      ParseFilter:
+        parent: LuFunction
+        in:
+          functionName:
+            const: dataverseConvertTDMFilter
+          filter:
+            link: GUI Filter/value
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Execute Query:
+    transactional: false
+    actors:
+      DataverseTableQuery1:
+        parent: DataverseTableQuery
+        in:
+          headers:
+            const:
+              If-None-Match: null
+              Prefer: odata.include-annotations=Microsoft.Dynamics.CRM.lookuplogicalname
+          expand_lookups:
+            const: true
+          fields:
+            const: ''
+          interface:
+            link: Source Interface/value
+          table:
+            link: Source Table Name/value
+          filter:
+            link: ParseFilter/result
+        out:
+          result:
+            external: result
+            schema: '#ref'
+      Dummy Count:
+        parent: Const
+        in:
+          value:
+            const: -1
+            schema: integer
+        out:
+          value:
+            external: tableCount
+            schema: integer
+schemas:
+  ParseFilter.out.result:
+    type: object
+    properties: {
+      }
+  DataverseTableQuery1.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        '@odata.etag':
+          type: string
+        telephone3: {
+          }
+        address1_shippingmethodcode: {
+          }
+        sharesoutstanding: {
+          }
+        ownershipcode: {
+          }
+        _defaultpricelevelid_value: {
+          }
+        _preferredequipmentid_value: {
+          }
+        address1_freighttermscode: {
+          }
+        _ownerid_value@OData.Community.Display.V1.FormattedValue:
+          type: string
+        _ownerid_value@Microsoft.Dynamics.CRM.associatednavigationproperty:
+          type: string
+        _ownerid_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+          type: string
+        _ownerid_value:
+          type: string
+        address1_upszone: {
+          }
+        merged@OData.Community.Display.V1.FormattedValue:
+          type: string
+        merged:
+          type: boolean
+        websiteurl: {
+          }
+        address2_city: {
+          }
+        _slainvokedid_value: {
+          }
+        address1_postofficebox: {
+          }
+        importsequencenumber: {
+          }
+        preferredappointmentdaycode: {
+          }
+        customertypecode: {
+          }
+        utcconversiontimezonecode: {
+          }
+        overriddencreatedon: {
+          }
+        aging90: {
+          }
+        stageid: {
+          }
+        address1_utcoffset: {
+          }
+        address1_latitude: {
+          }
+        adx_createdbyipaddress: {
+          }
+        _msdyn_accountkpiid_value: {
+          }
+        _masterid_value: {
+          }
+        lastonholdtime: {
+          }
+        address2_fax: {
+          }
+        accountid:
+          type: string
+        _transactioncurrencyid_value@OData.Community.Display.V1.FormattedValue:
+          type: string
+        _transactioncurrencyid_value@Microsoft.Dynamics.CRM.associatednavigationproperty:
+          type: string
+        _transactioncurrencyid_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+          type: string
+        _transactioncurrencyid_value:
+          type: string
+        accountnumber: {
+          }
+        participatesinworkflow@OData.Community.Display.V1.FormattedValue:
+          type: string
+        participatesinworkflow:
+          type: boolean
+        address2_line1: {
+          }
+        followemail@OData.Community.Display.V1.FormattedValue:
+          type: string
+        followemail:
+          type: boolean
+        address1_telephone3: {
+          }
+        address1_telephone2: {
+          }
+        address1_telephone1: {
+          }
+        address2_postofficebox: {
+          }
+        _owninguser_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+          type: string
+        _owninguser_value:
+          type: string
+        _primarycontactid_value: {
+          }
+        emailaddress1: {
+          }
+        ftpsiteurl: {
+          }
+        emailaddress2: {
+          }
+        address2_latitude: {
+          }
+        processid: {
+          }
+        emailaddress3: {
+          }
+        address2_shippingmethodcode@OData.Community.Display.V1.FormattedValue:
+          type: string
+        address2_shippingmethodcode:
+          type: integer
+        address2_composite: {
+          }
+        accountratingcode@OData.Community.Display.V1.FormattedValue:
+          type: string
+        accountratingcode:
+          type: integer
+        creditonhold@OData.Community.Display.V1.FormattedValue:
+          type: string
+        creditonhold:
+          type: boolean
+        traversedpath: {
+          }
+        address1_city: {
+          }
+        openrevenue_date@OData.Community.Display.V1.FormattedValue:
+          type: string
+        openrevenue_date:
+          type: string
+        address2_line2: {
+          }
+        aging30_base: {
+          }
+        numberofemployees: {
+          }
+        address1_addressid:
+          type: string
+        teamsfollowed: {
+          }
+        address1_addresstypecode: {
+          }
+        donotphone@OData.Community.Display.V1.FormattedValue:
+          type: string
+        donotphone:
+          type: boolean
+        address2_stateorprovince: {
+          }
+        _createdby_value@OData.Community.Display.V1.FormattedValue:
+          type: string
+        _createdby_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+          type: string
+        _createdby_value:
+          type: string
+        address2_postalcode: {
+          }
+        donotemail@OData.Community.Display.V1.FormattedValue:
+          type: string
+        donotemail:
+          type: boolean
+        _msa_managingpartnerid_value: {
+          }
+        openrevenue_state@OData.Community.Display.V1.FormattedValue:
+          type: string
+        openrevenue_state:
+          type: integer
+        donotsendmm@OData.Community.Display.V1.FormattedValue:
+          type: string
+        donotsendmm:
+          type: boolean
+        entityimage_url: {
+          }
+        address1_composite: {
+          }
+        aging60: {
+          }
+        _modifiedby_value@OData.Community.Display.V1.FormattedValue:
+          type: string
+        _modifiedby_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+          type: string
+        _modifiedby_value:
+          type: string
+        marketingonly@OData.Community.Display.V1.FormattedValue:
+          type: string
+        marketingonly:
+          type: boolean
+        timezoneruleversionnumber: {
+          }
+        address2_telephone3: {
+          }
+        address2_telephone2: {
+          }
+        address2_telephone1: {
+          }
+        address2_upszone: {
+          }
+        address1_postalcode: {
+          }
+        _owningteam_value: {
+          }
+        primarysatoriid: {
+          }
+        address2_line3: {
+          }
+        timespentbymeonemailandmeetings: {
+          }
+        territorycode@OData.Community.Display.V1.FormattedValue:
+          type: string
+        territorycode:
+          type: integer
+        opendeals_state@OData.Community.Display.V1.FormattedValue:
+          type: string
+        opendeals_state:
+          type: integer
+        address1_country: {
+          }
+        address2_longitude: {
+          }
+        _modifiedonbehalfby_value: {
+          }
+        revenue_base: {
+          }
+        creditlimit: {
+          }
+        accountclassificationcode@OData.Community.Display.V1.FormattedValue:
+          type: string
+        accountclassificationcode:
+          type: integer
+        address1_line2: {
+          }
+        paymenttermscode: {
+          }
+        address1_county: {
+          }
+        donotpostalmail@OData.Community.Display.V1.FormattedValue:
+          type: string
+        donotpostalmail:
+          type: boolean
+        _territoryid_value: {
+          }
+        marketcap: {
+          }
+        _preferredsystemuserid_value: {
+          }
+        preferredappointmenttimecode: {
+          }
+        address1_fax: {
+          }
+        _owningbusinessunit_value@OData.Community.Display.V1.FormattedValue:
+          type: string
+        _owningbusinessunit_value@Microsoft.Dynamics.CRM.associatednavigationproperty:
+          type: string
+        _owningbusinessunit_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+          type: string
+        _owningbusinessunit_value:
+          type: string
+        _createdonbehalfby_value: {
+          }
+        modifiedon@OData.Community.Display.V1.FormattedValue:
+          type: string
+        modifiedon:
+          type: string
+        address2_name: {
+          }
+        creditlimit_base: {
+          }
+        marketcap_base: {
+          }
+        _modifiedbyexternalparty_value: {
+          }
+        address2_utcoffset: {
+          }
+        statuscode@OData.Community.Display.V1.FormattedValue:
+          type: string
+        statuscode:
+          type: integer
+        adx_modifiedbyusername: {
+          }
+        _originatingleadid_value: {
+          }
+        opendeals@OData.Community.Display.V1.FormattedValue:
+          type: string
+        opendeals:
+          type: integer
+        sic: {
+          }
+        _preferredserviceid_value: {
+          }
+        _slaid_value: {
+          }
+        fax: {
+          }
+        address1_line1: {
+          }
+        shippingmethodcode@OData.Community.Display.V1.FormattedValue:
+          type: string
+        shippingmethodcode:
+          type: integer
+        donotbulkemail@OData.Community.Display.V1.FormattedValue:
+          type: string
+        donotbulkemail:
+          type: boolean
+        address2_county: {
+          }
+        versionnumber@OData.Community.Display.V1.FormattedValue:
+          type: string
+        versionnumber:
+          type: integer
+        address2_freighttermscode@OData.Community.Display.V1.FormattedValue:
+          type: string
+        address2_freighttermscode:
+          type: integer
+        aging30: {
+          }
+        opendeals_date@OData.Community.Display.V1.FormattedValue:
+          type: string
+        opendeals_date:
+          type: string
+        msdyn_primarytimezone: {
+          }
+        address1_line3: {
+          }
+        name:
+          type: string
+        openrevenue@OData.Community.Display.V1.FormattedValue:
+          type: string
+        openrevenue:
+          type: number
+        industrycode: {
+          }
+        statecode@OData.Community.Display.V1.FormattedValue:
+          type: string
+        statecode:
+          type: integer
+        address1_stateorprovince: {
+          }
+        customersizecode@OData.Community.Display.V1.FormattedValue:
+          type: string
+        customersizecode:
+          type: integer
+        onholdtime: {
+          }
+        _createdbyexternalparty_value: {
+          }
+        entityimage_timestamp: {
+          }
+        exchangerate@OData.Community.Display.V1.FormattedValue:
+          type: string
+        exchangerate:
+          type: number
+        entityimageid: {
+          }
+        _parentaccountid_value: {
+          }
+        donotbulkpostalmail@OData.Community.Display.V1.FormattedValue:
+          type: string
+        donotbulkpostalmail:
+          type: boolean
+        yominame: {
+          }
+        lastusedincampaign: {
+          }
+        accountcategorycode: {
+          }
+        openrevenue_base@OData.Community.Display.V1.FormattedValue:
+          type: string
+        openrevenue_base:
+          type: number
+        primarytwitterid: {
+          }
+        donotfax@OData.Community.Display.V1.FormattedValue:
+          type: string
+        donotfax:
+          type: boolean
+        msdyn_gdproptout@OData.Community.Display.V1.FormattedValue:
+          type: string
+        msdyn_gdproptout:
+          type: boolean
+        adx_createdbyusername: {
+          }
+        telephone2: {
+          }
+        stockexchange: {
+          }
+        businesstypecode@OData.Community.Display.V1.FormattedValue:
+          type: string
+        businesstypecode:
+          type: integer
+        revenue: {
+          }
+        description: {
+          }
+        _msdyn_salesaccelerationinsightid_value: {
+          }
+        address2_addresstypecode@OData.Community.Display.V1.FormattedValue:
+          type: string
+        address2_addresstypecode:
+          type: integer
+        createdon@OData.Community.Display.V1.FormattedValue:
+          type: string
+        createdon:
+          type: string
+        aging90_base: {
+          }
+        tickersymbol: {
+          }
+        address1_name: {
+          }
+        adx_modifiedbyipaddress: {
+          }
+        telephone1: {
+          }
+        address1_primarycontactname: {
+          }
+        address1_longitude: {
+          }
+        address2_primarycontactname: {
+          }
+        entityimage: {
+          }
+        preferredcontactmethodcode@OData.Community.Display.V1.FormattedValue:
+          type: string
+        preferredcontactmethodcode:
+          type: integer
+        address2_addressid:
+          type: string
+        aging60_base: {
+          }
+        address2_country: {
+          }

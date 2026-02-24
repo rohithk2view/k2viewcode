@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Properties - Params:
+		- Attributes: dataType, mandatory, readOnly, category, showExp, enabledExp, multiLine, secretManagerHelper, disabledOnEnvOverride, clearValueOnEnvOverride
+		- dataType values: string, integer, double, boolean, password, OptionsList, OptionsListEditable
+			When using OptionsList, add the following to the Property body:
+			<OptionsList>
+				<Option value="1">opt1</Option>
+				<Option value="2">opt2</Option>
+				<Option value="3">opt3</Option>
+			</OptionsList>
+		- In Property body, support for these elements: DefaultValue, Comments, OptionsList, DefaultValueExp
+			(for DefaultValueExp check examples below)
+ -->
+<GenericInterfaces>
+	<Interfaces>
+		<Interface type="Dataverse" displayName="Dataverse" enabled="true" version="1.0" category="Others" techType="nosql">
+			<Properties>
+				<Property name="ProtocolType" displayName="Protocol Type" dataType="OptionsList" mandatory="true" category="" clearValueOnEnvOverride="false">
+					<DefaultValue/>
+					<DefaultValueExp basedOnProp="AuthenticationType">
+						<!-- The Option value is comma separated IDs list -->
+						<OptionsList>
+							<Option value="None">HTTP</Option>
+							<Option value="Basic,Bearer,OAuth2_PasswordCredentials,OAuth2_PasswordCredentials_Basic_Auth_Headers,OAuth2_ClientCredentials,OAuth2_ClientCredentials_Basic_Auth_Headers">HTTPS</Option>
+						</OptionsList>
+					</DefaultValueExp>
+					<Comments/>
+					<OptionsList>
+						<Option value="HTTP">HTTP</Option>
+						<Option value="HTTPS">HTTPS</Option>
+					</OptionsList>
+				</Property>
+				<Property name="HOST" displayName="Host" dataType="string" mandatory="true" category="" secretManagerHelper="true">
+					<DefaultValue/>
+					<Comments/>
+				</Property>
+				<Property name="PORT" displayName="Port" dataType="integer" mandatory="false" category="" clearValueOnEnvOverride="false">
+					<DefaultValue/>
+					<DefaultValueExp basedOnProp="ProtocolType">
+						<!-- The Option value is comma separated IDs list -->
+						<OptionsList>
+							<Option value="HTTP">80</Option>
+							<Option value="HTTPS">443</Option>
+						</OptionsList>
+					</DefaultValueExp>
+					<Comments/>
+				</Property>
+				<Property name="AuthenticationType" displayName="Authentication Type" dataType="OptionsList" mandatory="true" category="" clearValueOnEnvOverride="false">
+					<DefaultValue>Basic</DefaultValue>
+					<Comments/>
+					<OptionsList>
+						<Option value="None">None</Option>
+						<Option value="Basic">Basic</Option>
+						<Option value="Bearer">Bearer</Option>
+						<Option value="OAuth2_PasswordCredentials">OAuth 2.0 Password Credentials</Option>
+						<Option value="OAuth2_PasswordCredentials_Basic_Auth_Headers">OAuth 2.0 Password Credentials (Basic auth headers)</Option>
+						<Option value="OAuth2_ClientCredentials">OAuth 2.0 Client Credentials</Option>
+						<Option value="OAuth2_ClientCredentials_Basic_Auth_Headers">OAuth 2.0 Client Credentials (Basic auth headers)</Option>
+					</OptionsList>
+				</Property>
+				<Property name="User" displayName="" dataType="string" mandatory="true" category="" showExp="[[AuthenticationType==(^Basic|OAuth2_PasswordCredentials)]]" secretManagerHelper="true">
+					<DefaultValue/>
+					<Comments/>
+				</Property>
+				<Property name="Password" displayName="" dataType="password" mandatory="true" category="" showExp="[[AuthenticationType==(^Basic|OAuth2_PasswordCredentials)]]" secretManagerHelper="true">
+					<DefaultValue/>
+					<Comments/>
+				</Property>
+				<Property name="Token" displayName="" dataType="password" mandatory="true" category="" showExp="[[AuthenticationType==Bearer]]" secretManagerHelper="true">
+					<DefaultValue/>
+					<Comments/>
+				</Property>
+				<Property name="AccessTokenUrl" displayName="Access Token URL" dataType="string" mandatory="false" category="" showExp="[[AuthenticationType==(OAuth2_\w+)]]">
+					<DefaultValue/>
+					<Comments>The provider's authentication server, to exchange an authorization code for an access token.</Comments>
+				</Property>
+				<Property name="AccessTokenBodyParams" displayName="Access Token Additional Body Parameters" dataType="string" mandatory="false" category="" showExp="[[AuthenticationType==(OAuth2_\w+)]]">
+					<DefaultValue/>
+					<Comments>Parameters to be added to the token request body</Comments>
+				</Property>
+				<Property name="ClientId" displayName="Client ID" dataType="string" mandatory="false" category="" showExp="[[AuthenticationType==(OAuth2_\w+)]]" secretManagerHelper="true">
+					<DefaultValue/>
+					<Comments>The ID for your client application registered with the API provider.</Comments>
+				</Property>
+				<Property name="ClientSecret" displayName="Client Secret" dataType="secret" mandatory="false" category="" showExp="[[AuthenticationType==(OAuth2_\w+)]]" secretManagerHelper="true">
+					<DefaultValue/>
+					<Comments>The client secret given to you by the API provider.</Comments>
+				</Property>
+				<Property name="Scope" displayName="Scope" dataType="string" mandatory="false" category="" showExp="[[AuthenticationType==(OAuth2_\w+)]]" clearValueOnEnvOverride="false">
+					<DefaultValue/>
+					<Comments>The scope of access you are requesting, which may include multiple space-separated values.</Comments>
+				</Property>
+				<Property name="TokenTimeout" displayName="Token Timeout" dataType="integer" mandatory="false" category="" showExp="[[AuthenticationType==(OAuth2_\w+)]]" clearValueOnEnvOverride="false">
+					<DefaultValue>0</DefaultValue>
+					<Comments>In Seconds</Comments>
+				</Property>
+				<Property name="Certificate" displayName="Certificate" dataType="string" mandatory="false" multiLine="true" category="" secretManagerHelper="true">
+					<DefaultValue/>
+					<Comments>Certificate</Comments>
+				</Property>
+				<Property name="FOREIGN_KEYS" displayName="Add Foreign Keys" dataType="boolean" mandatory="false" category="Catalog Settings" clearValueOnEnvOverride="false">
+					<DefaultValue>true</DefaultValue>
+					<Comments/>
+				</Property>
+				<Property name="DISCOVERY_MODE" displayName="Catalog Discovery Mode" dataType="OptionsList" mandatory="true" category="Catalog Settings" clearValueOnEnvOverride="false">
+					<DefaultValue>SINGLE_SCHEMA</DefaultValue>
+					<Comments/>
+					<OptionsList>
+						<Option value="SINGLE_SCHEMA">All Tables in One Schema</Option>
+						<Option value="GROUP_BY_SOLUTIONS">Schema per Solution</Option>
+					</OptionsList>
+				</Property>
+				<Property name="SOLUTIONS_FILTER" displayName="Solutions Filter" dataType="string" mandatory="false" showExp="[[DISCOVERY_MODE==GROUP_BY_SOLUTIONS]]" category="Catalog Settings">
+					<DefaultValue></DefaultValue>
+					<Comments/>
+				</Property>
+				<Property name="TABLES_FILTER" displayName="Tables Filter" dataType="string" mandatory="false" category="Catalog Settings">
+					<DefaultValue></DefaultValue>
+					<Comments/>
+				</Property>
+				<Property name="ATTRIBUTES_FILTER" displayName="Columns Filter" dataType="string" mandatory="false" category="Catalog Settings">
+					<DefaultValue></DefaultValue>
+					<Comments/>
+				</Property>
+				<Property name="BATCH_SIZE" displayName="Batch Size" dataType="integer" mandatory="false" category="Batch Settings" clearValueOnEnvOverride="false">
+					<DefaultValue>10</DefaultValue>
+					<Comments>Max value is 1000.</Comments>
+				</Property>
+				<Property name="MAX_CONCURRENT_BATCHES" displayName="Max Concurrent Batches" dataType="integer" mandatory="false" category="Batch Settings" clearValueOnEnvOverride="false">
+					<DefaultValue>32</DefaultValue>
+					<Comments></Comments>
+				</Property>
+				<Property name="DEBUG" displayName="Debug" dataType="boolean" mandatory="false" category="" clearValueOnEnvOverride="false">
+					<DefaultValue>false</DefaultValue>
+					<Comments/>
+				</Property>
+				<Property name="ioprovider" displayName="IoProvider Function" dataType="string" mandatory="true" readOnly="true" category="Advanced" disabledOnEnvOverride="true">
+					<DefaultValue>dataverseIoProvider</DefaultValue>
+					<Comments>Function name that returns IoProvider</Comments>
+				</Property>
+				<Property name="delegate" displayName="" dataType="string" mandatory="false" readOnly="true" category="Advanced" disabledOnEnvOverride="true">
+					<DefaultValue>HTTP</DefaultValue>
+					<Comments/>
+				</Property>
+			</Properties>
+		</Interface>
+	</Interfaces>
+</GenericInterfaces>

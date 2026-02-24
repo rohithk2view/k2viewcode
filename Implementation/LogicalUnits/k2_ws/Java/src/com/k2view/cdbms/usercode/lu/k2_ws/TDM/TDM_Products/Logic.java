@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
-
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsOwner;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 
@@ -603,8 +603,8 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String,Object> response=new HashMap<>();
 		String errorCode="";
 		String message=null;
-		      final String SYNTHETIC = "Synthetic";
-		
+		final String SYNTHETIC = "Synthetic";
+		final String AI = "AI";
 		try{
 			String sql="SELECT products.product_id, products.product_versions, products.product_name, COUNT(product_logical_units.lu_id) as lus " +
 					"FROM " + schema + ".products " +
@@ -618,11 +618,13 @@ public class Logic extends WebServiceUserCode {
 			for(Db.Row row:rows) {
 				product=new HashMap<>();
 				product.put("product_id", Integer.parseInt(row.get("product_id").toString()));
-		              if (envId != null && envId < 0) {
-		                  product.put("product_versions", SYNTHETIC);
-		              } else {
-				    product.put("product_versions", row.get("product_versions"));
-		              }
+		            if (envId != null && envId == -1) {
+		            	product.put("product_versions", SYNTHETIC);
+		            }else if (envId != null && envId == -2){
+						product.put("product_versions", AI);
+					} else {
+				    	product.put("product_versions", row.get("product_versions"));
+		            }
 				product.put("product_name",row.get("product_name"));
 				product.put("lus", Integer.parseInt(row.get("lus").toString()));
 				result.add(product);
@@ -643,6 +645,7 @@ public class Logic extends WebServiceUserCode {
 		response.put("message", message);
 		return response;
 	}
+
 
 
 	static void fnUpdateProductDate(long prodId,String username) throws Exception{
@@ -671,8 +674,16 @@ public class Logic extends WebServiceUserCode {
 	
 	@webService(path = "product/{envId}/{productId}/DisableEnvironmentProduct", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	public static Object wsDisableEnvironmentProduct(@param(required=true) Long productId,Long envId,Long envProdcutID,String envName) throws Exception {
-	String permissionGroup = fnGetUserPermissionGroup("");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
+		if (!"admin".equals(permissionGroup)) {
+			if ("tester".equals(permissionGroup)) {
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore are not allowed to disable environment products.", null);
+			} else if("owner".equals(permissionGroup)){
+				if(!fnIsOwner(envId.toString())) 	
+					return wrapWebServiceResults("FAILED", "You are not the owner of this environment and therefore are not allowed to disable its products.", null);
+			}
+		}		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
@@ -755,8 +766,16 @@ public class Logic extends WebServiceUserCode {
 	
 	@webService(path = "product/{envId}/{productId}/EnableEnvironmentProduct", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	public static Object wsEnableEnvironmentProduct(@param(required=true) Long productId,Long envId,Long envProdcutID,String envName) throws Exception {
-	String permissionGroup = fnGetUserPermissionGroup("");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
+		if (!"admin".equals(permissionGroup)) {
+			if ("tester".equals(permissionGroup)) {
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore are not allowed to disable environment products.", null);
+			} else if("owner".equals(permissionGroup)){
+				if(!fnIsOwner(envId.toString())) 	
+					return wrapWebServiceResults("FAILED", "You are not the owner of this environment and therefore are not allowed to disable its products.", null);
+			}
+		}
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";

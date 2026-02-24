@@ -1,16 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="DBConnGenericAdoJdbc" name="TDM" type="genericdb" version="8.2.0">
+<?xml version="1.0" encoding="utf-8"?>
+<DBConn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="DBConnGenericAdoJdbc" name="TDM" type="genericdb" version="8.3.2">
     <JdbcDriverName>PostgreSQL</JdbcDriverName>
     <Active>true</Active>
-    <DataSource>34.89.246.193</DataSource>
+    <DataSource>postgres-service</DataSource>
     <PortNum>5432</PortNum>
     <DataBase>TDMDB</DataBase>
-    <UserId>bbva</UserId>
-    <Password>~encs2~faumVQJYxbiNxEn2EKV2F647EVR+hjxOO58qZ9AXCj9+xc6c</Password>
-    <ConnectionStringServerSide>jdbc:postgresql://34.89.246.193:5432/TDMDB?stringtype=unspecified</ConnectionStringServerSide>
+    <UserId>postgres</UserId>
+    <Password>postgres</Password>
+    <ConnectionStringServerSide>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</ConnectionStringServerSide>
     <MinConnectionsNumber>0</MinConnectionsNumber>
     <MaxConnectionsNumber>60</MaxConnectionsNumber>
-    <SchemaFilter></SchemaFilter>
     <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>
     <AutomaticMetadataLoading>false</AutomaticMetadataLoading>
     <OfflineMode>true</OfflineMode>
@@ -18,4 +17,5 @@
     <ConnectionProperties></ConnectionProperties>
     <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
     <Certificate></Certificate>
+    <SchemaFilter></SchemaFilter>
 </DBConn>

@@ -1,0 +1,58 @@
+tags: Dataverse
+stages:
+  Get Load Phase:
+    transactional: false
+    actors:
+      LoadPhase:
+        parent: FabricSetRead
+        in:
+          key:
+            const: DATAVERSE_LOAD_PHASE
+  Stop if in second phase:
+    remark: We don't want to delete what was already loaded in phase 1
+    transactional: false
+    actors:
+      NotEquals1:
+        parent: NotEquals
+        condition: result
+        in:
+          b:
+            const: '2'
+            schema: string
+          a:
+            link: LoadPhase/result
+      JobName:
+        parent: StringFormat
+        in:
+          format:
+            const: TDM delete all ${table} records
+          table:
+            external: table
+            schema: string
+            mandatory: false
+  Truncate Table:
+    transactional: false
+    actors:
+      DataverseBulkDelete1:
+        parent: DataverseBulkDelete
+        in:
+          interface:
+            const: null
+            external: interface
+          table:
+            const: null
+            external: table
+          job_name:
+            const: null
+            link: JobName/string
+  Wait for delete job:
+    transactional: false
+    actors:
+      DataverseBulkDeleteAwait1:
+        parent: DataverseBulkDeleteAwait
+        in:
+          interface:
+            const: null
+            external: interface
+          job_id:
+            link: DataverseBulkDelete1/job_id

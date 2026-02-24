@@ -1,0 +1,73 @@
+{
+    "type": "DataverseTableLoad",
+    "badge": "Da",
+    "doc": [
+        "Provides batch data loading into Dataverse with a simplified Actor compared to DataverseBatch, enhancing ease of use."
+    ],
+    "inputs": [
+        {
+            "name": "operation",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.dropdown",
+                "options": [
+                    "create",
+                    "update",
+                    "upsert"
+                ]
+            },
+            "doc": "The operation to load data with.",
+            "const": "create"
+        },
+        {
+            "name": "table",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": false,
+            "doc": "The entity set name of the Dataverse table"
+        },
+        {
+            "name": "debug",
+            "hidden": true
+        },
+        {
+            "name": "noCertificateCheck",
+            "hidden": true
+        },
+        {
+            "name": "timeout",
+            "hidden": true
+        },
+        {
+            "name": "headers",
+            "hidden": true
+        },
+        {
+            "name": "method",
+            "hidden": true
+        },
+        {
+            "name": "path",
+            "mandatory": false,
+            "hidden": true
+        },
+        {
+            "name": "skip_lookups",
+            "const": false,
+            "schema": {
+                "type": "boolean"
+            },
+            "doc": "If true, values of lookup fields will be ignored.",
+            "mandatory": false
+        }
+    ],
+    "outputs": [],
+    "tags": [
+        "Dataverse"
+    ],
+    "parentType": "DataverseBatch",
+    "actorClass": "com.k2view.cdbms.usercode.common.dataverse.actors.DataverseTableLoadActor"
+}

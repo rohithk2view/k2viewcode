@@ -81,27 +81,27 @@ stages:
             external: table
             schema: string
             mandatory: false
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
           interface:
             external: sourceInterface
             schema: string
             editor:
               id: com.k2view.mTableKey
             mandatory: false
-          schema:
-            external: sourceSchema
-            schema: string
-            editor:
-              id: com.k2view.mTableKey
-            mandatory: false
           table:
-            external: sourceTable
+            external: table
             schema: string
             editor:
               id: com.k2view.mTableKey
             mandatory: false
-          luName:
-            external: luType
+          schema:
+            external: schema
             schema: string
+            editor:
+              id: com.k2view.mTableKey
             mandatory: false
         out:
           SEQ_FIELD_NAME:
@@ -217,7 +217,25 @@ stages:
     dependsOn: Stage 15
   Get Sequences:
     actors:
-      GetSequenceListForGenerateFlows1:
+      Get Type Of Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetObjectType
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          name:
+            external: sourceTable
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Sequence List For Generate Flows:
         parent: InnerFlow
         in:
           flowName:
@@ -251,6 +269,67 @@ stages:
         out:
           result:
             schema: '#ref'
+  In Case of Document:
+    dependsOn: Get Sequences
+    actors:
+      Document?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Type Of Table/result
+            schema: string
+          b:
+            const: TABLE
+            schema: string
+      'false':
+        parent: Const
+        in:
+          value:
+            const: 'false'
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Not  Main Document Table:
+    else: true
+    dependsOn: Get Sequences
+    actors:
+      Get Document's Main Table And Class:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTableClass
+          sourceInterface:
+            external: sourceInterface
+            schema: string
+            mandatory: false
+          sourceSchema:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          sourceTable:
+            external: sourceTable
+            schema: string
+            mandatory: false
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: '#ref'
+      'true':
+        parent: Const
+        in:
+          value:
+            const: 'true'
+            schema: string
+        out:
+          value:
+            schema: string
   Template's Input 1:
     actors:
       LU Name:
@@ -330,7 +409,7 @@ stages:
           functionName:
             const: filerOutSequences
           Sequences:
-            link: GetSequenceListForGenerateFlows1/result
+            link: Get Sequence List For Generate Flows/result
             schema: '#ref'
             mandatory: false
           parentRec:
@@ -365,6 +444,20 @@ stages:
         out:
           map:
             schema: '#ref'
+      Document Indicator:
+        parent: MapBuild
+        in:
+          key:
+            const: DOCUMENT_IND
+            schema: string
+          value:
+            link:
+            - false/value
+            - true/value
+            schema: string
+        out:
+          map:
+            schema: '#ref'
   Marge All Inputs to One Map:
     actors:
       Merge Inputs:
@@ -388,6 +481,10 @@ stages:
               pos: 6
             - path: Population Arguments List/map
               pos: 7
+            - path: Document Indicator/map
+              pos: 8
+            - path: Get Document's Main Table And Class/result
+              pos: 9
         out:
           map:
             external: tableDefaultMapping
@@ -399,6 +496,8 @@ schemas:
       type: object
       properties:
         columnType:
+          type: string
+        upperColumnName:
           type: string
         columnName:
           type: string
@@ -416,6 +515,8 @@ schemas:
     items:
       type: object
       properties:
+        MAIN_DOCUMENT:
+          type: string
         PARENT_TABLE:
           type: string
         PARENT_FIELD_NAME:
@@ -470,7 +571,7 @@ schemas:
           type: string
         TABLE:
           type: string
-  GetSequenceListForGenerateFlows1.out.result:
+  Get Sequence List For Generate Flows.out.result:
     type: array
     items:
       type: object
@@ -479,6 +580,15 @@ schemas:
           type: string
         FABRIC_FIELD_NAME:
           type: string
+        TARGET_FIELD_NAME:
+          type: string
+  Get Document's Main Table And Class.out.result:
+    type: object
+    properties:
+      CATALOG_CLASS_NAME:
+        type: string
+      MAIN_TABLE_NAME:
+        type: string
   LU Name.out.map:
     type: object
     properties:
@@ -626,6 +736,22 @@ schemas:
             TABLE:
               type: string
   Population Arguments List.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Document Indicator.out.map:
     type: object
     properties:
       TABLE_FIELDS:

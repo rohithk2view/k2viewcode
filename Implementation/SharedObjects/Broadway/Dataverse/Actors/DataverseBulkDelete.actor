@@ -1,0 +1,142 @@
+{
+    "type": "DataverseBulkDelete",
+    "badge": "Da",
+    "doc": [
+        "Asynchronously triggers a bulk delete job in Dataverse.",
+        "Deletes rows matching the specified criteria, or all rows if no criteria are provided.",
+        "Returns the job ID immediately, which can be used with the DataverseBulkDeleteAwait actor to await completion."
+    ],
+    "inputs": [
+        {
+            "name": "payload",
+            "hidden": true
+        },
+        {
+            "name": "debug",
+            "hidden": true
+        },
+        {
+            "name": "interface",
+            "schema": {},
+            "editor": {
+                "id": "com.k2view.interface",
+                "doc": [
+                    "The Dataverse interface to use."
+                ],
+                "interfaceType": [
+                    "Dataverse"
+                ]
+            }
+        },
+        {
+            "name": "method",
+            "editor": {
+                "id": "com.k2view.dropdown",
+                "options": [
+                    "",
+                    "POST",
+                    "PUT",
+                    "DELETE",
+                    "PATCH"
+                ]
+            },
+            "const": "POST",
+            "hidden": true
+        },
+        {
+            "name": "path",
+            "const": "BulkDelete",
+            "hidden": true
+        },
+        {
+            "name": "format",
+            "const": "JSON",
+            "hidden": true
+        },
+        {
+            "name": "exceptionOnError",
+            "hidden": true
+        },
+        {
+            "name": "params",
+            "hidden": true
+        },
+        {
+            "name": "headers",
+            "const": {},
+            "hidden": true
+        },
+        {
+            "name": "timeout",
+            "const": 60000,
+            "hidden": true
+        },
+        {
+            "name": "noCertificateCheck",
+            "const": false,
+            "hidden": true
+        },
+        {
+            "const": "",
+            "name": "table",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": false
+        },
+        {
+            "const": "",
+            "name": "job_name",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": false,
+            "doc": "Name to identify and track the bulk delete job. If empty, a default name is assigned."
+        },
+        {
+            "name": "criteria",
+            "schema": {},
+            "mandatory": false,
+            "doc": [
+                "A map or JSON string of criteria used to filter which rows to delete.",
+                "If omitted or empty, all rows in the table will be deleted.",
+                "Example: {\"FilterOperator\": \"And\", \"Conditions\": [{\"AttributeName\": \"firstname\", \"Operator\": \"Equal\", \"Values\": [{\"Value\": \"Bob\", \"Type\": \"System.String\"}]}]}"
+            ]
+        },
+        {
+            "const": false,
+            "name": "retained",
+            "schema": {
+                "type": "boolean"
+            },
+            "mandatory": false,
+            "doc": "When true, deletes only long-term retained data."
+        }
+    ],
+    "outputs": [
+        {
+            "name": "status",
+            "hidden": true
+        },
+        {
+            "name": "header",
+            "hidden": true
+        },
+        {
+            "name": "result",
+            "hidden": true
+        },
+        {
+            "name": "job_id",
+            "schema": {
+                "type": "string"
+            },
+            "doc": "The bulk delete job ID."
+        }
+    ],
+    "tags": [
+        "Dataverse"
+    ],
+    "parentType": "HttpJson",
+    "actorClass": "com.k2view.cdbms.usercode.common.dataverse.actors.DataverseBulkDelete"
+}

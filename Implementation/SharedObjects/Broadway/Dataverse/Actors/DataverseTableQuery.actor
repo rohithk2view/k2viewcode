@@ -1,0 +1,146 @@
+{
+    "type": "DataverseTableQuery",
+    "badge": "Da",
+    "doc": [
+        "Executes a query against a Dataverse table using OData parameters for filtering, selecting, expanding, and sorting data.",
+        "The actor automatically handles pagination to retrieve all matching rows."
+    ],
+    "inputs": [
+        {
+            "name": "interface",
+            "schema": {},
+            "editor": {
+                "id": "com.k2view.interface",
+                "doc": [
+                    "The Dataverse interface to use."
+                ],
+                "interfaceType": [
+                    "Dataverse"
+                ]
+            }
+        },
+        {
+            "name": "table",
+            "schema": {
+                "type": "string"
+            },
+            "doc": "The entity set name of the Dataverse table"
+        },
+        {
+            "const": "GET",
+            "name": "method",
+            "schema": {},
+            "hidden": true
+        },
+        {
+            "const": {},
+            "name": "headers",
+            "schema": {
+                "type": "object"
+            },
+            "doc": [
+                "Set optional HTTP header parameters. The Actor will not override any headers provided.",
+                "For example: {\"prefer\": \"odata.include-annotations=\\\"OData.Community.Display.V1.FormattedValue\\\"\"}"
+            ]
+        },
+        {
+            "const": "",
+            "name": "expand_lookups",
+            "schema": {
+                "type": "boolean"
+            },
+            "doc": [
+                "If true, the actor expands each lookup attribute whose target entity has an alternate key defined, using the alternate key in place of the GUID primary key."
+            ],
+            "mandatory": false
+        },
+        {
+            "name": "filter",
+            "schema": {
+                "type": "string"
+            },
+            "doc": "OData $filter expression to limit the result set. Example: \"statuscode eq 1\"",
+            "mandatory": false
+        },
+        {
+            "name": "fields",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "doc": "List of field names to include in the OData $select clause.",
+            "editor": {
+                "id": "com.k2view.strings",
+                "template": true
+            },
+            "mandatory": false
+        },
+        {
+            "const": "",
+            "name": "expand",
+            "doc": "OData $expand clause to include related tables. Example: \"createdby($select=fullname)\"",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": false
+        },
+        {
+            "const": "",
+            "name": "orderby",
+            "doc": "Sorts results by one or more fields. Example: \"name asc, createdon desc\"",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": false
+        },
+        {
+            "const": 0,
+            "name": "limit",
+            "schema": {
+                "type": "integer"
+            },
+            "doc": "Limits the number of rows returned using the OData $top parameter.",
+            "mandatory": false
+        },
+        {
+            "const": "",
+            "name": "apply",
+            "schema": {
+                "type": "string"
+            },
+            "doc": "OData $apply clause for aggregations or transformations. Example: groupby((ownerid), aggregate(revenue with sum as TotalRevenue))",
+            "mandatory": false
+        }
+    ],
+    "outputs": [
+        {
+            "name": "status",
+            "schema": {},
+            "hidden": true
+        },
+        {
+            "name": "header",
+            "schema": {},
+            "hidden": true
+        },
+        {
+            "name": "result",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object"
+                }
+            },
+            "doc": [
+                "A result set (virtual array) containing the rows. Each row contains a Map with the results.",
+                "You can access the map using the column name or the column index, with 0 being the first column."
+            ]
+        }
+    ],
+    "tags": [
+        "Dataverse"
+    ],
+    "actorClass": "com.k2view.cdbms.usercode.common.dataverse.actors.DataverseTableQueryActor"
+}

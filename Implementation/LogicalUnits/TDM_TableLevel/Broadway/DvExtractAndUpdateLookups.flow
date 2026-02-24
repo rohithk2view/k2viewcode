@@ -1,0 +1,164 @@
+tags: Dataverse
+stages:
+  Prep:
+    actors:
+      TDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Get Task Execution ID:
+        parent: FabricSetRead
+        height: 191
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+      Get Source Environment:
+        parent: FabricSetRead
+        height: 138
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+  Task tables:
+    actors:
+      FetchTaskTables:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              select t.interface_name, t.schema_name, t.ref_table_name
+               from ${@schema}.task_ref_tables t, ${@schema}.task_execution_summary es where t.task_id = es.task_id AND es.task_execution_id = ${task_exec_id} AND t.ref_table_name != '_updateLookups'
+          schema:
+            link: TDMDBSchema/schema
+            schema: any
+            mandatory: false
+            createdBy: sql
+          task_exec_id:
+            link: Get Task Execution ID/result
+            schema: any
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: '#ref'
+      SetPhaseGlobalTo2:
+        parent: FabricSet
+        in:
+          key:
+            const: DATAVERSE_LOAD_PHASE
+          value:
+            const: '2'
+  Build Ref Instance ID:
+    actors:
+      ResetPhaseOnError1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: DvResetPhaseGlobal
+                number_of_retries: ''
+                retry_interval: ''
+      BuildIID:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildIID
+          sourceEnv:
+            link: Get Source Environment/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          interfaceName:
+            link:
+              path: FetchTaskTables/result/interface_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            link:
+              path: FetchTaskTables/result/schema_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            link:
+              path: FetchTaskTables/result/ref_table_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            link: Get Task Execution ID/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          iid:
+            schema: string
+  Run table load:
+    last: 1
+    actors:
+      ResetPhaseOnError2:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: DvResetPhaseGlobal
+                number_of_retries: ''
+                retry_interval: ''
+      ExtractAndLoadTable:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: RunTableLoad
+          refInstanceId:
+            link: BuildIID/iid
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExeId:
+            link: Get Task Execution ID/result
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+  Reset phase global:
+    actors:
+      ResetPhaseGlobal:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: DvResetPhaseGlobal
+schemas:
+  FetchTaskTables.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        interface_name:
+          type: string
+        schema_name:
+          type: string
+        ref_table_name:
+          type: string

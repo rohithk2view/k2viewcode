@@ -27,12 +27,16 @@ stages:
             external: sourceInterface
             schema: string
             mandatory: false
-          SchemaName:
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          schemaName:
             external: sourceSchema
             schema: string
             mandatory: false
-          tableName:
-            external: tableName
+          catalogSchema:
+            external: catalogSchema
             schema: string
             mandatory: false
         out:
@@ -149,16 +153,17 @@ stages:
             mandatory: false
           filterGUI:
             external: filterGUI
-            schema: any
+            schema: string
+            mandatory: false
+          catalogSchema:
+            external: catalogSchema
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
             mandatory: false
         out:
           result:
             schema: '#ref'
-      Set Target Environment:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: setTargetEnv
       getTDMDBSchema:
         parent: InnerFlow
         in:
@@ -282,7 +287,7 @@ stages:
             mandatory: false
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
-            schema: any
+            schema: string
             mandatory: false
   Get Number of Loaded Records:
     transactional: false
@@ -392,6 +397,8 @@ schemas:
         column_name:
           type: string
         column_type:
+          type: string
+        column_sqlite_type:
           type: string
   Prepare SqliteTable & Inseet Command.in.TableColums:
     type: array

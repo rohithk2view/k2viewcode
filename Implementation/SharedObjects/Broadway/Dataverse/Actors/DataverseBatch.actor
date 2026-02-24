@@ -1,0 +1,120 @@
+{
+    "type": "DataverseBatch",
+    "badge": "Da",
+    "doc": [
+        "Uses the Dataverse $batch API to combine multiple requests into a single call.",
+        "Automatically sends a batch request every X records, where X is configurable in the interface settings.",
+        "For batch inserts, consider using DataverseTableLoad for a simpler and more user-friendly alternative."
+    ],
+    "inputs": [
+        {
+            "name": "debug",
+            "hidden": true
+        },
+        {
+            "name": "params",
+            "hidden": true
+        },
+        {
+            "name": "payload",
+            "hidden": false
+        },
+        {
+            "name": "exceptionOnError",
+            "hidden": true
+        },
+        {
+            "name": "interface",
+            "schema": {},
+            "editor": {
+                "id": "com.k2view.interface",
+                "doc": [
+                    "The Dataverse interface to use."
+                ],
+                "interfaceType": [
+                    "Dataverse"
+                ]
+            }
+        },
+        {
+            "name": "path",
+            "const": "",
+            "doc": "The relative path to use. For example: accounts",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "method",
+            "editor": {
+                "id": "com.k2view.dropdown",
+                "options": [
+                    "",
+                    "POST",
+                    "PUT",
+                    "DELETE",
+                    "PATCH"
+                ]
+            },
+            "const": "POST",
+            "hidden": false
+        },
+        {
+            "name": "headers",
+            "const": {}
+        },
+        {
+            "name": "timeout",
+            "const": 60000,
+            "hidden": true
+        },
+        {
+            "name": "noCertificateCheck",
+            "const": false,
+            "hidden": true
+        },
+        {
+            "const": "",
+            "name": "atomic",
+            "schema": {
+                "type": "boolean"
+            },
+            "doc": "If true, each individual batch request is executed atomically. Note: there is no rollback for already successful batches.",
+            "mandatory": false
+        },
+        {
+            "name": "async",
+            "const": false,
+            "schema": {
+                "type": "boolean"
+            },
+            "doc": [
+                "If true, batch requests are sent asynchronously.",
+                "Once the max concurrency is reached, the actor waits for the oldest request to complete.",
+                "All requests are awaited at commit time.",
+                "The maximum number of concurrent batch requests is configurable in the interface settings."
+            ],
+            "mandatory": false
+        }
+    ],
+    "outputs": [
+        {
+            "name": "status",
+            "hidden": true
+        },
+        {
+            "name": "header",
+            "hidden": true
+        },
+        {
+            "name": "result",
+            "schema": {},
+            "hidden": true
+        }
+    ],
+    "tags": [
+        "Dataverse"
+    ],
+    "actorClass": "com.k2view.cdbms.usercode.common.dataverse.actors.DataverseBatchActor",
+    "parentType": "HttpJson"
+}

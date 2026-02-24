@@ -1,0 +1,79 @@
+{
+    "type": "DataverseBulkDeleteAwait",
+    "badge": "Da",
+    "doc": [
+        "Waits for the completion of a Dataverse bulk delete job.",
+        "Accepts a job ID (output of the DataverseBulkDelete actor) as input.",
+        "Polls the job status periodically using exponential backoff until it finishes or fails.",
+        "Returns the final status of the bulk delete job."
+    ],
+    "inputs": [
+        {
+            "const": "",
+            "name": "interface",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.interface",
+                "doc": [
+                    "The Dataverse interface to use."
+                ],
+                "interfaceType": [
+                    "Dataverse"
+                ]
+            },
+            "mandatory": true
+        },
+        {
+            "name": "job_id",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": true,
+            "doc": "The bulk delete job ID"
+        },
+        {
+            "name": "wait_for_seconds",
+            "const": 0,
+            "schema": {
+                "type": "integer"
+            },
+            "doc": "The time to wait for the batch to complete. If the number is 0 or negative the actor will wait indefinitely.",
+            "mandatory": false
+        }
+    ],
+    "outputs": [
+        {
+            "name": "result",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "bulkdeleteoperationid": {
+                        "type": "string"
+                    },
+                    "successcount": {
+                        "type": "integer"
+                    },
+                    "failurecount": {
+                        "type": "integer"
+                    },
+                    "statecode": {
+                        "type": "integer"
+                    },
+                    "statuscode": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "doc": [
+                "Bulk delete job result with success, failure counts, and stats.",
+                "Fetched from Dataverse bulkdeleteoperations API."
+            ]
+        }
+    ],
+    "tags": [
+        "Dataverse"
+    ],
+    "actorClass": "com.k2view.cdbms.usercode.common.dataverse.actors.DataverseBulkDeleteAwait"
+}

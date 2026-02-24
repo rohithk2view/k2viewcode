@@ -1,0 +1,276 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Set Target Environment:
+        parent: FabricSet
+        in:
+          key:
+            const: ENVIRONMENT
+            default: false
+          value:
+            const: null
+            external: TARGET_ENVIRONMENT
+            default: false
+      Create Folder For Load:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createFolderForFlows
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          FOLDER_NAME:
+            const: LoadFlows
+            schema: string
+            mandatory: false
+      Create Folder For Sequences:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createFolderForFlows
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          FOLDER_NAME:
+            const: SequencesFlows
+            schema: string
+            mandatory: false
+      geLuTables:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getLuTables
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+        out:
+          res:
+            schema: '#ref'
+  Stage 8:
+    actors:
+      Get Type Of Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetObjectType
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          name:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: any
+  Stage 10:
+    dependsOn: Stage 8
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Type Of Table/result
+            schema: string
+          b:
+            const: TABLE
+            schema: string
+      Create Load Table Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CreateLoadTableFlow
+          TABLE_NAME:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+            mandatory: false
+            createdBy: flowName
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+            createdBy: flowName
+          SOURCE_SCHEMA:
+            external: SOURCE_SCHEMA
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+            createdBy: flowName
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+            mandatory: false
+            createdBy: flowName
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          useFabric:
+            const: true
+            schema: boolean
+            mandatory: false
+            createdBy: flowName
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+            createdBy: flowName
+    split: '--------------------'
+  Stage 2:
+    else: true
+    dependsOn: Stage 8
+    actors:
+      Document?:
+        parent: Equals
+        in:
+          a:
+            link: Get Type Of Table/result
+            schema: string
+          b:
+            const: DOC_MAIN
+            schema: string
+  Stage 3:
+    last: 1
+    dependsOn: Stage 10
+    split: '--------------------'
+  Stage 4:
+    last: 1
+    dependsOn: Stage 2
+    actors:
+      Equals3:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Document?/result
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      List of Documents:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+        out:
+          array:
+            schema: '#ref'
+      'Create Load Flow For Main Document ':
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CreateLoadFlowForOneDataSet
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceTable:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          targetDbInterface:
+            external: TARGET_INTERFACE
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          targetDbSchema:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          targetDbTable:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceDBIneterface:
+            external: SOURCE_INTERFACE
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceDBSchema:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          rootFieldName:
+            external: ROOT_FIELD_NAME
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+            createdBy: flowName
+    split: '--------------------'
+  Stage 5:
+    last: 1
+    else: true
+    dependsOn: Stage 2
+  Stage 6:
+    actors:
+      createLoadAllTablesFlow1:
+        parent: createLoadAllTablesFlow
+        in:
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          documents:
+            link: List of Documents/array
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+          LU_NAME:
+            external: LU_NAME
+schemas:
+  geLuTables.out.res:
+    type: array
+    items:
+      type: string
+  List of Documents.out.array:
+    type: array
+    items:
+      type: string
+  createLoadAllTablesFlow1.in.documents:
+    type: array
+    items:
+      type: string

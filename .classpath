@@ -1,4 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" />
+	<classpathentry kind="output" path=".studioWeb/java/bin" />
+	<classpathentry kind="src" path="Implementation/SharedObjects/Java/src" />
+	<classpathentry kind="src" path="Implementation/LogicalUnits/Customer/Java/src" />
+	<classpathentry kind="src" path="Implementation/LogicalUnits/k2_ref/Java/src" />
+	<classpathentry kind="src" path="Implementation/LogicalUnits/k2_ws/Java/src" />
+	<classpathentry kind="src" path="Implementation/LogicalUnits/TDM/Java/src" />
+	<classpathentry kind="src" path="Implementation/LogicalUnits/TDM_LIBRARY/Java/src" />
+	<classpathentry kind="src" path="Implementation/LogicalUnits/TDM_TableLevel/Java/src" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/cdbms-core-8.3.3_10.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/cdbms-iid-finder-8.3.3_10.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/fabric-session-8.3.3_10.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/fabric-common-8.3.3_3.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/fabric-api-servlet-8.3.3_10.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/fabric-parser-8.3.3_10.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/fabricdb-8.3.3_3.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/broadway-web-8.3.3_1.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/broadway-testing-actors-8.3.3_1.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/broadway-masking-actors-8.3.3_1.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/broadway-image-actors-8.3.3_1.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/broadway-core-actors-8.3.1_131.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/broadway-8.3.3_1.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/graphit-8.3.1_14.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/discovery-sqlite-antlr-8.3.3_3.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/discovery-plugins-8.3.3_3.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/discovery-core-8.3.3_3.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/discovery-common-8.3.3_3.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/tomcat-servlet-api-10.1.48.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/handlebars-4.5.0.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/fabric/k2-sqlite-jdbc-3.46.1.3_2.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/provided/slf4j-api-2.0.9.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/provided/logback-core-1.4.14.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/fabric/lib/provided/logback-classic-1.4.14.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/project/lib/json-20231013.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/project/lib/handlebars-4.3.0.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/project/lib/gson-2.10.1.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/project/lib/cron-utils-9.2.1.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/project/lib/commons-lang3-3.11.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/project/lib/commons-collections4-4.3.jar" />
 </classpath>

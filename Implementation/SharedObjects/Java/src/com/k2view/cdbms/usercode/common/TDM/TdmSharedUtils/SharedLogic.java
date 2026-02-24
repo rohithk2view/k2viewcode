@@ -22,6 +22,7 @@ import java.nio.ByteBuffer;
 import java.sql.*;
 import java.util.Date;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.*;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -85,23 +86,7 @@ public class SharedLogic {
 	public static Map<String, List<Map<String, Object>>> allTables = new HashMap<>();
 	private static HashMap<String, String> luShortMap = new HashMap<>();
     private static HashMap<String, String> tdmSeparators = new HashMap<>();
-    public static void setBroadwayActorFlags(String key, String value) throws SQLException {
-        //TDM 7.1 - Masking and Sequence Broadway Actors have special flags to enable/disable them, and they need
-        // to be set based on the input globals of the task
-
-        // Masking Actor - If MASKING_FLAG is set to false set the indicator of masking actor to false to suppress the masking in
-        // both Load and Extract tasks. If MASKING_FLAG is not set or set to true then nothing to do as the Masking is enabled by default.
-        if (key.contains("MASKING_FLAG") && "false".equals(value)) {
-            //log.info("setBroadawayActorFlags - Disabling Masking");
-            fabric().execute("set enable_masking = false");
-        }
-        // Sequence Actor - If TDM_REPLACE_SEQUENCES is set, used its value to disable/enable the sequence actor
-        if (key.contains("TDM_REPLACE_SEQUENCES")) {
-            //log.info("setBroadawayActorFlags - Setting Sequence Actor to: " + value);
-            fabric().execute("set enable_sequences = ?", value);
-        }
-    }
-
+  
     public static Object fnBatchStatistics(String i_batchId, String i_runMode) throws Exception {
         Object response;
         switch (i_runMode) {
@@ -286,7 +271,7 @@ public class SharedLogic {
 
 	private static boolean problematic(String condition) {
 		// These 4 asymmetric (<, >, <=, >=) that cause reverse of operators; others (like IN) do not.
-		return condition.contains("<") || condition.equalsIgnoreCase(">") ;
+		return condition.contains("<") || condition.contains(">") ;
 	}
 
 	static void expandSql(Long beID, String sourceEnv, Set<LuTable> usedTables, StringBuffer ret, Set<String> usedLu) {
@@ -355,16 +340,16 @@ public class SharedLogic {
 					// skip non same LU
 					continue;
 				}
-				UserCode.log.info("processTableDependencies LU {} for {} and {} ", table1.luName, table1.luTable, table2.luTable);
+				//UserCode.log.info("processTableDependencies LU {} for {} and {} ", table1.luName, table1.luTable, table2.luTable);
 				LUType luType = LUTypeFactoryImpl.getInstance().getTypeByName(table1.luName);
 				List<String> path = buildParentTablePath(luType, table1, table2);
-				UserCode.log.info("processTableDependencies path {}", path);
+				//UserCode.log.info("processTableDependencies path {}", path);
 				if (!Util.isEmpty(path)) {
 					Map<String, Map<String, List<LudbRelationInfo>>> rel = luType.getLudbPhysicalRelations();
 					for (int i = 1 ; i < path.size(); i ++) {
 						TableObject tableParent = (TableObject) luType.ludbObjects.get(path.get(i-1));
 						TableObject tableChild = (TableObject) luType.ludbObjects.get(path.get(i));
-						UserCode.log.info("processTableDependencies for from  {} to {} ",  path.get(i-1), path.get(i));
+						//UserCode.log.info("processTableDependencies for from  {} to {} ",  path.get(i-1), path.get(i));
 
 						List<LudbRelationInfo> childRelations = rel.get(tableParent.k2StudioObjectName).get(tableChild.k2StudioObjectName);
 						for (LudbRelationInfo childRelation : childRelations) {
@@ -377,7 +362,7 @@ public class SharedLogic {
 									append(table1.luName).append(".").
 									append(tableChild.ludbObjectName).append(".").
 									append(childRelation.to.get("column")).append("\n");
-							UserCode.log.info("processTableDependencies SQL :: \n {} ", prep);
+							//UserCode.log.info("processTableDependencies SQL :: \n {} ", prep);
 							addedTables.add(new LuTable(table1.luName, tableParent.ludbObjectName.toUpperCase()));
 							first = false;
 						}
@@ -387,12 +372,12 @@ public class SharedLogic {
 		}
 		if (!first) {
 			prep.append(" AND ");
-			UserCode.log.info("processTableDependencies SQL :: \n {} ", prep);
+			//UserCode.log.info("processTableDependencies SQL :: \n {} ", prep);
 		}
 		for (LuTable lt : addedTables) {
 			if (! usedTables.contains(lt)) {
 				usedTables.add(lt);
-				UserCode.log.info("added used table {} ", lt);
+				//UserCode.log.info("added used table {} ", lt);
 			}
 		}
 		return prep;
@@ -419,20 +404,20 @@ public class SharedLogic {
         try{
             TableObject table1Obj = (TableObject) luType.ludbObjects.get(table1);
             if (table1Obj.isRootObject()) {
-                UserCode.log.info("buildPath stop on root object {}", table1Obj.ludbObjectName);
+                //UserCode.log.info("buildPath stop on root object {}", table1Obj.ludbObjectName);
                 return false;
             }
             if (table1Obj.ludbObjectName.equalsIgnoreCase(table2.luTable)) {
                 res.add(table2.luTable);
-                UserCode.log.info("buildPath stop on table2.luTable {}", table2.luTable);
+                //UserCode.log.info("buildPath stop on table2.luTable {}", table2.luTable);
                 return true;
             }
             Map<String, List<LudbRelationInfo>> map = luType.ludbOppositePhysicalRelations.get(table1);
             for (String parent : map.keySet()) {
-                UserCode.log.info("buildPath iterate on table2.luTable {}",  parent);
+                //UserCode.log.info("buildPath iterate on table2.luTable {}",  parent);
                 boolean res1 = buildPath(luType, table2, parent, res);
                 if (res1) {
-                    UserCode.log.info("buildPath ADDED on table1 {}",  table1);
+                    //UserCode.log.info("buildPath ADDED on table1 {}",  table1);
                     res.add(table1);
                     return true;
                 }
@@ -561,7 +546,7 @@ public class SharedLogic {
             if(result!=null){
                 throw new RuntimeException(result.toString());
             }
-            UserCode.log.info(matchQuery.sql);
+            //UserCode.log.info(matchQuery.sql);
 			return matchQuery.sql;
 		}
         String iidSeparator = "" + db(TDM).fetch("Select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where LOWER(param_name) = 'iid_separator'").firstValue();
@@ -821,7 +806,7 @@ public class SharedLogic {
 			}
 
 		} else {
-			Util.rte(() -> rowsList.addAll(fnGetEnvsByUser(userName)));
+			Util.rte(() -> rowsList.addAll(fnGetEnvsByUser(userName, null)));
 		}
 
 		List<Map<String, Object>> result = new ArrayList<>();
@@ -885,182 +870,196 @@ public class SharedLogic {
 	}
 
 	@out(name = "result", type = List.class, desc = "")
-	public static Set<Map<String,Object>> fnGetEnvsByUser(String userName) throws Exception {
-        Set<Map<String, Object>> rowsList = new HashSet<>();
-        String fabricRoles="";
+	public static Set<Map<String,Object>> fnGetEnvsByUser(String userName, Set<Long> productIds) throws Exception {
+		Set<Map<String, Object>> rowsList = new HashSet<>();
+		String fabricRoles="";
 		try{
 			fabricRoles=fnGetUserRoles(userName);
 		} catch(Throwable t) {
-		    throw new RuntimeException(t.getMessage());
+			throw new RuntimeException(t.getMessage());
 		}
-		
+	
+		String productFilterJoin = "";
+		String productFilterWhere = "";
+	
+		if (productIds != null && !productIds.isEmpty()) {
+			String productIdsString = productIds.stream()
+				.map(String::valueOf)
+				.collect(Collectors.joining(","));
+			productFilterJoin = " JOIN " + TDMDB_SCHEMA + ".environment_products ep ON env.environment_id = ep.environment_id";
+			productFilterWhere = " AND ep.status = 'Active' AND ep.enable_product = TRUE AND ep.product_id IN (" + productIdsString + ")";
+		}
+	
 		//get the environments where the user is the owner
-		String query1 = "select *, " +
-		        "CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, 'owner' as role_id, 'owner' as assignment_type " +
-		        "from " + TDMDB_SCHEMA + ".environments env, " + TDMDB_SCHEMA + ".environment_owners o " +
-		        "where env.environment_id = o.environment_id " +
-		        "and (o.user_id = (?) or o.user_id = ANY(string_to_array(?, '" + TDM_PARAMETERS_SEPARATOR + "')))" +
-		        "and env.environment_status = 'Active'";
-		
+		String query1 = "select env.*, " +
+			"CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, 'owner' as role_id, 'owner' as assignment_type " +
+			"from " + TDMDB_SCHEMA + ".environments env JOIN " + TDMDB_SCHEMA + ".environment_owners o on o.environment_id = env.environment_id" +
+			productFilterJoin +
+			" where (o.user_id = (?) or o.user_id = ANY(string_to_array(?, '" + TDM_PARAMETERS_SEPARATOR + "')))" +
+			" and env.environment_status = 'Active'" +
+			productFilterWhere;
+	
 		//log.info("fnGetEnvsByuser - query 1 for user Name " + userName + "is: " + query1);
 		Db.Rows rows = db(TDM).fetch(query1, userName, fabricRoles);
-		
+	
 		List<String> columnNames = rows.getColumnNames();
 		for (Db.Row row : rows) {
-		    ResultSet resultSet = row.resultSet();
-		    Map<String, Object> rowMap = new HashMap<>();
-		    for (String columnName : columnNames) {
-		        rowMap.put(columnName, resultSet.getObject(columnName));
-		    }
-		    rowsList.add(rowMap);
+			ResultSet resultSet = row.resultSet();
+			Map<String, Object> rowMap = new HashMap<>();
+			for (String columnName : columnNames) {
+				rowMap.put(columnName, resultSet.getObject(columnName));
+			}
+			rowsList.add(rowMap);
 		}
-		
+	
 		String envIds = "(";
 		if (!rowsList.isEmpty()) {
-		    for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
-		    envIds = envIds.substring(0, envIds.length() - 1);
+			for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
+			envIds = envIds.substring(0, envIds.length() - 1);
 		}
 		envIds += ")";
-		
+	
 		//get the environments where the user is assigned to a role by their username
-		String query2 = "select *, " +
-		        "CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
-		        "from " + TDMDB_SCHEMA + ".environments env, " + TDMDB_SCHEMA + ".environment_roles r, " + TDMDB_SCHEMA + ".environment_role_users u " +
-		        "where env.environment_id = r.environment_id " +
-		        "and lower(r.role_status) = 'active' " +
-		        "and r.role_id = u.role_id " +
-		        "and u.user_id = (?) " +
-				"and u.user_type = 'ID' " +
-		        "and env.environment_status = 'Active'";
+		String query2 = "select env.*, " +
+			"CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
+			"from " + TDMDB_SCHEMA + ".environments env JOIN " + TDMDB_SCHEMA + ".environment_roles r on env.environment_id = r.environment_id JOIN " + TDMDB_SCHEMA + ".environment_role_users u on r.role_id = u.role_id " +
+			productFilterJoin +
+			" where lower(r.role_status) = 'active' " +			
+			" and u.user_id = (?) " +
+			" and u.user_type = 'ID' " +
+			" and env.environment_status = 'Active'";
 		// remove the list of environments returned by query 1;
-		query2 += "()".equals(envIds) ? "" : "and env.environment_id not in " + envIds;
+		query2 += "()".equals(envIds) ? "" : " and env.environment_id not in " + envIds;
+		query2 += productFilterWhere;
 		rows = db(TDM).fetch(query2, userName);
-		
+	
 		//log.info("fnGetEnvsByuser - query 2 for user Name " + userName + "is: " + query2);
-		
+	
 		columnNames = rows.getColumnNames();
 		for (Db.Row row : rows) {
-		    ResultSet resultSet = row.resultSet();
-		    Map<String, Object> rowMap = new HashMap<>();
-		    for (String columnName : columnNames) {
-		        rowMap.put(columnName, resultSet.getObject(columnName));
-		    }
-		    rowsList.add(rowMap);
+			ResultSet resultSet = row.resultSet();
+			Map<String, Object> rowMap = new HashMap<>();
+			for (String columnName : columnNames) {
+				rowMap.put(columnName, resultSet.getObject(columnName));
+			}
+			rowsList.add(rowMap);
 		}
-		
+	
 		envIds = "(";
 		if (!rowsList.isEmpty()) {
-		    for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
-		    envIds = envIds.substring(0, envIds.length() - 1);
+			for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
+			envIds = envIds.substring(0, envIds.length() - 1);
 		}
 		envIds += ")";
-		
+	
 		//get the environments where the user id is one of the Fabric Roles
-		String query3 = "select *, " +
-		        "CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
-		        "from " + TDMDB_SCHEMA + ".environments env, " + TDMDB_SCHEMA + ".environment_roles r, " + TDMDB_SCHEMA + ".environment_role_users u " +
-		        "where env.environment_id = r.environment_id " +
-		        "and lower(r.role_status) = 'active' " +
-		        "and r.role_id = u.role_id " +
-		        "and u.user_id = ANY(string_to_array(?, '" + TDM_PARAMETERS_SEPARATOR + "')) " +
-		"and u.user_type = 'GROUP' " +
-		        "and env.environment_status = 'Active'";
+		String query3 = "select env.*, " +
+			"CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
+			"from " + TDMDB_SCHEMA + ".environments env JOIN " + TDMDB_SCHEMA + ".environment_roles r on env.environment_id = r.environment_id JOIN " + TDMDB_SCHEMA + ".environment_role_users u on r.role_id = u.role_id " +
+			productFilterJoin +
+			" where lower(r.role_status) = 'active' " +			
+			" and u.user_id = ANY(string_to_array(?, '" + TDM_PARAMETERS_SEPARATOR + "')) " +
+			" and u.user_type = 'GROUP' " +
+			" and env.environment_status = 'Active'";
 		// remove the list of environments returned by query 1+2;
-		query3 += "()".equals(envIds) ? "" : "and env.environment_id not in " + envIds;
+		query3 += "()".equals(envIds) ? "" : " and env.environment_id not in " + envIds;
+		query3 += productFilterWhere;
 		rows = db(TDM).fetch(query3, fabricRoles);
-		
+	
 		//log.info("fnGetEnvsByuser - query 3 for Fabric Roles < " + fabricRoles + "> is: " + query3);
-		
+	
 		columnNames = rows.getColumnNames();
 		for (Db.Row row : rows) {
-		    ResultSet resultSet = row.resultSet();
-		    Map<String, Object> rowMap = new HashMap<>();
-		    for (String columnName : columnNames) {
-		        rowMap.put(columnName, resultSet.getObject(columnName));
-		    }
-		    rowsList.add(rowMap);
+			ResultSet resultSet = row.resultSet();
+			Map<String, Object> rowMap = new HashMap<>();
+			for (String columnName : columnNames) {
+				rowMap.put(columnName, resultSet.getObject(columnName));
+			}
+			rowsList.add(rowMap);
 		}
-		
+	
 		envIds = "(";
 		if (!rowsList.isEmpty()) {
-		    for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
-		    envIds = envIds.substring(0, envIds.length() - 1);
+			for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
+			envIds = envIds.substring(0, envIds.length() - 1);
 		}
 		envIds += ")";
-		
+	
 		//get the environments where the user is assigned to a role by 'ALL' assignment
-		String query4 = "select *, " +
-		        "CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type " +
-		        ", r.role_id, 'all' as assignment_type " +
-		        "from " + TDMDB_SCHEMA + ".environments env, " + TDMDB_SCHEMA + ".environment_roles r, " + TDMDB_SCHEMA + ".environment_role_users u " +
-		        "where env.environment_id = r.environment_id " +
-		        "and lower(r.role_status) = 'active' " +
-		        "and r.role_id = u.role_id " +
-		        "and lower(u.username) = 'all' " +
-		        "and env.environment_status = 'Active'";
+		String query4 = "select env.*, " +
+			"CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type " +
+			", r.role_id, 'all' as assignment_type " +
+			"from " + TDMDB_SCHEMA + ".environments env JOIN " + TDMDB_SCHEMA + ".environment_roles r on env.environment_id = r.environment_id JOIN " + TDMDB_SCHEMA + ".environment_role_users u on r.role_id = u.role_id " +
+			productFilterJoin +
+			" where lower(r.role_status) = 'active' " +			
+			" and lower(u.username) = 'all' " +
+			" and env.environment_status = 'Active'";
 		// remove the list of environments returned by queries 1+2+3;
-		query4 += "()".equals(envIds) ? "" : "and env.environment_id not in " + envIds;
+		query4 += "()".equals(envIds) ? "" : " and env.environment_id not in " + envIds;
+		query4 += productFilterWhere;
 		rows = db(TDM).fetch(query4);
-		
+	
 		//log.info(" fnGetEnvsByuser - query 4 (get ALL roles) is: " + query4);
-
+	
 		columnNames = rows.getColumnNames();
 		for (Db.Row row : rows) {
-		    ResultSet resultSet = row.resultSet();
-		    Map<String, Object> rowMap = new HashMap<>();
-		    for (String columnName : columnNames) {
-		        rowMap.put(columnName, resultSet.getObject(columnName));
-		    }
-		    rowsList.add(rowMap);
+			ResultSet resultSet = row.resultSet();
+			Map<String, Object> rowMap = new HashMap<>();
+			for (String columnName : columnNames) {
+				rowMap.put(columnName, resultSet.getObject(columnName));
+			}
+			rowsList.add(rowMap);
 		}
 		envIds = "(";
 		if (!rowsList.isEmpty()) {
-		    for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
-		    envIds = envIds.substring(0, envIds.length() - 1);
+			for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
+			envIds = envIds.substring(0, envIds.length() - 1);
 		}
 		envIds += ")";
-		// Query 5: Fetch all active environments that the user is not 
+	
+		// Query 5: Fetch all active environments that the user is not
 		String query5 = "WITH categorized_env AS ( " +
-					"SELECT env.*, " +
-					"CASE " +
-					"  WHEN env.allow_read = true AND env.allow_write = true THEN 'BOTH' " +
-					"  WHEN env.allow_write = true THEN 'TARGET' " +
-					"  ELSE 'SOURCE' " +
-					"END AS environment_type, " +
-					"'user' AS assignment_type, " +
-					"0 AS role_id " +
-					"FROM " + TDMDB_SCHEMA + ".environments env " +
-					"WHERE env.environment_status = 'Active' " +
-				") " +
-				"SELECT * FROM categorized_env " +
-				"WHERE environment_type IN ('BOTH', 'SOURCE')";
+			"SELECT env.*, " +
+			"CASE " +
+			"   WHEN env.allow_read = true AND env.allow_write = true THEN 'BOTH' " +
+			"   WHEN env.allow_write = true THEN 'TARGET' " +
+			"   ELSE 'SOURCE' " +
+			"END AS environment_type, " +
+			"'user' AS assignment_type, " +
+			"0 AS role_id " +
+			"FROM " + TDMDB_SCHEMA + ".environments env " +
+			productFilterJoin +
+			" WHERE env.environment_status = 'Active' " +
+			productFilterWhere +
+			" ) " +
+			"SELECT * FROM categorized_env " +
+			"WHERE environment_type IN ('BOTH', 'SOURCE')";
 		// remove the list of environments returned by queries 1+2+3+4;
-		query5 += "()".equals(envIds) ? "" : "and categorized_env.environment_id not in " + envIds;
+		query5 += "()".equals(envIds) ? "" : " and categorized_env.environment_id not in " + envIds;
 		rows = db(TDM).fetch(query5);
-
+	
 		// log.info("fnGetEnvsByuser - query 5 (get ALL Env) is: " + query5);
-
+	
 		columnNames = rows.getColumnNames();
 		for (Db.Row row : rows) {
-		    ResultSet resultSet = row.resultSet();
-		    Map<String, Object> rowMap = new HashMap<>();
-		    for (String columnName : columnNames) {
+			ResultSet resultSet = row.resultSet();
+			Map<String, Object> rowMap = new HashMap<>();
+			for (String columnName : columnNames) {
 				if("sync_mode".equalsIgnoreCase(columnName)){
-					rowMap.put(columnName, "OFF");			
+					rowMap.put(columnName, "OFF");
 				}else if ("environment_type".equalsIgnoreCase(columnName)){
-					rowMap.put(columnName, "SOURCE");			
+					rowMap.put(columnName, "SOURCE");
 				}else{
 					rowMap.put(columnName, resultSet.getObject(columnName));
 				}
-		    }
-		    rowsList.add(rowMap);
+			}
+			rowsList.add(rowMap);
 		}
 		if (rows != null) {
 			rows.close();
 		}
 		// Return the final set of environments
 		return rowsList;
-
 	}
 
 	//TDM 7.2 - This function gets the Override Attributes supplied when the task was executed.
@@ -1128,7 +1127,7 @@ public class SharedLogic {
             if("TDM.tdmTaskScheduler".equalsIgnoreCase(userId)){
                 userId = userName;
             }
-			rowsList.addAll(fnGetEnvsByUser(userId));
+			rowsList.addAll(fnGetEnvsByUser(userId, null));
 		}
 	
 		List<Map<String, Object>> result = new ArrayList<>();
@@ -1578,7 +1577,7 @@ public class SharedLogic {
 						}
 						Map<String, String> sourceValidationsErrorMessages = fnValidateSourceEnvForTask(be_lus, taskData.getInt("refcount"),
 								selectionMethod,
-								taskData.getString("sync_mode"), taskData.getBoolean("version_ind"), taskType, role,taskId);
+								taskData.getString("sync_mode"), taskData.getBoolean("version_ind"), taskType, role,taskId,validateReadNumber);
 						//log.info("validateNumber: " + validateNumber);
 		
 						if (validateReadNumber!=-1 && (allowedEntitySize > validateReadNumber)) {
@@ -1637,7 +1636,7 @@ public class SharedLogic {
 								selectionMethod,
 								taskData.getBoolean("version_ind"),
 								taskData.getBoolean("replace_sequences"), taskData.getBoolean("delete_before_load"), taskType,
-								reserveInd != null ? reserveInd : taskData.getBoolean("reserve_ind"), allowedEntitySize, role, cloneInd,taskData.getString("sync_mode"),taskId);
+								reserveInd != null ? reserveInd : taskData.getBoolean("reserve_ind"), allowedEntitySize, role, cloneInd,taskData.getString("sync_mode"),taskId,validateNumber);
 						//log.info("targetValidationsErrorMesssages: " + targetValidationsErrorMesssages);
 						if (validateNumber != -1 && (allowedEntitySize>validateNumber)) {
 							targetValidationsErrorMessages.put("Number of entity", "The number of entities exceeds the number of entities in the "+ permission+ " permission");
@@ -1818,111 +1817,123 @@ public class SharedLogic {
     }
 
 
-    public static List<HashMap<String, String>> fnGetTableFields(String dbInterfaceName, String SchemaName, String tableName) throws Exception {
+    public static List<HashMap<String, String>> fnGetTableFields(String dbInterfaceName, String schemaName, String tableName, String catalogSchema) throws Exception {
 
-        Map<String,Object> interfaceInput = new HashMap<>();
+		Map<String,Object> interfaceInput = new HashMap<>();
         interfaceInput.put("dataPlatform", dbInterfaceName);
-        interfaceInput.put("schema", SchemaName);
+        interfaceInput.put("schema", catalogSchema);
         interfaceInput.put("dataset", tableName);
 
         List<Map<String, Object>> interfaceTables =  MtableLookup("catalog_field_info",interfaceInput, MTable.Feature.caseInsensitive);
 		if (interfaceTables == null  || interfaceTables.isEmpty()) {
-            return getTableFieldsByJDBC(dbInterfaceName, SchemaName, tableName);
+            return getTableFieldsByJDBC(dbInterfaceName, schemaName, tableName);
         } else {
-            return getTableFieldsByCatalog(dbInterfaceName, SchemaName, tableName, interfaceTables);
+            return getTableFieldsByCatalog(interfaceTables);
         }
 
     }
 
-    private static List<HashMap<String, String>> getTableFieldsByJDBC(String dbInterfaceName, String SchemaName, String tableName) throws SQLException {
+private static List<HashMap<String, String>> getTableFieldsByJDBC(String dbInterfaceName, String schemaName,
+			String tableName) throws SQLException {
 		List<HashMap<String, String>> result = new ArrayList<>();
 
-        DatabaseMetaData metaData = getConnection(dbInterfaceName).getMetaData();
-        ResultSet columns = metaData.getColumns(null, SchemaName, tableName, null);
-        
-        while (columns.next()) {
-            HashMap<String, String> map = new HashMap<>();
-            
-            map.put("column_name", columns.getString("COLUMN_NAME"));
-            int dataType = columns.getInt("DATA_TYPE");
-            String columnType = toSqliteType(dataType);
-            String generalColumnType = "TEXT";
-            Boolean addField = true;
-            switch (columnType) {
-                case "INTEGER":
-                case "REAL":
-                    generalColumnType = "NUMBER";
-                    break;
-                case "TEXT":
-                    generalColumnType = "TEXT";
-                    break;
-                case "BLOB":
-                    generalColumnType = "BLOB";
-                    break;
-                default:
-                    generalColumnType = "TEXT";
-                    break;
-            }
-            if (addField) {
-                map.put("column_name", columns.getString("COLUMN_NAME"));
-                map.put("column_type", generalColumnType);
-				map.put("column_sqlite_type", columnType);
-                result.add(map);
-            }
-        }
+		DatabaseMetaData metaData = getConnection(dbInterfaceName).getMetaData();
+		ResultSet columns = metaData.getColumns(null, schemaName, tableName, null);
 
-        if (columns != null) {
-            columns.close();
-        }
+		while (columns.next()) {
+			HashMap<String, String> map = new HashMap<>();
 
-        return result;
-    }
+			int dataType = columns.getInt("DATA_TYPE");
+			String typeName = columns.getString("TYPE_NAME");
+			String columnType = toSqliteType(dataType, typeName);
 
-    private static List<HashMap<String, String>> getTableFieldsByCatalog(String dbInterfaceName, String SchemaName, String tableName, List<Map<String, Object>> interfaceTables) throws SQLException {
+			String columnName = columns.getString("COLUMN_NAME");
+			boolean startsWithNumber = columnName.matches("^[0-9].*");
+			if (startsWithNumber) {
+				columnName = "\"" + columnName + "\"";
+			}
+			map.put("column_name", columnName);
+			map.put("column_type", columnType);
+			map.put("column_sqlite_type", columnType);
+			result.add(map);
+
+		}
+
+		if (columns != null) {
+			columns.close();
+		}
+
+		return result;
+	}
+
+   	private static List<HashMap<String, String>> getTableFieldsByCatalog(List<Map<String, Object>> interfaceTables) throws Exception {
 		List<HashMap<String, String>> result = new ArrayList<>();
 
-        for (Map<String, Object> fieldRec : interfaceTables) {
-            HashMap<String, String> map = new HashMap<>();
-            String fieldName = fieldRec.get("field").toString();
-            map.put("column_name", fieldName);
+		for (Map<String, Object> fieldRec : interfaceTables) {
+			HashMap<String, String> map = new HashMap<>();
+			String fieldName = fieldRec.get("field").toString();
 
 			String columnType = "TEXT";
-            String generalColumnType = "TEXT";
-            Boolean addField = true;
-            Object sourceEntityType = fieldRec.get("sourceEntityType");
-            if (sourceEntityType != null && "column".equalsIgnoreCase(sourceEntityType.toString())) {
-            int fieldDataType = Integer.parseInt(fieldRec.get("sqlDataType").toString());
-            columnType = toSqliteType(fieldDataType);
-           
-            switch (columnType) {
-                case "INTEGER":
-                case "REAL":
-                    generalColumnType = "NUMBER";
-                    break;
-                case "TEXT":
-                    generalColumnType = "TEXT";
-                    break;
-                case "BLOB":
-                    generalColumnType = "BLOB";
-                    break;
-                default:
-                    generalColumnType = "TEXT";
-                    break;
-                }
-            } else {
-                addField = false; 
-            }
-            if (addField) {
-                map.put("column_name", fieldName);
-                map.put("column_type", generalColumnType);
+			Boolean addField = true;
+		
+			Object sqlDataType = fieldRec.get("sqlDataType");
+			if (sqlDataType != null) {
+				int fieldDataType = Integer.parseInt(fieldRec.get("sqlDataType").toString());
+				String sourceDataTypeStr = null;
+				Object sourceDataType = fieldRec.get("sourceDataType");
+				if (sourceDataType != null) {
+					sourceDataTypeStr = sourceDataType.toString();
+				}
+				columnType = toSqliteType(fieldDataType, sourceDataTypeStr);
+			} else {
+				columnType = getFieldTypeBydefinedBy(fieldRec);
+			}
+
+			
+			if (addField) {
+				boolean startsWithNumber = fieldName.matches("^[0-9].*");
+				if (startsWithNumber) {
+					fieldName = "\"" + fieldName + "\"";
+				}
+
+				map.put("column_name", fieldName);
+				map.put("column_type", columnType);
 				map.put("column_sqlite_type", columnType);
-                result.add(map);
-            }
+				result.add(map);
+			}
 
-        }
+		}
 
-        return result;
-    }
+		return result;
+	}
+
+	private static String getFieldTypeBydefinedBy(Map<String, Object> fieldRec) throws Exception{
+		
+		String definedBy = fieldRec.get("definedBy").toString();
+		String fieldType = "";
+		switch (definedBy) {
+			case "STRING":
+				fieldType = "TEXT";
+				break;
+			case "BYTES":
+				fieldType = "BLOB";
+				break;
+			case "BOOLEAN":
+			fieldType = "INTEGER";
+				break;
+			case "COLLECTION":
+				fieldType = "TEXT";
+					break;
+			case "UNKNOWN":
+				fieldType = "TEXT";
+				break;
+			default:
+				fieldType = definedBy;
+				break;
+		}
+
+		return fieldType;
+	}
 
     private record LuTable(String luName, String luTable) {
         @Override

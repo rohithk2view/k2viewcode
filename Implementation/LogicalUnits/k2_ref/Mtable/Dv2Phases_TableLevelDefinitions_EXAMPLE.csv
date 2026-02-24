@@ -1,0 +1,4 @@
+interface_name,schema_name,table_name,extract_flow,table_order,delete_flow,load_flow
+{YOUR_INTERFACE},main,_updateLookups,DvExtractAndUpdateLookups,999,DvNoOp,DvNoOp
+{YOUR_INTERFACE},main,accounts,DvTableLevelExtract,1,DvTableLevelDelete,DvLoadInTwoPhases
+{YOUR_INTERFACE},main,contacts,DvTableLevelExtract,1,DvTableLevelDelete,DvLoadInTwoPhases

@@ -56,19 +56,40 @@ stages:
             const: 10
           a:
             link: Get Max Population Order/result
-  Filter Out Tables:
+  Filter Out Documents:
     actors:
-      filter Out TDM Tables:
-        parent: filterOutTDMTables
+      Get Type Of Table:
+        parent: LuFunction
         in:
-          tableName:
+          functionName:
+            const: fnGetObjectType
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          name:
             link:
               path: List Population Flows/result/tableName
               iterate: Iterate
-          luName:
-            external: luName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: any
   Prepare Input Data:
     actors:
+      Table?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Type Of Table/result
+            schema: string
+          b:
+            const: TABLE
+            schema: string
       Calculate Table's Order:
         parent: MathAdd
         in:
@@ -85,7 +106,7 @@ stages:
             const: buildDeleteTablesTemplateData
           table:
             link:
-              path: filter Out TDM Tables/tableNameOut
+              path: List Population Flows/result/tableName
               iterate: Iterate
             schema: string
             mandatory: false
@@ -227,8 +248,6 @@ stages:
         out:
           array:
             schema: '#ref'
-  Close Inner Loop:
-    last: 1
   Close Loop:
     last: 1
   Concatenate:

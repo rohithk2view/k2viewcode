@@ -15,9 +15,9 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
-
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM.TDM_Permissions.Logic.wsGetFabricRolesByUser;
 import java.sql.*;
@@ -42,6 +42,58 @@ public class Logic extends WebServiceUserCode {
 	static final String admin = "admin";
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 	static final String adi_only = "false";
+	private static final Set<String> EXCLUDED_GLOBALS = Set.of(
+			"TDM_DELETE_BEFORE_LOAD",
+			"TDM_INSERT_TO_TARGET",
+			"TDM_SOURCE_PRODUCT_VERSION",
+			"TDM_TARGET_PRODUCT_VERSION",
+			"TDM_SYNC_SOURCE_DATA",
+			"ROOT_TABLE_NAME",
+			"ROOT_COLUMN_NAME",
+			"TDM_REPLACE_SEQUENCES",
+			"TDM_TASK_EXE_ID",
+			"TDM_SOURCE_ENVIRONMENT_NAME",
+			"TDM_TAR_ENV_NAME",
+			"TDM_TASK_ID",
+			"COMBO_MAX_COUNT",
+			"TDM_CLONING_DATA",
+			"TDM_DATAFLUX_TASK",
+			"MASKING_CACHE_TTL",
+			"MAX_NUMBER_OF_ENTITIES_IN_LIST",
+			"TDM_LU_RETENTION_PERIOD_TYPE",
+			"TDM_LU_RETENTION_PERIOD_VALUE",
+			"GET_RESERVED_ENTITIES_LIMIT",
+			"USER_NAME",
+			"USER_FABRIC_ROLES",			
+			"TDM_RESERVE_IND",
+			"RESERVE_RETENTION_PERIOD_TYPE",
+			"RESERVE_RETENTION_PERIOD_VALUE",
+			"BE_ID",
+			"TASK_TYPE",
+			"enable_masking",
+			"enable_sequences",
+			"clone_id",
+			"TDMDB_SCHEMA",
+			"TDM_PARAMETERS_SEPARATOR",
+			"SEQ_CACHE_INTERFACE",
+			"TDM_POPULATE_JMX_STATS",
+			"TDM_SEQ_REPORT",
+			"TDM_BATCH_LIMIT",
+			"TDM_DELETE_TABLES_PREFIX",
+			"TDM_SUMMARY_REPORT_LIMIT",
+			"TDM_REF_UPD_SIZE",
+			"AI_DB_INTERFACE",
+			"TDM_VERSION_TASK_EXECUTION_ID",
+			"AI_ENVIRONMENT",
+			"TDM_DEBUG_MODE",
+			"TDM_DELETE_ONLY_TASK",
+			"CREATE_AI_K2SYSTEM_DB",
+			"SYNTHETIC_ENVIRONMENT",
+			"TABLE_LEVEL_SEPARATOR",
+			"POP_FULL_LU_HIERARCHY_IN_TDM_LU",
+			"CREATE_PHYSICAL_FK_IN_MDB_EXPORT_SCHEMA",
+			"REPLACE_SEQ_BY_LUI_SYNC",
+			"TDM_USING_CATALOG_SEQUENCES");
 
 	@desc("Gets Environments")
 	@webService(path = "environments", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
@@ -1684,7 +1736,7 @@ public class Logic extends WebServiceUserCode {
 		String userId = sessionUser().name();
 		
 		try {
-			response.put("result", fnGetEnvsByUser(userId));
+			response.put("result", fnGetEnvsByUser(userId, null));
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
@@ -1698,16 +1750,6 @@ public class Logic extends WebServiceUserCode {
 	@desc("Gets the list of all Global variables defined in the Fabric project except the TDM product Globals. If the optional input \"lus\" parameter is populated, return only shared Globals or Globals defined in the input LUs.")
 	@webService(path = "environment/getAllGlobals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "\"result\": [\r\n" +
-			"    {\r\n" +
-			"      \"globalName\": \"LOAD_MASKING_FLAG\",\r\n" +
-			"      \"Description\": \"\",\r\n" +
-			"      \"luList\": [\r\n" +
-			"        {\r\n" +
-			"          \"luName\": \"ALL\",\r\n" +
-			"          \"defaultValue\": \"false\"\r\n" +
-			"        }\r\n" +
-			"      ]\r\n" +
-			"    },\r\n" +
 			"    {\r\n" +
 			"      \"globalName\": \"GET_RESERVED_ENTITIES_LIMIT\",\r\n" +
 			"      \"Description\": \"\",\r\n" +
@@ -1765,61 +1807,7 @@ public class Logic extends WebServiceUserCode {
 			((List) getFabricResponse("set")).forEach(var -> {
 				String[] keyParts = ((String) ((Map) var).get("key")).split("\\.");
 				if (keyParts.length == 3 && "Global".equals(keyParts[0])) {
-					if (!"TDM_DELETE_BEFORE_LOAD".equals(keyParts[2]) &&
-						!"TDM_INSERT_TO_TARGET".equals(keyParts[2]) &&
-						!"TDM_SOURCE_PRODUCT_VERSION".equals(keyParts[2]) &&
-						!"TDM_TARGET_PRODUCT_VERSION".equals(keyParts[2]) &&
-						!"TDM_SYNC_SOURCE_DATA".equals(keyParts[2]) &&
-						!"ROOT_TABLE_NAME".equals(keyParts[2]) &&
-						!"ROOT_COLUMN_NAME".equals(keyParts[2]) &&
-						!"TDM_REPLACE_SEQUENCES".equals(keyParts[2]) &&
-						!"TDM_TASK_EXE_ID".equals(keyParts[2]) &&
-						!"TDM_SOURCE_ENVIRONMENT_NAME".equals(keyParts[2]) &&
-						!"TDM_TAR_ENV_NAME".equals(keyParts[2]) &&
-						!"TDM_TASK_ID".equals(keyParts[2]) &&
-						!"COMBO_MAX_COUNT".equals(keyParts[2]) &&
-						!"TDM_CLONING_DATA".equals(keyParts[2]) &&
-						!"TDM_DATAFLUX_TASK".equals(keyParts[2]) &&
-						!"MASKING_CACHE_TTL".equals(keyParts[2]) &&
-						!"MAX_NUMBER_OF_ENTITIES_IN_LIST".equals(keyParts[2]) &&
-						!"TDM_LU_RETENTION_PERIOD_TYPE".equals(keyParts[2]) &&
-						!"TDM_LU_RETENTION_PERIOD_VALUE".equals(keyParts[2]) &&
-						!"GET_RESERVED_ENTITIES_LIMIT".equals(keyParts[2]) &&
-						!"USER_NAME".equals(keyParts[2]) &&
-						!"USER_FABRIC_ROLES".equals(keyParts[2]) &&
-						!"USER_PERMISSION_GROUP".equals(keyParts[2]) &&
-						!"TDM_RESERVE_IND".equals(keyParts[2]) &&
-						!"RESERVE_RETENTION_PERIOD_TYPE".equals(keyParts[2]) &&
-						!"RESERVE_RETENTION_PERIOD_VALUE".equals(keyParts[2]) &&
-						!"BE_ID".equals(keyParts[2]) &&
-						!"TASK_TYPE".equals(keyParts[2]) &&
-						!"enable_masking".equals(keyParts[2]) &&
-						!"enable_sequences".equals(keyParts[2]) &&
-						!"BUILD_TDMDB".equals(keyParts[2]) &&
-						!"clone_id".equals(keyParts[2]) &&
-						!"TDMDB_SCHEMA".equals(keyParts[2]) &&
-                        !"TDM_PARAMETERS_SEPARATOR".equals(keyParts[2]) &&
-                        !"SEQ_CACHE_INTERFACE".equals(keyParts[2]) &&
-                        !"SEQ_DROP_KEYSPACE".equals(keyParts[2]) &&
-                        !"SEQ_DO_TRUNCATE".equals(keyParts[2]) &&
-                        !"TDM_POPULATE_JMX_STATS".equals(keyParts[2]) &&
-                        !"TDM_SEQ_REPORT".equals(keyParts[2]) &&
-                        !"TDM_BATCH_LIMIT".equals(keyParts[2]) &&
-                        !"TDM_DELETE_TABLES_PREFIX".equals(keyParts[2]) &&
-                        !"TDM_SUMMARY_REPORT_LIMIT".equals(keyParts[2]) &&
-                        !"TDM_REF_UPD_SIZE".equals(keyParts[2]) &&
-                        !"AI_DB_INTERFACE".equals(keyParts[2]) &&
-				        !"TDM_VERSION_TASK_EXECUTION_ID".equals(keyParts[2]) &&
-				        !"AI_ENVIRONMENT".equals(keyParts[2]) &&
-                        !"TDM_DEBUG_MODE".equals(keyParts[2]) &&
-                        !"TDM_DELETE_ONLY_TASK".equals(keyParts[2]) &&
-                        !"CREATE_AI_K2SYSTEM_DB".equals(keyParts[2]) &&
-                        !"SYNTHETIC_ENVIRONMENT".equals(keyParts[2]) &&
-                        !"TABLE_LEVEL_SEPARATOR".equals(keyParts[2]) &&
-						!"POP_FULL_LU_HIERARCHY_IN_TDM_LU".equals(keyParts[2]) &&
-						!"CREATE_PHYSICAL_FK_IN_MDB_EXPORT_SCHEMA".equals(keyParts[2]) &&
-						!keyParts[2].contains("MASKING_FLAG")
-					) 
+					if (!EXCLUDED_GLOBALS.contains(keyParts[2]) && !keyParts[2].contains("MASKING_FLAG"))
 					{
 						if ("k2_ws".equals(keyParts[1])) {
 							// TDM 7.1 - Add the globals of k2_ws as they are the Shared globals, to allow user to add globals at shared level to impact all LUs
@@ -2893,7 +2881,7 @@ public class Logic extends WebServiceUserCode {
                 }
             } else {
                 
-                userEnvs = fnGetEnvsByUser(userId);
+                userEnvs = fnGetEnvsByUser(userId, null);
             }
                 
             for (Map<String, Object> env : userEnvs) {
@@ -3022,87 +3010,121 @@ public class Logic extends WebServiceUserCode {
     }
 
 	@desc("Get a list of environments that are available for the user.")
-	@webService(path = "userEnvironments", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": [\r\n" +
-			"    {\r\n" +
-			"      \"synthetic_indicator\": \"None\",\r\n" +
-			"      \"environment_id\": 1,\r\n" +
-			"      \"role_id\": \"admin\",\r\n" +
-			"      \"assignment_type\": \"admin\",\r\n" +
-			"      \"environment_type\": \"SOURCE\",\r\n" +
-			"      \"environment_name\": \"SRC\",\r\n" +
-			"\t  \"mask_sensitive_data\": true\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"synthetic_indicator\": \"None\",\r\n" +
-			"      \"environment_id\": 2,\r\n" +
-			"      \"role_id\": \"admin\",\r\n" +
-			"      \"assignment_type\": \"admin\",\r\n" +
-			"      \"environment_type\": \"BOTH\",\r\n" +
-			"      \"environment_name\": \"TAR\",\r\n" +
-			"\t  \"mask_sensitive_data\": true\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"synthetic_indicator\": \"None\",\r\n" +
-			"      \"environment_id\": 3,\r\n" +
-			"      \"role_id\": \"admin\",\r\n" +
-			"      \"assignment_type\": \"admin\",\r\n" +
-			"      \"environment_type\": \"TARGET\",\r\n" +
-			"      \"environment_name\": \"TAR_CRM\",\r\n" +
-			"\t  \"mask_sensitive_data\": false\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"synthetic_indicator\": \"RuleBased\",\r\n" +
-			"      \"environment_id\": -1,\r\n" +
-			"      \"role_id\": \"admin\",\r\n" +
-			"      \"assignment_type\": \"admin\",\r\n" +
-			"      \"environment_type\": \"SOURCE\",\r\n" +
-			"      \"environment_name\": \"Synthetic\",\r\n" +
-			"      \"mask_sensitive_data\": false\r\n" +
-			"\t},\r\n" +
-			"\t{\r\n" +
-			"      \"synthetic_indicator\": \"AI\",\r\n" +
-			"      \"environment_id\": -2,\r\n" +
-			"      \"role_id\": \"admin\",\r\n" +
-			"      \"assignment_type\": \"admin\",\r\n" +
-			"      \"environment_type\": \"SOURCE\",\r\n" +
-			"      \"synthetic_indicator\": \"AI\",\r\n" +
-			"      \"mask_sensitive_data\": false\r\n" +
-			"\t}\r\n" +
-			"\t \r\n" +
-			"  ],\r\n" +
-			"  \"errorCode\": \"\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
+	@webService(path = "userEnvironments", verb = {
+			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON }, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = """
+			{
+				"result": [
+				  {
+					"synthetic_indicator": "None",
+					"environment_id": 1,
+					"role_id": "admin",
+					"assignment_type": "admin",
+					"environment_sync_mode": "ON",
+					"environment_type": "SOURCE",
+					"environment_name": "Production",
+					"mask_sensitive_data": true
+				  },
+				  {
+					"synthetic_indicator": "None",
+					"environment_id": 2,
+					"role_id": "admin",
+					"assignment_type": "admin",
+					"environment_sync_mode": "ON",
+					"environment_type": "BOTH",
+					"environment_name": "UAT",
+					"mask_sensitive_data": false
+				  },
+				  {
+					"synthetic_indicator": "AI",
+					"environment_id": -2,
+					"role_id": "admin",
+					"assignment_type": "admin",
+					"environment_sync_mode": "OFF",
+					"environment_type": "BOTH",
+					"environment_name": "AI",
+					"mask_sensitive_data": false
+				  },
+				  {
+					"synthetic_indicator": "RuleBased",
+					"environment_id": -1,
+					"role_id": "admin",
+					"assignment_type": "admin",
+					"environment_sync_mode": "FORCE",
+					"environment_type": "SOURCE",
+					"environment_name": "Synthetic",
+					"mask_sensitive_data": false
+				  }
+				],
+				"errorCode": "SUCCESS",
+				"message": null
+			  }
+				""")
+
 	public static Object wsGetUserEnvironments(String be_name) throws Exception {
-		Map<String,Object> response=new HashMap<>();
+		Map<String, Object> response = new HashMap<>();
 		Set<Map<String, Object>> result = new HashSet<>();
-		String message=null;
-		String errorCode="SUCCESS";
+		String message = null;
+		String errorCode = "SUCCESS";
 		String userId = sessionUser().name();
 		String permissionGroup = fnGetUserPermissionGroup("");
 		Set<Map<String, Object>> userEnvs = new HashSet<>();
+		Set<Long> productIds = null;
+
 		try {
-		
-			if (admin.equalsIgnoreCase(permissionGroup)){
-				String allEnvs = "Select env.environment_id,env.environment_name," +
-								"  Case When env.allow_read = True And env.allow_write = True Then 'BOTH'" +
-								"    When env.allow_write = True Then 'TARGET' Else 'SOURCE'" +
-								"  End As environment_type," +
-								"  'admin' As role_id," +
-								"  'admin' As assignment_type," +
-		                        " env.mask_sensitive_data," +
-		                              " sync_mode" +
-								" From " + schema + ".environments env" +
-								" Where env.environment_status = 'Active'";
-				Db.Rows rows= db(TDM).fetch(allEnvs);
+
+			// Base query to get all active environments
+			String baseQuery = "SELECT DISTINCT env.environment_id, env.environment_name," +
+					" CASE WHEN env.allow_read = TRUE AND env.allow_write = TRUE THEN 'BOTH' " +
+					" WHEN env.allow_write = TRUE THEN 'TARGET' ELSE 'SOURCE' END AS environment_type," +
+					" 'admin' AS role_id, 'admin' AS assignment_type," +
+					" env.mask_sensitive_data, env.sync_mode " +
+					" FROM " + TDMDB_SCHEMA + ".environments env";
+
+			String finalQuery;
+
+			if (be_name != null && !be_name.trim().isEmpty()) {
+				// Logic for when a business entity is specified
+				String productIdsSql = "SELECT DISTINCT plu.product_id FROM " + TDMDB_SCHEMA + ".business_entities be "
+						+
+						"JOIN " + TDMDB_SCHEMA + ".product_logical_units plu ON be.be_id = plu.be_id " +
+						"WHERE be.be_name = ? AND plu.lu_parent_name IS NULL";
+
+				Db.Rows productRows = db(TDM).fetch(productIdsSql, be_name);
+				productIds = new HashSet<>();
+
+				for (Db.Row row : productRows) {
+					productIds.add(Long.parseLong(row.get("product_id").toString()));
+				}
+				productRows.close();
+
+				if (productIds.isEmpty()) {
+					return wrapWebServiceResults("SUCCESS", "No root products found for business entity.",
+							new ArrayList<>());
+				}
+
+				String productIdsString = productIds.stream()
+						.map(String::valueOf)
+						.collect(Collectors.joining(","));
+
+				finalQuery = baseQuery + " JOIN " + TDMDB_SCHEMA
+						+ ".environment_products ep ON env.environment_id = ep.environment_id " +
+						" WHERE env.environment_status = 'Active' AND ep.status = 'Active' AND ep.enable_product = TRUE AND ep.product_id IN ("
+						+ productIdsString + ")";
+			} else {
+				// Original logic for no business entity specified
+				finalQuery = baseQuery + " WHERE env.environment_status = 'Active'";
+			}
+
+			if (admin.equalsIgnoreCase(permissionGroup)) {
+				Db.Rows rows = db(TDM).fetch(finalQuery);
 				List<String> columnNames = rows.getColumnNames();
+				userEnvs = new HashSet<>();
 				for (Db.Row row : rows) {
-					ResultSet resultSet = row.resultSet();
 					Map<String, Object> rowMap = new HashMap<>();
 					for (String columnName : columnNames) {
-						rowMap.put(columnName, resultSet.getObject(columnName));
+						rowMap.put(columnName, row.get(columnName));
 					}
 					userEnvs.add(rowMap);
 				}
@@ -3110,21 +3132,28 @@ public class Logic extends WebServiceUserCode {
 					rows.close();
 				}
 			} else {
-				
-				userEnvs = fnGetEnvsByUser(userId);
+				userEnvs = fnGetEnvsByUser(userId, productIds);
 			}
-				
+
 			for (Map<String, Object> env : userEnvs) {
-		
+
 				String environment_id = "" + env.get("environment_id");
 				String env_type = "" + env.get("environment_type");
-		
+
 				Map<String, Object> map = new HashMap<>();
 				if ("tester".equalsIgnoreCase(permissionGroup)) {
-					int num_of_reserved = env.get("allowed_number_of_reserved_entities") != null ? Integer.parseInt(env.get("allowed_number_of_reserved_entities").toString()) : 0;
-					int num_of_read = env.get("allowed_number_of_entities_to_read") != null ? Integer.parseInt(env.get("allowed_number_of_entities_to_read").toString()) : 0;
-					int num_of_write = env.get("allowed_number_of_entities_to_copy") != null ? Integer.parseInt(env.get("allowed_number_of_entities_to_copy").toString()) : 0;
-					Boolean allowed_refresh_reference_data = env.get("allowed_refresh_reference_data") != null ? Boolean.parseBoolean(env.get("allowed_refresh_reference_data").toString()) : false;
+					int num_of_reserved = env.get("allowed_number_of_reserved_entities") != null
+							? Integer.parseInt(env.get("allowed_number_of_reserved_entities").toString())
+							: 0;
+					int num_of_read = env.get("allowed_number_of_entities_to_read") != null
+							? Integer.parseInt(env.get("allowed_number_of_entities_to_read").toString())
+							: 0;
+					int num_of_write = env.get("allowed_number_of_entities_to_copy") != null
+							? Integer.parseInt(env.get("allowed_number_of_entities_to_copy").toString())
+							: 0;
+					Boolean allowed_refresh_reference_data = env.get("allowed_refresh_reference_data") != null
+							? Boolean.parseBoolean(env.get("allowed_refresh_reference_data").toString())
+							: false;
 					String permission;
 					switch (env_type) {
 						case "SOURCE":
@@ -3161,78 +3190,78 @@ public class Logic extends WebServiceUserCode {
 							break;
 					}
 					map.put("permission", permission);
-                    map.put("allowed_refresh_reference_data", allowed_refresh_reference_data);
+					map.put("allowed_refresh_reference_data", allowed_refresh_reference_data);
 				}
-				//TDM 9.0 - Change synthetic_indicator to String to support 2 types of synthetic environments 
+				// TDM 9.0 - Change synthetic_indicator to String to support 2 types of
+				// synthetic environments
 				if (Integer.parseInt(environment_id) >= 0) {
-					map.put("synthetic_indicator","None");
+					map.put("synthetic_indicator", "None");
 				} else if (Integer.parseInt(environment_id) == -1) {
-					map.put("synthetic_indicator","RuleBased");
+					map.put("synthetic_indicator", "RuleBased");
 				} else {
-					map.put("synthetic_indicator","AI");
+					map.put("synthetic_indicator", "AI");
 				}
-				
+
 				map.put("environment_id", env.get("environment_id"));
 				map.put("environment_name", env.get("environment_name"));
 				map.put("environment_type", env.get("environment_type"));
 				map.put("role_id", env.get("role_id"));
 				map.put("assignment_type", env.get("assignment_type"));
 				map.put("mask_sensitive_data", env.get("mask_sensitive_data"));
-		        map.put("environment_sync_mode", env.get("sync_mode"));
+				map.put("environment_sync_mode", env.get("sync_mode"));
 				result.add(map);
 			}
-                // After processing userEnvs, manually add AI and Synthetic environments if they are not already present
-                boolean foundAI = false;
-                boolean foundSynthetic = false;
+			// After processing userEnvs, manually add AI and Synthetic environments if they
+			// are not already present
+			boolean foundAI = false;
+			boolean foundSynthetic = false;
 
-                for (Map<String, Object> res : result) {
-                    String environment_name = (String) res.get("environment_name");
-                    if ("AI".equals(environment_name)) {
-                        foundAI = true;
-                    } else if ("Synthetic".equals(environment_name)) {
-                        foundSynthetic = true;
-                    }
-                }
+			for (Map<String, Object> res : result) {
+				String environment_name = (String) res.get("environment_name");
+				if ("AI".equals(environment_name)) {
+					foundAI = true;
+				} else if ("Synthetic".equals(environment_name)) {
+					foundSynthetic = true;
+				}
+			}
 
-                if (!foundAI) {
-                    Map<String, Object> aiEnv = new HashMap<>();
-                    aiEnv.put("synthetic_indicator", "AI");
-                    aiEnv.put("environment_id", -2);
-                    aiEnv.put("role_id", -2);
-                    aiEnv.put("assignment_type", "all");
-                    aiEnv.put("environment_sync_mode", "OFF");
-                    aiEnv.put("permission", "");
-                    aiEnv.put("allowed_refresh_reference_data", false);
-                    aiEnv.put("environment_type", "BOTH");
-                    aiEnv.put("environment_name", "AI");
-                    aiEnv.put("mask_sensitive_data", false);
-                    result.add(aiEnv);
-                }
+			if (!foundAI) {
+				Map<String, Object> aiEnv = new HashMap<>();
+				aiEnv.put("synthetic_indicator", "AI");
+				aiEnv.put("environment_id", -2);
+				aiEnv.put("role_id", -2);
+				aiEnv.put("assignment_type", "all");
+				aiEnv.put("environment_sync_mode", "OFF");
+				aiEnv.put("permission", "");
+				aiEnv.put("allowed_refresh_reference_data", false);
+				aiEnv.put("environment_type", "BOTH");
+				aiEnv.put("environment_name", "AI");
+				aiEnv.put("mask_sensitive_data", false);
+				result.add(aiEnv);
+			}
 
-                if (!foundSynthetic) {
-                    Map<String, Object> syntheticEnv = new HashMap<>();
-                    syntheticEnv.put("synthetic_indicator", "RuleBased");
-                    syntheticEnv.put("environment_id", -1);
-                    syntheticEnv.put("role_id", -1);
-                    syntheticEnv.put("assignment_type", "all");
-                    syntheticEnv.put("environment_sync_mode", "FORCE");
-                    syntheticEnv.put("permission", "");
-                    syntheticEnv.put("allowed_refresh_reference_data", false);
-                    syntheticEnv.put("environment_type", "SOURCE");
-                    syntheticEnv.put("environment_name", "Synthetic");
-                    syntheticEnv.put("mask_sensitive_data", false);
-                    result.add(syntheticEnv);
-                }
+			if (!foundSynthetic) {
+				Map<String, Object> syntheticEnv = new HashMap<>();
+				syntheticEnv.put("synthetic_indicator", "RuleBased");
+				syntheticEnv.put("environment_id", -1);
+				syntheticEnv.put("role_id", -1);
+				syntheticEnv.put("assignment_type", "all");
+				syntheticEnv.put("environment_sync_mode", "FORCE");
+				syntheticEnv.put("permission", "");
+				syntheticEnv.put("allowed_refresh_reference_data", false);
+				syntheticEnv.put("environment_type", "SOURCE");
+				syntheticEnv.put("environment_name", "Synthetic");
+				syntheticEnv.put("mask_sensitive_data", false);
+				result.add(syntheticEnv);
+			}
 
-		
-
-		} catch(Exception e){
-			message=e.getMessage();
-			errorCode="FAILED";
+		} catch (Exception e) {
+			message = e.getMessage();
+			errorCode = "FAILED";
 		}
-		
+
 		response.put("result", result);
-		response.put("errorCode",errorCode);
+		response.put("errorCode", errorCode);
 		response.put("message", message);
 		return response;
 	}

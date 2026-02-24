@@ -1,0 +1,34 @@
+{
+    "type": "DataverseUpdateLookups",
+    "badge": "Da",
+    "doc": [
+        "Updates only the lookup fields of a table.",
+        "The Actor calls the Dataverse batch API with PATCH for every entry."
+    ],
+    "inputs": [
+        {
+            "name": "table",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": false,
+            "doc": "The entity set name of the Dataverse table"
+        },
+        {
+            "name": "path",
+            "mandatory": false,
+            "hidden": true
+        },
+        {
+            "name": "method",
+            "const": "PATCH",
+            "hidden": true
+        }
+    ],
+    "outputs": [],
+    "tags": [
+        "Dataverse"
+    ],
+    "actorClass": "com.k2view.cdbms.usercode.common.dataverse.actors.DataverseUpdateLookupsActor",
+    "parentType": "DataverseBatch"
+}

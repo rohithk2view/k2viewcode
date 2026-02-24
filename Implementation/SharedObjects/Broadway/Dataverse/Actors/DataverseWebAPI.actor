@@ -1,0 +1,44 @@
+{
+    "type": "DataverseWebAPI",
+    "badge": "Da",
+    "doc": [
+        "Sends a request to a Dataverse server stringifying the request into JSON and parsing the JSON result.",
+        "In case of a JSON parsing error, the actor will throw an exception."
+    ],
+    "inputs": [
+        {
+            "name": "exceptionOnError",
+            "hidden": true
+        },
+        {
+            "name": "interface",
+            "doc": [
+				"The Dataverse interface to use."
+			],
+            "editor": {
+                "id": "com.k2view.interface",
+                "interfaceType": [
+                    "Dataverse"
+                ]
+            }
+        },
+        {
+			"name": "path",
+			"mandatory": true,
+			"schema": {
+				"type": "string"
+			},
+			"const":"",
+			"doc":"The relative path to use. For example: EntityDefinitions"
+		},
+        {
+            "name": "headers",
+            "const": {}
+        }
+    ],
+    "outputs": [],
+    "tags": [
+        "Dataverse"
+    ],
+    "parentType": "HttpJson"
+}
