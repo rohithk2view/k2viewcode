@@ -39,4 +39,5 @@
 	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/project/lib/cron-utils-9.2.1.jar" />
 	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/project/lib/commons-lang3-3.11.jar" />
 	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/project/lib/commons-collections4-4.3.jar" />
+	<classpathentry kind="lib" path="/opt/apps/fabric/workspace/project/lib/MetadataFileAnalyzerPlugin-1.0-SNAPSHOT (3).jar" />
 </classpath>

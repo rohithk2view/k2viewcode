@@ -9,7 +9,19 @@
       "rowCount" : true
     },
     "globalSchemaExclude" : [ "SYS.*", ".*SYS$", "USER.*", ".*USER$" ],
-    "override" : false
+    "pluginsOverride" : {
+      "Meta Data Analyzer" : {
+        "name" : "Meta Data Analyzer",
+        "active" : true,
+        "ordinalPosition" : 13,
+        "threshold" : 1,
+        "class" : "com.k2view.discovery.plugins.MetadataFileAnalyzerPlugin"
+      },
+      "Reference by Name Comparison" : {
+        "active" : true
+      }
+    },
+    "override" : true
   }, {
     "name" : "Rule1",
     "enabled" : true,
@@ -18,5 +30,25 @@
     "schema" : [ "*" ],
     "dataset" : [ "accounts", "contacts" ],
     "override" : true
+  }, {
+    "name" : "Rule2 crm",
+    "enabled" : true,
+    "filter" : "",
+    "dataPlatform" : "CRMDUMMY",
+    "override" : true,
+    "connectToSource" : false,
+    "pluginsOverride" : {
+      "Meta Data Analyzer" : {
+        "inputParameters" : {
+          "file_path" : "/opt/apps/fabric/workspace/project/Implementation/SharedObjects/Interfaces/Discovery/Mtable/CRMDUMMYFK.csv"
+        }
+      },
+      "Reference by Name Comparison" : { },
+      "LLM Profiling" : { },
+      "LLM Description" : { },
+      "Metadata Regex Classifier" : {
+        "active" : false
+      }
+    }
   } ]
 }
